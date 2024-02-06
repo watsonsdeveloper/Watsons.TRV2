@@ -1,0 +1,11 @@
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DTO\bin\Debug\net8.0\Watsons.TRV2.DTO.deps.json
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DTO\bin\Debug\net8.0\Watsons.TRV2.DTO.dll
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DTO\bin\Debug\net8.0\Watsons.TRV2.DTO.pdb
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DTO\obj\Debug\net8.0\Watsons.TRV2.DTO.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DTO\obj\Debug\net8.0\Watsons.TRV2.DTO.AssemblyInfoInputs.cache
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DTO\obj\Debug\net8.0\Watsons.TRV2.DTO.AssemblyInfo.cs
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DTO\obj\Debug\net8.0\Watsons.TRV2.DTO.csproj.CoreCompileInputs.cache
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DTO\obj\Debug\net8.0\Watsons.TRV2.DTO.dll
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DTO\obj\Debug\net8.0\refint\Watsons.TRV2.DTO.dll
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DTO\obj\Debug\net8.0\Watsons.TRV2.DTO.pdb
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DTO\obj\Debug\net8.0\ref\Watsons.TRV2.DTO.dll

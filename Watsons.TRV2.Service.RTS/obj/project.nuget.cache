@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "Jnwy9cvHVNKAjKdcvRc1Aa5wS7kGNggWrANonnoxj/irBEXKbwovL9t9pP8053aXU2rcsD8Sgo5Z5ig5qRnbHQ==",
+  "success": true,
+  "projectFilePath": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Service.RTS\\Watsons.TRV2.Service.RTS.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\JhiWei.Wong\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\JhiWei.Wong\\.nuget\\packages\\microsoft.extensions.options\\8.0.0\\microsoft.extensions.options.8.0.0.nupkg.sha512",
+    "C:\\Users\\JhiWei.Wong\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

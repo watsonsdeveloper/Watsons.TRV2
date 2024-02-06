@@ -1,0 +1,16 @@
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\bin\Release\net8.0\Watsons.TRV2.DA.MyMaster.deps.json
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\bin\Release\net8.0\Watsons.TRV2.DA.MyMaster.runtimeconfig.json
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\bin\Release\net8.0\Watsons.TRV2.DA.MyMaster.dll
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\bin\Release\net8.0\Watsons.TRV2.DA.MyMaster.pdb
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\bin\Release\net8.0\Watsons.Common.dll
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\obj\Release\net8.0\Watsons.TRV2.DA.MyMaster.csproj.AssemblyReference.cache
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\obj\Release\net8.0\Watsons.TRV2.DA.MyMaster.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\obj\Release\net8.0\Watsons.TRV2.DA.MyMaster.AssemblyInfoInputs.cache
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\obj\Release\net8.0\Watsons.TRV2.DA.MyMaster.AssemblyInfo.cs
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\obj\Release\net8.0\Watsons.TRV2.DA.MyMaster.csproj.CoreCompileInputs.cache
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\obj\Release\net8.0\Watsons.TRV2.DA.MyMaster.csproj.CopyComplete
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\obj\Release\net8.0\Watsons.TRV2.DA.MyMaster.dll
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\obj\Release\net8.0\refint\Watsons.TRV2.DA.MyMaster.dll
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\obj\Release\net8.0\Watsons.TRV2.DA.MyMaster.pdb
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\obj\Release\net8.0\Watsons.TRV2.DA.MyMaster.genruntimeconfig.cache
+C:\Projects\Watsons.TRV2\Watsons.TRV2.DA.MyMaster\obj\Release\net8.0\ref\Watsons.TRV2.DA.MyMaster.dll

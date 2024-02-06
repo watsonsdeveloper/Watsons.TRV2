@@ -1,0 +1,12 @@
+C:\Projects\Watsons.TRV2\Watsons.TRV2.Services.RTS\bin\Debug\net8.0\Watsons.TRV2.Services.RTS.deps.json
+C:\Projects\Watsons.TRV2\Watsons.TRV2.Services.RTS\bin\Debug\net8.0\Watsons.TRV2.Services.RTS.dll
+C:\Projects\Watsons.TRV2\Watsons.TRV2.Services.RTS\bin\Debug\net8.0\Watsons.TRV2.Services.RTS.pdb
+C:\Projects\Watsons.TRV2\Watsons.TRV2.Services.RTS\obj\Debug\net8.0\Watsons.TRV2.Services.RTS.csproj.AssemblyReference.cache
+C:\Projects\Watsons.TRV2\Watsons.TRV2.Services.RTS\obj\Debug\net8.0\Watsons.TRV2.Services.RTS.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\Watsons.TRV2\Watsons.TRV2.Services.RTS\obj\Debug\net8.0\Watsons.TRV2.Services.RTS.AssemblyInfoInputs.cache
+C:\Projects\Watsons.TRV2\Watsons.TRV2.Services.RTS\obj\Debug\net8.0\Watsons.TRV2.Services.RTS.AssemblyInfo.cs
+C:\Projects\Watsons.TRV2\Watsons.TRV2.Services.RTS\obj\Debug\net8.0\Watsons.TRV2.Services.RTS.csproj.CoreCompileInputs.cache
+C:\Projects\Watsons.TRV2\Watsons.TRV2.Services.RTS\obj\Debug\net8.0\Watsons.TRV2.Services.RTS.dll
+C:\Projects\Watsons.TRV2\Watsons.TRV2.Services.RTS\obj\Debug\net8.0\refint\Watsons.TRV2.Services.RTS.dll
+C:\Projects\Watsons.TRV2\Watsons.TRV2.Services.RTS\obj\Debug\net8.0\Watsons.TRV2.Services.RTS.pdb
+C:\Projects\Watsons.TRV2\Watsons.TRV2.Services.RTS\obj\Debug\net8.0\ref\Watsons.TRV2.Services.RTS.dll

@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "Watsons.TRV2.DTO/1.0.0": {
+        "runtime": {
+          "Watsons.TRV2.DTO.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Watsons.TRV2.DTO/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

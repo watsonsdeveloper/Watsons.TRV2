@@ -1,0 +1,6 @@
+@Watsons.TRV2.API.Mobile_HostAddress = http://localhost:5255
+
+GET {{Watsons.TRV2.API.Mobile_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

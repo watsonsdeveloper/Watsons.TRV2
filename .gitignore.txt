@@ -1,0 +1,11 @@
+# Ignore all bin directories
+bin/
+
+# Ignore all .obj files
+*.obj
+
+# Ignore all files in any directory named .idea (common for JetBrains IDEs)
+.idea/
+
+bin/
+obj/
