@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Watsons.Common\Watsons.Common\Watsons.Common.csproj" />
     <ProjectReference Include="..\Watsons.TRV2.DA.MyMaster\Watsons.TRV2.DA.MyMaster.csproj" />
     <ProjectReference Include="..\Watsons.TRV2.DA.TR\Watsons.TRV2.DA.TR.csproj" />
     <ProjectReference Include="..\Watsons.TRV2.Services.Mobile\Watsons.TRV2.Services.Mobile.csproj" />

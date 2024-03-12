@@ -13,15 +13,13 @@ public partial class TrCart
 
     public int? StoreId { get; set; }
 
-    public byte BrandId { get; set; }
+    public byte Brand { get; set; }
 
     public string? BrandName { get; set; }
 
     public string? ProductName { get; set; }
 
-    public string? Reason { get; set; }
-
-    public bool RequireJustify { get; set; }
+    public byte? Reason { get; set; }
 
     public string? Justification { get; set; }
 
@@ -33,13 +31,13 @@ public partial class TrCart
 
     public string? UpdatedBy { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 
     public bool IsDeleted { get; set; }
 
-    public virtual Brand Brand { get; set; } = null!;
-
     public virtual ICollection<TrImage> TrImages { get; set; } = new List<TrImage>();
+
+    public virtual ICollection<TrOrder> TrOrders { get; set; } = new List<TrOrder>();
 }

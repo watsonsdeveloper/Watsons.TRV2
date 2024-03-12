@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Watsons.TRV2.DTO.Common;
+using Watsons.TRV2.DTO.Mobile.UploadedImage;
 
 namespace Watsons.TRV2.DTO.Mobile
 {
@@ -33,11 +34,13 @@ namespace Watsons.TRV2.DTO.Mobile
         public string? SupplierName { get; set; }
         public string? SupplierCode { get; set; }
         public string CreatedBy { get; set; } = null!;
+        public DateTime CreatedAt { get; set; }
         public bool RequireJustify { get; set; } = true;
         public bool IsAvailableStock { get; set; } = false;
-        public string? Reason { get; set; }
+        public TrReason? Reason { get; set; }
         public string? Justification { get; set; }
         public string? ErrorMessage { get; set; }
+        public List<UploadedImageDto>? UploadedImages { get; set; }
     }
 
 }

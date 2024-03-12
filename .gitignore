@@ -1,0 +1,20 @@
+# Ignore all bin directories
+Watsons.TRV2.Services.Mobile/bin/
+Watsons.TRV2.Services.Mobile/obj/
+Watsons.TRV2.DTO/obj/
+Watsons.TRV2.DTO/bin/
+Watsons.TRV2.DA.TR/obj/
+
+Watsons.TRV2.MSTest/
+# Ignore all obj directories
+obj/
+bin/
+
+wwwroot/
+
+# Ignore specific files
+myconfig.json
+# Ignore files with specific extensions
+*.log
+*.tmp
+*.dll

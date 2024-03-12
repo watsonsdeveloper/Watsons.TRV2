@@ -16,7 +16,7 @@ namespace Watsons.TRV2.DA.TR.Repositories
         Task<bool> DeleteRange(List<long> trCartIds);
         Task<TrCart> Insert(TrCart entity);
         Task<IEnumerable<TrCart>> List(int storeId, byte brandId);
-        Task<TrCart?> Select(long trOrderId, int storeId);
+        Task<TrCart?> Select(long trCartId, int storeId);
 
         Task<bool> HasInCart(int storeId, string plu);
     }
@@ -64,10 +64,11 @@ namespace Watsons.TRV2.DA.TR.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<TrCart>> List(int storeId, byte brandId)
+        public async Task<IEnumerable<TrCart>> List(int storeId, byte brand)
         {
             return await _context.TrCarts.AsNoTracking()
-                .Where(c => c.StoreId == storeId && c.BrandId == brandId && !c.IsDeleted)
+                .Where(c => c.StoreId == storeId && c.Brand == brand && !c.IsDeleted)
+                .OrderByDescending(c => c.TrCartId)
                 .ToListAsync();
         }
 
@@ -76,26 +77,35 @@ namespace Watsons.TRV2.DA.TR.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<TrCart> Update(TrCart entity)
+        public async Task<TrCart> Update(TrCart entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _context.Update(entity);
+                await _context.SaveChangesAsync();
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
 
 
         public async Task<TrCart?> Select(long trCartId, int storeId)
         {
-            TrCart? trOrder;
+            TrCart? trCart;
             try
             {
-                trOrder = await _context.TrCarts
+                trCart = await _context.TrCarts
                     .FirstOrDefaultAsync(c => c.TrCartId == trCartId && c.StoreId == storeId && !c.IsDeleted);
             }
             catch (Exception e)
             {
                 throw new Exception();
             }
-            return trOrder;
+            return trCart;
         }
 
         public async Task<bool> HasInCart(int storeId, string plu)

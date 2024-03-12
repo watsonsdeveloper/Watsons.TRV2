@@ -17,6 +17,11 @@ using static Watsons.TRV2.DTO.Mobile.TrCartListDto;
 using Watsons.TRV2.DA.TR.Entities;
 using Watsons.TRV2.Services.RTS;
 using Watsons.TRV2.DA.MyMaster.Entities;
+using Watsons.TRV2.DTO.Mobile.UploadImage;
+using Watsons.TRV2.DTO.Mobile.TrCart;
+using AddToTrCartRequest = Watsons.TRV2.DTO.Mobile.TrCart.AddToTrCartRequest;
+using System.Reflection.Metadata.Ecma335;
+using Watsons.TRV2.DTO.Mobile.UploadedImage;
 
 namespace Watsons.TRV2.Services.Mobile
 {
@@ -26,64 +31,143 @@ namespace Watsons.TRV2.Services.Mobile
         Task<ServiceResult<List<TrCartDto>>> GetTrCartList(GetTrCartListRequest request);
         Task<ServiceResult<TrCartDto>> AddToTrCart(AddToTrCartRequest request);
         Task<ServiceResult<TrCartDto>> RemoveTrCart(RemoveTrCartRequest request);
+        Task<ServiceResult<TrCartDto>> UpdateTrCartRequirement(UpdateTrCartRequirementRequest request);
+
     }
     public class TrCartService : ITrCartService
     {
         private readonly IMapper _mapper;
         private readonly IRtsService _rtsService;
+        private readonly IUploadImageService _uploadImageService;
         private readonly ITrOrderRepository _trOrderRepository;
         private readonly ITrCartRepository _trCartRepository;
         private readonly ITrImageRepository _trImageRepository;
         private readonly IItemMasterRepository _itemMasterRepository;
         private readonly IStoreMasterRepository _storeMasterRepository;
+        private readonly IStoreSalesBandRepository _storeSalesBandRepository;
         private readonly IImageHelper _imageHelper;
 
         private readonly ImageSettings _imageSettings;
         private readonly RtsSettings _rtsSettings;
-        public TrCartService(IMapper mapper, IRtsService rtsService, 
-            ITrOrderRepository trOrderRepository, ITrCartRepository trCartRepository, 
-            ITrImageRepository trImageRepository, IItemMasterRepository itemMasterRepository, 
-            IStoreMasterRepository storeMasterRepository, IImageHelper imageHelper, 
+        public TrCartService(IMapper mapper, IRtsService rtsService,
+            IUploadImageService uploadImageService,
+            ITrOrderRepository trOrderRepository, ITrCartRepository trCartRepository,
+            ITrImageRepository trImageRepository, IItemMasterRepository itemMasterRepository,
+            IStoreMasterRepository storeMasterRepository, IStoreSalesBandRepository storeSalesBandRepository,
+            IImageHelper imageHelper,
             IOptions<ImageSettings> imageSettings, IOptions<RtsSettings> rtsSettings)
         {
             _mapper = mapper;
             _rtsService = rtsService;
+            _uploadImageService = uploadImageService;
             _trOrderRepository = trOrderRepository;
             _trCartRepository = trCartRepository;
             _trImageRepository = trImageRepository;
             _itemMasterRepository = itemMasterRepository;
             _storeMasterRepository = storeMasterRepository;
+            _storeSalesBandRepository = storeSalesBandRepository;
             _imageHelper = imageHelper;
 
             _imageSettings = imageSettings.Value;
             _rtsSettings = rtsSettings.Value;
         }
 
+        /// <summary>
+        /// Update trCartDto
+        /// 1. IsAvailableStock from RTS
+        /// 2. RequireJustify from StoreSalesBand
+        /// </summary>
+        /// <param name="trCartDto"></param>
+        /// <param name="rtsDict"></param>
+        /// <param name="monthlyStoreOrder"></param>
+        /// <param name="storeSalesBandDto"></param>
+        /// <returns></returns>
+        private async Task<TrCartDto> MapTrCartDto(TrCartDto trCartDto, Dictionary<string, int>? rtsDict, 
+            Dictionary<string, int>? monthlyStoreOrder, StoreSalesBandDto? storeSalesBandDto, List<TrImage>? uploadedImages)
+        {
+            #region check if product available stock in RTS
+            if (trCartDto.Brand == Brand.Supplier)
+            {
+                trCartDto.IsAvailableStock = true;
+            }
+            else
+            {
+                if(rtsDict == null)
+                {
+                    rtsDict = await _rtsService.GetMultipleProductSingleStore(
+                        new RTS.DTO.GetMultipleProductSingleStore.Request()
+                    {
+                        StoreID = trCartDto.StoreId,
+                        PluList = [trCartDto.Plu],
+                    });
+                }
+                var rts = rtsDict?[trCartDto.Plu];
+                if (rts != null && rts > _rtsSettings.MinStockRequired)
+                {
+                    trCartDto.IsAvailableStock = true;
+                }
+                else
+                {
+                    trCartDto.IsAvailableStock = false;
+                }
+            }
+            #endregion
+
+            #region justification check if sales band threshold within a month
+            trCartDto.RequireJustify = true;
+            if(storeSalesBandDto == null)
+            {
+                var storeSalesBand = await _storeSalesBandRepository.GetStoreSalesBandDetails(trCartDto.StoreId);
+                if (storeSalesBand == null)
+                {
+                    return trCartDto;
+                }
+                storeSalesBandDto = _mapper.Map<StoreSalesBandDto>(storeSalesBand);
+            }
+
+            // check if product has requested within a month
+            if (monthlyStoreOrder == null)
+            {
+                monthlyStoreOrder = await _trOrderRepository.GetProductQuantityOfMonthlyStoreOrder(trCartDto.StoreId, (byte)trCartDto.Brand);
+            }
+
+            if (monthlyStoreOrder.ContainsKey(trCartDto.Plu) && monthlyStoreOrder[trCartDto.Plu] > storeSalesBandDto.PluCapped)
+            {
+                trCartDto.RequireJustify = true;
+            }
+            else
+            {
+                trCartDto.RequireJustify = false;
+            }
+            #endregion
+
+            if(uploadedImages == null)
+            {
+                uploadedImages = await _trImageRepository.ListByTrCartId(trCartDto.TrCartId) as List<TrImage>;
+            }
+
+            if(uploadedImages != null && uploadedImages.Count > 0)
+            {
+                // remove those not belong to this trCartId
+                uploadedImages = uploadedImages.Where(i => i.TrCartId == trCartDto.TrCartId).ToList();
+
+                trCartDto.UploadedImages = _mapper.Map<List<UploadedImageDto>>(uploadedImages);
+            }
+
+            return trCartDto;
+        }
+
         public async Task<ServiceResult<TrCartDto>> GetTrCart(GetTrCartRequest request)
         {
-            var store = await _storeMasterRepository.SelectStore(request.StoreId);
-            if (store == null)
-            {
-                return ServiceResult<TrCartDto>.Failure("Store Not Found.");
-            }
-
-            var trCart = await _trCartRepository.Select(request.TrCartId, store.StoreId);
+            var trCart = await _trCartRepository.Select(request.TrCartId, request.StoreId);
             if (trCart == null)
             {
-                return ServiceResult<TrCartDto>.Failure("Product Not Found.");
+                return ServiceResult<TrCartDto>.Failure("Cart Not Found.");
             }
 
-            //var item = await _itemMasterRepository.SearchByPlu(trCart.Plu);
-            //if (item == null)
-            //{
-            //    return ServiceResult<TrCartDto>.Failure("Product Not Found.");
-            //}
-
-            // TODO : including image path
-
             var trCartDto = _mapper.Map<TrCartDto>(trCart);
-            //trCartDto.ProductName = item.RetekItemDesc;
-            //trCartDto.BrandName = item.Brand;
+
+            trCartDto = await MapTrCartDto(trCartDto, null, null, null, null);
 
             return ServiceResult<TrCartDto>.Success(trCartDto);
         }
@@ -97,64 +181,42 @@ namespace Watsons.TRV2.Services.Mobile
             }
 
             var trCartList = await _trCartRepository.List(store.StoreId, (byte)request.Brand);
-            if (trCartList == null && trCartList?.Count() == 0)
+            if (trCartList == null && !trCartList!.Any())
             {
                 return ServiceResult<List<TrCartDto>>.Failure("Product Not Found.");
             }
+            var trCartIds = trCartList.Select(c => c.TrCartId).ToList();
 
-            // check if product available stock in RTS
-            var rtsResponse = await _rtsService.GetMultipleProductSingleStore(new RTS.DTO.GetMultipleProductSingleStore.Request()
+            Dictionary<string, int>? rtsDictionary = null;
+            if (request.Brand == Brand.Own)
             {
-                StoreID = store.StoreId,
-                PluList = trCartList!.Select(c => c.Plu).ToList(),
-            });
-
-            // check if product has requested within a month
-            //Dictionary<string, string> pluRequestedWithinMonth = new Dictionary<string, string>();
-            var pluRequestedWithinMonth = new List<string>();
-            var monthlyOrderList = await _trOrderRepository.GetStoreMonthlyTrOrders(store.StoreId, (byte)request.Brand);
-            if (monthlyOrderList?.TrOrderList != null)
-            {
-                pluRequestedWithinMonth = monthlyOrderList?.TrOrderList
-                    .Where(o => o.Status == (byte)TrOrderStatus.Approved)
-                    .Select(o => o.Plu)
-                    .ToList();
+                // check if product available stock in RTS
+                rtsDictionary = await _rtsService.GetMultipleProductSingleStore(new RTS.DTO.GetMultipleProductSingleStore.Request()
+                {
+                    StoreID = store.StoreId,
+                    PluList = trCartList!.Select(c => c.Plu).ToList(),
+                });
             }
+
+            var storeSalesBand = await _storeSalesBandRepository.GetStoreSalesBandDetails(store.StoreId);
+            if (storeSalesBand == null)
+            {
+                return ServiceResult<List<TrCartDto>>.Failure("Store Sales Band Not Found.");
+            }
+            var storeSalesBandDto = _mapper.Map<StoreSalesBandDto>(storeSalesBand);
+
+            var uploadedImages = await _trImageRepository.ListByTrCartIds(trCartIds) as List<TrImage>;
+
+            // check if product has been requested within a month
+            var monthlyStoreOrder = await _trOrderRepository.GetProductQuantityOfMonthlyStoreOrder(request.StoreId, (byte)request.Brand);
 
             var trCartListDto = _mapper.Map<List<TrCartDto>>(trCartList);
 
-            //var itemMasterDict = new Dictionary<string, ItemMaster>();
-            foreach (var trCartDto in trCartListDto)
+            for (int i = 0; i < trCartListDto.Count; i++)
             {
-                var rtsProduct = rtsResponse?.FirstOrDefault(rts => rts.Plu == trCartDto.Plu);
-                if (rtsProduct != null && rtsProduct.AvailableStock > _rtsSettings.MinStockRequired)
-                {
-                    trCartDto.IsAvailableStock = true;
-                }
-
-                // TODO: checking after done Order
-                if (pluRequestedWithinMonth != null && pluRequestedWithinMonth.Contains(trCartDto.Plu))
-                {
-                    trCartDto.RequireJustify = true;
-                }
-
-                //if (itemMasterDict.ContainsKey(trCartDto.Plu))
-                //{
-                //    trCartDto.ProductName = itemMasterDict[trCartDto.Plu].RetekItemDesc;
-                //}
-                //else 
-                //{
-                //    var item = await _itemMasterRepository.SearchByPlu(trCartDto.Plu);
-                //    if(item != null)
-                //    {
-                //        itemMasterDict.Add(trCartDto.Plu, item);
-                //        trCartDto.ProductName = item.RetekItemDesc;
-                //        trCartDto.BrandName = item.Brand;
-                //    }
-                //}
-
-                // TODO : including image path
+                trCartListDto[i] = await MapTrCartDto(trCartListDto[i], rtsDictionary, monthlyStoreOrder, storeSalesBandDto, uploadedImages);
             }
+            
             return ServiceResult<List<TrCartDto>>.Success(trCartListDto);
         }
 
@@ -173,6 +235,11 @@ namespace Watsons.TRV2.Services.Mobile
             }
 
             if (item.Trid != 1)
+            {
+                return ServiceResult<TrCartDto>.Failure("Product is not tester product.");
+            }
+
+            if (item.ItemStatus == null || (!item.ItemStatus.Contains("1") && !item.ItemStatus.Contains("2")))
             {
                 return ServiceResult<TrCartDto>.Failure("Product is not tester product.");
             }
@@ -198,55 +265,49 @@ namespace Watsons.TRV2.Services.Mobile
                 return ServiceResult<TrCartDto>.Failure("Product upon pending approval.");
             }
 
-            // Check RTS > 3 items
-            List<RTS.DTO.GetMultipleProductSingleStore.Response>? rtsResponse;
-            try
+            if (request.Brand == Brand.Own)
             {
-                var rtsRequest = new RTS.DTO.GetMultipleProductSingleStore.Request()
+                Dictionary<string, int>? rtsDictionary;
+                try
                 {
-                    StoreID = store.StoreId,
-                    PluList = new List<string>() { item.Item }
-                };
-                rtsResponse = await _rtsService.GetMultipleProductSingleStore(rtsRequest);
-            }
-            catch (Exception ex)
-            {
-                return ServiceResult<TrCartDto>.Failure("Error while getting multiple product single store");
-            }
+                    var rtsRequest = new RTS.DTO.GetMultipleProductSingleStore.Request()
+                    {
+                        StoreID = store.StoreId,
+                        PluList = new List<string>() { item.Item }
+                    };
+                    rtsDictionary = await _rtsService.GetMultipleProductSingleStore(rtsRequest);
+                }
+                catch (Exception ex)
+                {
+                    return ServiceResult<TrCartDto>.Failure("Error while getting multiple product single store");
+                }
 
-            if (rtsResponse == null || rtsResponse == null || rtsResponse.Count == 0)
-            {
-                return ServiceResult<TrCartDto>.Failure("Product not found in RTS.");
-            }
-            else if(rtsResponse.FirstOrDefault(rts => rts.Plu == item.Item)?.AvailableStock <= _rtsSettings.MinStockRequired)
-            {
-                return ServiceResult<TrCartDto>.Failure($"Available stock less than {_rtsSettings.MinStockRequired + 1}.");
-            }
-
-            var hasRequestedWithinAMonth = false;
-            var monthlyOrderList = await _trOrderRepository.GetStoreMonthlyTrOrders(store.StoreId, (byte)request.Brand);
-            if (monthlyOrderList?.TrOrderList != null)
-            {
-                hasRequestedWithinAMonth = monthlyOrderList.TrOrderList
-                .Where(o => o.Status == (byte)TrOrderStatus.Approved && o.Plu == item.Item).Any();
+                if (rtsDictionary == null || !rtsDictionary.Any())
+                {
+                    return ServiceResult<TrCartDto>.Failure("Product not found in RTS.");
+                }
+                else if (rtsDictionary[item.Item] <= _rtsSettings.MinStockRequired)
+                {
+                    return ServiceResult<TrCartDto>.Failure($"Available stock less than {_rtsSettings.MinStockRequired + 1}.");
+                }
             }
 
             var trCart = new TrCart()
             {
-                ProductName = item.RetekItemDesc,
+                ProductName = item.EcomItemDesc ?? item.RetekItemDesc,
                 BrandName = item.Brand,
                 Plu = item.Item,
                 Barcode = item.Barcode,
                 StoreId = store.StoreId,
-                BrandId = (byte)request.Brand,
+                Brand = (byte)request.Brand,
                 CreatedBy = request.CreatedBy,
-                RequireJustify = hasRequestedWithinAMonth,
                 SupplierCode = item.SupplierCode,
                 SupplierName = item.SupplierName,
             };
             await _trCartRepository.Insert(trCart);
 
             var trCartDto = _mapper.Map<TrCartDto>(trCart);
+            trCartDto = await MapTrCartDto(trCartDto, null, null, null, null);
 
             return ServiceResult<TrCartDto>.Success(trCartDto);
         }
@@ -262,7 +323,20 @@ namespace Watsons.TRV2.Services.Mobile
             var trCart = await _trCartRepository.Select(request.TrCartId, store.StoreId);
             if (trCart == null)
             {
-                return ServiceResult<TrCartDto>.Failure("Product Not Found.");
+                return ServiceResult<TrCartDto>.Failure("Cart Not Found.");
+            }
+
+            var uploadedImages = await _trImageRepository.ListByTrCartId(request.TrCartId);
+            if (uploadedImages.Any())
+            {
+                var isImagesDeleted = await _uploadImageService.DeleteAllUploadedImagesByTrCartId(new DeleteAllUploadedImagesRequest()
+                {
+                    TrCartId = trCart.TrCartId,
+                    StoreId = store.StoreId
+                });
+
+                if (!isImagesDeleted.IsSuccess)
+                    return ServiceResult<TrCartDto>.Failure("Failed to remove product images from cart.");
             }
 
             var isDeleted = await _trCartRepository.Delete(trCart);
@@ -273,6 +347,76 @@ namespace Watsons.TRV2.Services.Mobile
 
             var trCartDto = _mapper.Map<TrCartDto>(trCart);
             return ServiceResult<TrCartDto>.Success(trCartDto);
+        }
+
+        public async Task<ServiceResult<TrCartDto>> UpdateTrCartRequirement(UpdateTrCartRequirementRequest request)
+        {
+            try
+            {
+                var trCart = await _trCartRepository.Select(request.TrCartId, request.StoreId);
+                if (trCart == null)
+                {
+                    return ServiceResult<TrCartDto>.Failure("Cart not found.");
+                }
+
+                var uploadedImages = await _uploadImageService.ListByTrCartId(new ListByTrCartIdRequest()
+                {
+                    TrCartId = request.TrCartId,
+                    StoreId = request.StoreId
+                });
+
+                if (request.Reason != TrReason.Missing && request.Reason != TrReason.NewListing)
+                {
+                    if (uploadedImages.Data.Count() < _imageSettings.MinImageUpload)
+                    {
+                        return ServiceResult<TrCartDto>.Failure($"Minimum {_imageSettings.MinImageUpload} {(_imageSettings.MinImageUpload == 1 ? "image" : "images")} to be uploaded.");
+                    }
+                }
+                else if (request.Reason == TrReason.Missing || request.Reason == TrReason.NewListing)
+                {
+                    // remove all images if reason is missing or new listing
+                    if (uploadedImages.Data.Count() > 0)
+                    {
+                        var isImagesDeleted = await _uploadImageService.DeleteAllUploadedImagesByTrCartId(new DeleteAllUploadedImagesRequest()
+                        {
+                            TrCartId = trCart.TrCartId,
+                            StoreId = request.StoreId
+                        });
+                    }
+                }
+
+                var storeSalesBand = await _storeSalesBandRepository.GetStoreSalesBandDetails(request.StoreId);
+                if (storeSalesBand == null)
+                {
+                    return ServiceResult<TrCartDto>.Failure($"Store sales band not found.");
+                }
+                var storeSalesBandDto = _mapper.Map<StoreSalesBandDto>(storeSalesBand);
+
+                // check if product has requested within a month
+                var monthlyStoreOrder = await _trOrderRepository.GetProductQuantityOfMonthlyStoreOrder(request.StoreId, (byte)trCart.Brand);
+
+                if (monthlyStoreOrder.ContainsKey(trCart.Plu) && monthlyStoreOrder[trCart.Plu] > storeSalesBandDto.PluCapped)
+                {
+                    if(string.IsNullOrEmpty(request.Justification))
+                    {
+                        return ServiceResult<TrCartDto>.Failure($"Justification is required.");
+                    }
+                    trCart.Justification = request.Justification;
+                }
+
+                trCart.Reason = (byte)request.Reason!;
+                trCart.UpdatedBy = request.UpdatedBy;
+                await _trCartRepository.Update(trCart);
+
+                var trCartDto = _mapper.Map<TrCartDto>(trCart);
+                trCartDto = await MapTrCartDto(trCartDto, null, null, null, null);
+
+                return ServiceResult<TrCartDto>.Success(trCartDto);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
         }
 
         //public async Task<ServiceResult<RequestTrResponse>> RequestTr(RequestTrRequest request)

@@ -11,6 +11,9 @@ namespace Watsons.TRV2.DA.TR.Models
     {
         public int StoreId { get; set; }
 
-        public int BrandId { get; set; }
+        public byte Brand { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public string? UpdateBy { get; set; }
     }
 }

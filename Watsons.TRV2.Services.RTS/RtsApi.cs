@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Watsons.TRV2.Services.RTS
 {
-    public class RtsApi
+    public static class RtsApi
     {
         public static readonly string GetMultipleProductSingleStoreApiPath = "/enquire/multiProductSingleStore";
     }

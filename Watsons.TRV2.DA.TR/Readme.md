@@ -1,4 +1,4 @@
-1.Make sure project is build successful.
+1.Make sure solution is build successful.
 
 2.Open Package Manager Console, run command below:
 (a) TRV2 Database

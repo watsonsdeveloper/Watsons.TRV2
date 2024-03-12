@@ -15,7 +15,11 @@ public partial class TrContext : DbContext
     {
     }
 
-    public virtual DbSet<Brand> Brands { get; set; }
+    public virtual DbSet<EnumLookUp> EnumLookUps { get; set; }
+
+    public virtual DbSet<SalesBand> SalesBands { get; set; }
+
+    public virtual DbSet<StoreSalesBand> StoreSalesBands { get; set; }
 
     public virtual DbSet<TrCart> TrCarts { get; set; }
 
@@ -25,26 +29,72 @@ public partial class TrContext : DbContext
 
     public virtual DbSet<TrOrderBatch> TrOrderBatches { get; set; }
 
-    public virtual DbSet<TrPlu> TrPlus { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Brand>(entity =>
+        modelBuilder.Entity<EnumLookUp>(entity =>
         {
-            entity.HasKey(e => e.BrandId).HasName("PK__Brand__DAD4F05E85AD559E");
+            entity
+                .HasNoKey()
+                .ToTable("EnumLookUp");
 
-            entity.ToTable("Brand");
+            entity.HasIndex(e => new { e.EnumName, e.EnumId }, "UQ__EnumLook__AB52D1D259B5A9DE").IsUnique();
 
-            entity.Property(e => e.BrandId).ValueGeneratedOnAdd();
-            entity.Property(e => e.Brand1)
+            entity.Property(e => e.Description)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.EnumName)
+                .HasMaxLength(75)
+                .IsUnicode(false);
+            entity.Property(e => e.EnumValue)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Status).HasDefaultValue((byte)1);
+        });
+
+        modelBuilder.Entity<SalesBand>(entity =>
+        {
+            entity.HasKey(e => e.SalesBandId).HasName("PK__SalesBan__D823A91596BA2564");
+
+            entity.ToTable("SalesBand");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.CreatedBy)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.SalesBand1)
                 .HasMaxLength(25)
                 .IsUnicode(false)
-                .HasColumnName("Brand");
+                .HasColumnName("SalesBand");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<StoreSalesBand>(entity =>
+        {
+            entity.HasKey(e => e.StoreSalesBandId).HasName("PK__StoreSal__19B5EBDFB48FC744");
+
+            entity.ToTable("StoreSalesBand");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.CreatedBy)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.SalesBand).WithMany(p => p.StoreSalesBands)
+                .HasForeignKey(d => d.SalesBandId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StoreSalesBand_SalesBandId");
         });
 
         modelBuilder.Entity<TrCart>(entity =>
         {
-            entity.HasKey(e => e.TrCartId).HasName("PK__TrCart__6B0492B242B4D8B6");
+            entity.HasKey(e => e.TrCartId).HasName("PK__TrCart__6B0492B26A4CD8B9");
 
             entity.ToTable("TrCart");
 
@@ -61,16 +111,13 @@ public partial class TrContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Justification)
-                .HasMaxLength(100)
+                .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.Plu)
                 .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.ProductName)
                 .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.Reason)
-                .HasMaxLength(30)
                 .IsUnicode(false);
             entity.Property(e => e.SupplierCode)
                 .HasMaxLength(50)
@@ -80,16 +127,11 @@ public partial class TrContext : DbContext
             entity.Property(e => e.UpdatedBy)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-
-            entity.HasOne(d => d.Brand).WithMany(p => p.TrCarts)
-                .HasForeignKey(d => d.BrandId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_TrCart_BrandId");
         });
 
         modelBuilder.Entity<TrImage>(entity =>
         {
-            entity.HasKey(e => e.TrImageId).HasName("PK__TrImage__D6BA17147A08762E");
+            entity.HasKey(e => e.TrImageId).HasName("PK__TrImage__D6BA17141620212E");
 
             entity.ToTable("TrImage");
 
@@ -109,7 +151,7 @@ public partial class TrContext : DbContext
 
         modelBuilder.Entity<TrOrder>(entity =>
         {
-            entity.HasKey(e => e.TrOrderId).HasName("PK__TrOrder__11569D3E1E27F247");
+            entity.HasKey(e => e.TrOrderId).HasName("PK__TrOrder__11569D3ECA14E949");
 
             entity.ToTable("TrOrder");
 
@@ -119,14 +161,13 @@ public partial class TrContext : DbContext
             entity.Property(e => e.BrandName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.CreatedBy)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.IsRequireJustify).HasDefaultValue(true);
             entity.Property(e => e.Justification)
-                .HasMaxLength(100)
+                .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.Plu)
                 .HasMaxLength(20)
@@ -134,21 +175,17 @@ public partial class TrContext : DbContext
             entity.Property(e => e.ProductName)
                 .HasMaxLength(255)
                 .IsUnicode(false);
-            entity.Property(e => e.Reason)
-                .HasMaxLength(30)
-                .IsUnicode(false);
+            entity.Property(e => e.SalesBandPluCappedSnapshot).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.SupplierCode)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.SupplierName).HasMaxLength(200);
-            entity.Property(e => e.TrOrderBatchId)
-                .HasMaxLength(36)
-                .IsUnicode(false);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            entity.Property(e => e.UpdatedBy)
-                .HasMaxLength(50)
-                .IsUnicode(false);
             entity.Property(e => e.WeightCost).HasColumnType("decimal(5, 2)");
+
+            entity.HasOne(d => d.TrCart).WithMany(p => p.TrOrders)
+                .HasForeignKey(d => d.TrCartId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TrOrder_TrCartId");
 
             entity.HasOne(d => d.TrOrderBatch).WithMany(p => p.TrOrders)
                 .HasForeignKey(d => d.TrOrderBatchId)
@@ -158,59 +195,20 @@ public partial class TrContext : DbContext
 
         modelBuilder.Entity<TrOrderBatch>(entity =>
         {
-            entity.HasKey(e => e.TrOrderBatchId).HasName("PK__TrOrderB__DC57238DE3643342");
+            entity.HasKey(e => e.TrOrderBatchId).HasName("PK__TrOrderB__DC57238D976D9BC9");
 
             entity.ToTable("TrOrderBatch");
 
-            entity.Property(e => e.TrOrderBatchId)
-                .HasMaxLength(36)
-                .IsUnicode(false);
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.CreatedBy)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.Threshold).HasColumnType("decimal(8, 2)");
-            entity.Property(e => e.TotalCostUponApproval).HasColumnType("decimal(8, 2)");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            entity.Property(e => e.UpdatedBy)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-
-            entity.HasOne(d => d.Brand).WithMany(p => p.TrOrderBatches)
-                .HasForeignKey(d => d.BrandId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_TrOrderBatch_BrandId");
-        });
-
-        modelBuilder.Entity<TrPlu>(entity =>
-        {
-            entity.HasKey(e => e.TrPluId).HasName("PK__TrPlu__36F4161CADDEF259");
-
-            entity.ToTable("TrPlu");
-
             entity.HasIndex(e => e.StoreId, "idx_store");
 
-            entity.Property(e => e.Barcode)
-                .HasMaxLength(100)
-                .IsUnicode(false);
+            entity.Property(e => e.CostThresholdSnapshot).HasColumnType("decimal(8, 2)");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.CreatedBy)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Plu)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.Reason)
-                .HasMaxLength(30)
-                .IsUnicode(false);
-            entity.Property(e => e.SupplierCode)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.SupplierName).HasMaxLength(200);
+            entity.Property(e => e.TotalCostUponApproval).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             entity.Property(e => e.UpdatedBy)
                 .HasMaxLength(50)

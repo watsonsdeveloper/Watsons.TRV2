@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Watsons.TRV2.DTO.Common;
 using Watsons.TRV2.DTO.Mobile;
+using Watsons.TRV2.DTO.Mobile.TrCart;
 using Watsons.TRV2.DTO.Mobile.TrOrder;
+using Watsons.TRV2.DTO.Mobile.UploadImage;
 using Watsons.TRV2.Services.Mobile;
 
 namespace Watsons.TRV2.API.Mobile
@@ -16,22 +18,12 @@ namespace Watsons.TRV2.API.Mobile
                 return "WELCOME TO TRV2 MOBILE API";
             });
 
+            #region mobileApi
+
             var mobileApi = app.MapGroup("/mobileApi");
             mobileApi.MapGet("/searchProduct/{pluOrBarcode}", async (string pluOrBarcode, ProductService service) =>
             {
                 var response = await service.SearchByPluOrBarcode(pluOrBarcode);
-                return Results.Ok(response);
-            });
-
-            mobileApi.MapPost("/requestTr", async (RequestTrRequest request, TrService service) =>
-            {
-                var response = await service.RequestTr(request);
-                return Results.Ok(response);
-            });
-
-            mobileApi.MapGet("/trList", async (int storeId, TrStatus? status, String? pluOrBarcode, TrService service) =>
-            {
-                var response = await service.TrList(storeId, status, pluOrBarcode);
                 return Results.Ok(response);
             });
 
@@ -80,6 +72,12 @@ namespace Watsons.TRV2.API.Mobile
                 return Results.Ok(response);
             });
 
+            mobileApi.MapPost("/trCart/updateTrCartRequirement", async ([FromBody] UpdateTrCartRequirementRequest request, TrCartService service) =>
+            {
+                var response = await service.UpdateTrCartRequirement(request);
+                return Results.Ok(response);
+            });
+
             //mobileApi.MapGet("/trCart/updateTrCart", async ([FromBody] GetTrCartRequest, TrCartService service) =>
             //{
             //    //var response = await service.GetTrCart(storeId);
@@ -102,16 +100,43 @@ namespace Watsons.TRV2.API.Mobile
                 return Results.Ok(await service.GetTrOrder(request));
             });
 
-            mobileApi.MapPost("/trOrder/getTrOrder", async ([FromBody] GetTrOrderRequest request, TrOrderService service) =>
+            mobileApi.MapPost("/trOrder/getTrOrder", async ([FromBody] GetTrOrderRequest request, [FromServices] TrOrderService service) =>
             {
                 return Results.Ok(await service.GetTrOrder(request));
             });
 
-            mobileApi.MapPost("/trOrder/addToTrOrder", async ([FromBody] AddToTrOrderRequest request, TrOrderService service) =>
+            mobileApi.MapPost("/trOrder/addToTrOrder", async ([FromBody] AddToTrOrderRequest request, [FromServices] TrOrderService service) =>
             {
                 return Results.Ok(await service.AddToTrOrder(request));
             });
 
+            mobileApi.MapGet("/uploadImage/getUploadedImageUrls", async (int storeId, long? trCartid, long? trOrderId, [FromServices] UploadImageService service) =>
+            {
+                var request = new GetUploadedImageUrlsRequest()
+                {
+                    StoreId = storeId,
+                    TrCartId = trCartid,
+                    TrOrderId = trOrderId,
+                };
+                return Results.Ok(await service.GetUploadedImageUrls(request));
+            });
+
+            mobileApi.MapPost("/uploadImage/getUploadedImageUrls", async ([FromBody] GetUploadedImageUrlsRequest request, [FromServices] UploadImageService service) =>
+            {
+                return Results.Ok(await service.GetUploadedImageUrls(request));
+            });
+
+            mobileApi.MapPost("/uploadImage", async ([FromBody] UploadImageRequest request, UploadImageService service) =>
+            {
+                return Results.Ok(await service.UploadImage(request));
+            });
+
+            mobileApi.MapDelete("/uploadImage/deleteUploadedImages", async ([FromBody] DeleteUploadedImagesRequest request, [FromServices] UploadImageService service) =>
+            {
+                return Results.Ok(await service.DeleteUploadedImagesByImageIds(request));
+            });
+
+            #endregion
         }
     }
 }

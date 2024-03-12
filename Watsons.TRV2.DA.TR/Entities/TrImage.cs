@@ -11,9 +11,11 @@ public partial class TrImage
 
     public long? TrCartId { get; set; }
 
+    public bool IsDeleted { get; set; }
+
     public string ImagePath { get; set; } = null!;
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public virtual TrCart? TrCart { get; set; }
 

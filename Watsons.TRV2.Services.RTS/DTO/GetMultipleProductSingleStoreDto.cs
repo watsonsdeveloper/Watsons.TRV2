@@ -21,4 +21,5 @@ namespace Watsons.TRV2.Services.RTS.DTO.GetMultipleProductSingleStore
         [JsonPropertyName("availableStock")]
         public double AvailableStock { get; set; }
     }
+
 }

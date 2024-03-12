@@ -7,7 +7,7 @@ using Watsons.TRV2.DTO.Common;
 
 namespace Watsons.TRV2.DTO.Mobile.TrOrder
 {
-    public record TrOrderBatchDto(string TrOrderBatchId, TrOrderBatchStatus Status, int StoreId, Brand Brand, DateTime CreatedAt, string CreatedBy);
+    public record TrOrderBatchDto(long TrOrderBatchId, TrOrderBatchStatus TrOrderBatchStatus, int StoreId, Brand Brand, DateTime CreatedAt, string CreatedBy);
 
     //public class TrOrderBatchDto
     //{

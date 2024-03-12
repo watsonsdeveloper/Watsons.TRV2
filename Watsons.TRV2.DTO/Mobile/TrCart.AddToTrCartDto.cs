@@ -5,9 +5,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Watsons.TRV2.DTO.Common;
-using static Watsons.TRV2.DTO.Mobile.TrCartListDto;
 
-namespace Watsons.TRV2.DTO.Mobile
+namespace Watsons.TRV2.DTO.Mobile.TrCart
 {
     public class AddToTrCartRequest
     {

@@ -17,11 +17,11 @@ namespace Watsons.TRV2.DTO.Mobile.TrOrder
         public string? ProductName { get; set; }
         public string? BrandName { get; set; }
 
-        public string? Reason { get; set; }
+        public TrReason? Reason { get; set; }
 
         public string? Justification { get; set; }
 
-        public TrOrderStatus Status { get; set; }
+        public TrOrderStatus TrOrderStatus { get; set; }
 
         public string? SupplierName { get; set; }
 

@@ -7,7 +7,9 @@ public partial class TrOrder
 {
     public long TrOrderId { get; set; }
 
-    public string TrOrderBatchId { get; set; } = null!;
+    public long TrOrderBatchId { get; set; }
+
+    public long TrCartId { get; set; }
 
     public string? ProductName { get; set; }
 
@@ -17,13 +19,13 @@ public partial class TrOrder
 
     public string? Barcode { get; set; }
 
-    public string? Reason { get; set; }
-
-    public bool RequireJustify { get; set; }
+    public byte? Reason { get; set; }
 
     public string? Justification { get; set; }
 
-    public byte? Status { get; set; }
+    public bool? IsRequireJustify { get; set; }
+
+    public byte? TrOrderStatus { get; set; }
 
     public string? SupplierName { get; set; }
 
@@ -31,13 +33,13 @@ public partial class TrOrder
 
     public decimal? WeightCost { get; set; }
 
+    public decimal? SalesBandPluCappedSnapshot { get; set; }
+
     public string CreatedBy { get; set; } = null!;
 
-    public string? UpdatedBy { get; set; }
+    public DateTime CreatedAt { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
-
-    public DateTime? UpdatedAt { get; set; }
+    public virtual TrCart TrCart { get; set; } = null!;
 
     public virtual ICollection<TrImage> TrImages { get; set; } = new List<TrImage>();
 

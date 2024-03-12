@@ -17,7 +17,7 @@ namespace Watsons.TRV2.DTO.Mobile
 
     //    public int StoreId { get; set; }
 
-    //    public string Reason { get; set; } = null!;
+    //    public TrReason Reason { get; set; } = null!;
 
     //    public byte Status { get; set; }
 

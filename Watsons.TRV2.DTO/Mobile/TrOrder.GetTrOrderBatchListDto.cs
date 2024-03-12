@@ -11,6 +11,7 @@ namespace Watsons.TRV2.DTO.Mobile
     {
         public int StoreId { get; set; }
         public Brand Brand { get; set; }
-        public TrOrderBatchStatus Status { get; set; } = TrOrderBatchStatus.All;
+        public TrOrderStatus Status { get; set; } = TrOrderStatus.All;
+        public string? PluOrBarcode { get; set; }
     }
 }

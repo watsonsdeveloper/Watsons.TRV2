@@ -1,0 +1,256 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Projects\\Watsons.TRV2\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{3A193505-07B0-4CF0-9DCA-436339A4051B}|Watsons.TRV2.API.Portal\\Watsons.TRV2.API.Portal.csproj|c:\\projects\\watsons.trv2\\watsons.trv2.api.portal\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3A193505-07B0-4CF0-9DCA-436339A4051B}|Watsons.TRV2.API.Portal\\Watsons.TRV2.API.Portal.csproj|solutionrelative:watsons.trv2.api.portal\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3A193505-07B0-4CF0-9DCA-436339A4051B}|Watsons.TRV2.API.Portal\\Watsons.TRV2.API.Portal.csproj|c:\\projects\\watsons.trv2\\watsons.trv2.api.portal\\routers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3A193505-07B0-4CF0-9DCA-436339A4051B}|Watsons.TRV2.API.Portal\\Watsons.TRV2.API.Portal.csproj|solutionrelative:watsons.trv2.api.portal\\routers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0692D967-92EB-4A07-B2B2-8E8B249C21D6}|..\\Watsons.Common\\Watsons.Common\\Watsons.Common.csproj|c:\\projects\\watsons.common\\watsons.common\\jwthelpers\\jwthelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C83104B1-A704-43FC-BA63-017E81FF0A37}|Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj|c:\\projects\\watsons.trv2\\watsons.trv2.services.portal\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C83104B1-A704-43FC-BA63-017E81FF0A37}|Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj|solutionrelative:watsons.trv2.services.portal\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AB0E087D-4D72-4E76-A562-14F28B6F84FA}|Watsons.TRV2.Services.CredEncryptor\\Watsons.TRV2.Services.CredEncryptor.csproj|c:\\projects\\watsons.trv2\\watsons.trv2.services.credencryptor\\otpservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AB0E087D-4D72-4E76-A562-14F28B6F84FA}|Watsons.TRV2.Services.CredEncryptor\\Watsons.TRV2.Services.CredEncryptor.csproj|solutionrelative:watsons.trv2.services.credencryptor\\otpservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D62A2CB2-C269-46FF-A90E-6036C18E2C77}|Watsons.TRV2.DTO.Portal\\Watsons.TRV2.DTO.Portal.csproj|c:\\projects\\watsons.trv2\\watsons.trv2.dto.portal\\user.verifyloginotpdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D62A2CB2-C269-46FF-A90E-6036C18E2C77}|Watsons.TRV2.DTO.Portal\\Watsons.TRV2.DTO.Portal.csproj|solutionrelative:watsons.trv2.dto.portal\\user.verifyloginotpdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AB0E087D-4D72-4E76-A562-14F28B6F84FA}|Watsons.TRV2.Services.CredEncryptor\\Watsons.TRV2.Services.CredEncryptor.csproj|c:\\projects\\watsons.trv2\\watsons.trv2.services.credencryptor\\dto\\otpdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AB0E087D-4D72-4E76-A562-14F28B6F84FA}|Watsons.TRV2.Services.CredEncryptor\\Watsons.TRV2.Services.CredEncryptor.csproj|solutionrelative:watsons.trv2.services.credencryptor\\dto\\otpdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D62A2CB2-C269-46FF-A90E-6036C18E2C77}|Watsons.TRV2.DTO.Portal\\Watsons.TRV2.DTO.Portal.csproj|c:\\projects\\watsons.trv2\\watsons.trv2.dto.portal\\user.mfalogindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D62A2CB2-C269-46FF-A90E-6036C18E2C77}|Watsons.TRV2.DTO.Portal\\Watsons.TRV2.DTO.Portal.csproj|solutionrelative:watsons.trv2.dto.portal\\user.mfalogindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C83104B1-A704-43FC-BA63-017E81FF0A37}|Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj|c:\\projects\\watsons.trv2\\watsons.trv2.services.portal\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C83104B1-A704-43FC-BA63-017E81FF0A37}|Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj|solutionrelative:watsons.trv2.services.portal\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0692D967-92EB-4A07-B2B2-8E8B249C21D6}|..\\Watsons.Common\\Watsons.Common\\Watsons.Common.csproj|c:\\projects\\watsons.common\\watsons.common\\validationmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AB0E087D-4D72-4E76-A562-14F28B6F84FA}|Watsons.TRV2.Services.CredEncryptor\\Watsons.TRV2.Services.CredEncryptor.csproj|c:\\projects\\watsons.trv2\\watsons.trv2.services.credencryptor\\imfaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AB0E087D-4D72-4E76-A562-14F28B6F84FA}|Watsons.TRV2.Services.CredEncryptor\\Watsons.TRV2.Services.CredEncryptor.csproj|solutionrelative:watsons.trv2.services.credencryptor\\imfaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AB0E087D-4D72-4E76-A562-14F28B6F84FA}|Watsons.TRV2.Services.CredEncryptor\\Watsons.TRV2.Services.CredEncryptor.csproj|c:\\projects\\watsons.trv2\\watsons.trv2.services.credencryptor\\dto\\mfalogindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AB0E087D-4D72-4E76-A562-14F28B6F84FA}|Watsons.TRV2.Services.CredEncryptor\\Watsons.TRV2.Services.CredEncryptor.csproj|solutionrelative:watsons.trv2.services.credencryptor\\dto\\mfalogindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 255,
+          "SelectedChildIndex": 15,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:134:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "JwtHelper.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.Common\\Watsons.Common\\JwtHelpers\\JwtHelper.cs",
+              "RelativeDocumentMoniker": "..\\Watsons.Common\\Watsons.Common\\JwtHelpers\\JwtHelper.cs",
+              "ToolTip": "C:\\Projects\\Watsons.Common\\Watsons.Common\\JwtHelpers\\JwtHelper.cs",
+              "RelativeToolTip": "..\\Watsons.Common\\Watsons.Common\\JwtHelpers\\JwtHelper.cs",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAkwBQAAABCAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-12T06:44:41.969Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "User.VerifyLoginOtpDto.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.DTO.Portal\\User.VerifyLoginOtpDto.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.DTO.Portal\\User.VerifyLoginOtpDto.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.DTO.Portal\\User.VerifyLoginOtpDto.cs",
+              "RelativeToolTip": "Watsons.TRV2.DTO.Portal\\User.VerifyLoginOtpDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAqwAcAAAAyAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-12T06:40:06.018Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "OtpService.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.CredEncryptor\\OtpService.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.Services.CredEncryptor\\OtpService.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.CredEncryptor\\OtpService.cs",
+              "RelativeToolTip": "Watsons.TRV2.Services.CredEncryptor\\OtpService.cs",
+              "ViewState": "AQIAACgAAAAAAAAAAAAwwC8AAAApAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-12T06:37:16.184Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "OtpDto.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.CredEncryptor\\DTO\\OtpDto.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.Services.CredEncryptor\\DTO\\OtpDto.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.CredEncryptor\\DTO\\OtpDto.cs",
+              "RelativeToolTip": "Watsons.TRV2.Services.CredEncryptor\\DTO\\OtpDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAqwAoAAAAyAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-12T06:35:32.151Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "IMfaService.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.CredEncryptor\\IMfaService.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.Services.CredEncryptor\\IMfaService.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.CredEncryptor\\IMfaService.cs",
+              "RelativeToolTip": "Watsons.TRV2.Services.CredEncryptor\\IMfaService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-12T06:13:15.981Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ValidationMiddleware.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.Common\\Watsons.Common\\ValidationMiddleware.cs",
+              "RelativeDocumentMoniker": "..\\Watsons.Common\\Watsons.Common\\ValidationMiddleware.cs",
+              "ToolTip": "C:\\Projects\\Watsons.Common\\Watsons.Common\\ValidationMiddleware.cs",
+              "RelativeToolTip": "..\\Watsons.Common\\Watsons.Common\\ValidationMiddleware.cs",
+              "ViewState": "AQIAAA8AAAAAAAAAAAAAAB4AAAAxAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-12T06:07:20.409Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "MfaLoginDto.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.CredEncryptor\\DTO\\MfaLoginDto.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.Services.CredEncryptor\\DTO\\MfaLoginDto.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.CredEncryptor\\DTO\\MfaLoginDto.cs",
+              "RelativeToolTip": "Watsons.TRV2.Services.CredEncryptor\\DTO\\MfaLoginDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAqwAoAAAAYAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-12T05:34:23.218Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "IUserService.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\IUserService.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.Services.Portal\\IUserService.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\IUserService.cs",
+              "RelativeToolTip": "Watsons.TRV2.Services.Portal\\IUserService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAqwA0AAABKAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-12T04:15:15.711Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Routers.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.API.Portal\\Routers.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.API.Portal\\Routers.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.API.Portal\\Routers.cs",
+              "RelativeToolTip": "Watsons.TRV2.API.Portal\\Routers.cs",
+              "ViewState": "AQIAAA4AAAAAAAAAAAAQwCYAAAA4AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-12T04:08:13.275Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.API.Portal\\Program.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.API.Portal\\Program.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.API.Portal\\Program.cs",
+              "RelativeToolTip": "Watsons.TRV2.API.Portal\\Program.cs",
+              "ViewState": "AQIAAFcAAAAAAAAAAAAkwGUAAAA3AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-12T04:04:32.364Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\UserService.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.Services.Portal\\UserService.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\UserService.cs",
+              "RelativeToolTip": "Watsons.TRV2.Services.Portal\\UserService.cs",
+              "ViewState": "AQIAAEQAAAAAAAAAAAAwwGEAAAAnAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-12T04:01:11.4Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "User.MfaLoginDto.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.DTO.Portal\\User.MfaLoginDto.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.DTO.Portal\\User.MfaLoginDto.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.DTO.Portal\\User.MfaLoginDto.cs",
+              "RelativeToolTip": "Watsons.TRV2.DTO.Portal\\User.MfaLoginDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAqwAwAAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-12T04:00:55.856Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 145,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{004be353-6879-467c-9d1e-9ac23cdf6d49}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

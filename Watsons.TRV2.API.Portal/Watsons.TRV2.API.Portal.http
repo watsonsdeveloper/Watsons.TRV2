@@ -1,0 +1,6 @@
+@Watsons.TRV2.API.Portal_HostAddress = http://localhost:5219
+
+GET {{Watsons.TRV2.API.Portal_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

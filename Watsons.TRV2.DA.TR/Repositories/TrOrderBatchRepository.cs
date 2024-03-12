@@ -11,9 +11,9 @@ namespace Watsons.TRV2.DA.TR.Repositories
 {
     public interface ITrOrderBatchRepository : IRepository<TrOrderBatch>
     {
-        Task<TrOrderBatch?> Select(string id);
-        Task<TrOrderBatch?> Select(string id, int storeId);
-        Task<IEnumerable<TrOrderBatch>> List(List<int> storeIds, byte? brandId, byte? status);
+        Task<TrOrderBatch?> Select(long id);
+        Task<TrOrderBatch?> Select(long id, int storeId);
+        Task<IEnumerable<TrOrderBatch>> List(List<int> storeIds, byte? brandId, byte? status, string? pluOrBarcode);
     }
     public class TrOrderBatchRepository : ITrOrderBatchRepository
     {
@@ -54,20 +54,25 @@ namespace Watsons.TRV2.DA.TR.Repositories
         /// <param name="status"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<IEnumerable<TrOrderBatch>> List(List<int> storeIds, byte? brandId, byte? status)
+        public async Task<IEnumerable<TrOrderBatch>> List(List<int> storeIds, byte? brandId, byte? status, string? pluOrBarcode)
         {
             var list = new List<TrOrderBatch>();
             try
             {
-                var query = _context.TrOrderBatches.Where(o => storeIds.Contains(o.StoreId));
+                var query = _context.TrOrderBatches
+                    .Include(o => o.TrOrders)
+                    .Where(o => storeIds.Contains(o.StoreId));
 
                 if (status != null)
-                    query = query.Where(o => o.Status == status);
+                    query = query.Where(o => o.TrOrders.Any(o => o.TrOrderStatus == status));
 
                 if (brandId != null)
-                    query = query.Where(o => o.BrandId == brandId);
+                    query = query.Where(o => o.Brand == brandId);
 
-                list = await query.AsNoTracking().ToListAsync();
+                if(!string.IsNullOrEmpty(pluOrBarcode))
+                    query.Where(o => o.TrOrders.Any(o => o.Plu == pluOrBarcode || o.Barcode == pluOrBarcode));
+
+                list = await query.OrderByDescending(o => o.TrOrderBatchId).AsNoTracking().ToListAsync();
             }
             catch (Exception e)
             {
@@ -81,7 +86,7 @@ namespace Watsons.TRV2.DA.TR.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<TrOrderBatch?> Select(string id)
+        public async Task<TrOrderBatch?> Select(long id)
         {
             try
             {
@@ -94,7 +99,7 @@ namespace Watsons.TRV2.DA.TR.Repositories
             }
         }
 
-        public async Task<TrOrderBatch?> Select(string id, int storeId)
+        public async Task<TrOrderBatch?> Select(long id, int storeId)
         {
             try
             {

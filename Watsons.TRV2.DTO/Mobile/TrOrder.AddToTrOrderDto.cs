@@ -10,7 +10,6 @@ namespace Watsons.TRV2.Services.Mobile
 {
     public class AddToTrOrderRequest
     {
-        public List<TrCartDto> TrCartDtoList { get; set; } = null!;
         public int StoreId { get; set; }
         public Brand Brand { get; set; }
         public string CreatedBy { get; set; } = null!;

@@ -47,9 +47,10 @@ namespace Watsons.TRV2.DTO.Common
 
     public enum TrReason : byte
     {
-        Damaged = 1,
-        Depleted = 2,
-        Missing = 3,
+        NewListing = 1,
+        Damaged = 2,
+        Depleted = 3,
+        Missing = 4,
     }
     public enum Brand : byte
     {

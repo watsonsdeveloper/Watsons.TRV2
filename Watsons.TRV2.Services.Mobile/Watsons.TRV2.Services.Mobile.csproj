@@ -8,13 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.4" />
     <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Watsons.Common\Watsons.Common\Watsons.Common.csproj" />
+    <ProjectReference Include="..\..\..\Projects\Watsons.Common\Watsons.Common\Watsons.Common.csproj" />
     <ProjectReference Include="..\Watsons.TRV2.DA.MyMaster\Watsons.TRV2.DA.MyMaster.csproj" />
     <ProjectReference Include="..\Watsons.TRV2.DA.TR\Watsons.TRV2.DA.TR.csproj" />
     <ProjectReference Include="..\Watsons.TRV2.DTO\Watsons.TRV2.DTO.csproj" />

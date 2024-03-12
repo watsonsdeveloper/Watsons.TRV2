@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +16,7 @@ using Watsons.TRV2.DA.TR.Repositories;
 using Watsons.TRV2.DTO.Common;
 using Watsons.TRV2.DTO.Mobile;
 using Watsons.TRV2.DTO.Mobile.TrOrder;
+using Watsons.TRV2.DTO.Mobile.UploadImage;
 using Watsons.TRV2.Services.RTS;
 
 namespace Watsons.TRV2.Services.Mobile
@@ -29,34 +32,42 @@ namespace Watsons.TRV2.Services.Mobile
     {
         private readonly IMapper _mapper;
         private readonly IRtsService _rtsService;
+        private readonly IUploadImageService _uploadImageService;
         private readonly ITrOrderRepository _trOrderRepository;
         private readonly ITrOrderBatchRepository _trOrderBatchRepository;
         private readonly ITrCartRepository _trCartRepository;
         private readonly IItemMasterRepository _itemMasterRepository;
         private readonly IStoreMasterRepository _storeMasterRepository;
+        private readonly IStoreSalesBandRepository _storeSalesBandRepository;
 
+        private readonly ImageSettings _imageSettings;
         private readonly RtsSettings _rtsSettings;
-        public TrOrderService(IMapper mapper, IRtsService rtsService,
+        public TrOrderService(IMapper mapper, IRtsService rtsService, IUploadImageService uploadImageService,
             ITrOrderRepository trOrderRepository, ITrOrderBatchRepository trOrderBatchRepository,
             ITrCartRepository trCartRepository,
             IItemMasterRepository itemMasterRepository, IStoreMasterRepository storeMasterRepository,
+            IStoreSalesBandRepository storeSalesBandRepository,
+            IOptions<ImageSettings> imageSettings,
             IOptions<RtsSettings> rtsSettings)
         {
             _mapper = mapper;
             _rtsService = rtsService;
+            _uploadImageService = uploadImageService;
             _trOrderRepository = trOrderRepository;
             _trOrderBatchRepository = trOrderBatchRepository;
             _trCartRepository = trCartRepository;
             _itemMasterRepository = itemMasterRepository;
             _storeMasterRepository = storeMasterRepository;
+            _storeSalesBandRepository = storeSalesBandRepository;
 
+            _imageSettings = imageSettings.Value;
             _rtsSettings = rtsSettings.Value;
         }
 
         public async Task<ServiceResult<List<TrOrderBatchDto>>> GetTrOrderBatchList(GetTrOrderBatchListRequest request)
         {
-            byte? status = request.Status != TrOrderBatchStatus.All ? (byte)request.Status : null;
-            var trOrderBatchList = await _trOrderBatchRepository.List(new List<int>() { request.StoreId }, (byte)request.Brand, status);
+            byte? status = request.Status != TrOrderStatus.All ? (byte)request.Status : null;
+            var trOrderBatchList = await _trOrderBatchRepository.List(new List<int>() { request.StoreId }, (byte)request.Brand, status, request.PluOrBarcode);
 
             var trOrderBatchListDto = _mapper.Map<List<TrOrderBatchDto>>(trOrderBatchList);
             return ServiceResult<List<TrOrderBatchDto>>.Success(trOrderBatchListDto);
@@ -103,81 +114,138 @@ namespace Watsons.TRV2.Services.Mobile
             {
                 return ServiceResult<List<TrCartDto>>.Failure("No item in cart.");
             }
-
-            var trCartIdList = request.TrCartDtoList.Select(c => c.TrCartId).ToList();
+            var trDtoCartList = _mapper.Map<List<TrCartDto>>(trCartList);
+            var trCartIdList = trDtoCartList.Select(c => c.TrCartId).ToList();
 
             var trOrderPendingList = await _trOrderRepository.List(request.StoreId, (byte)TrOrderBatchStatus.Pending);
+            Dictionary<string, TrOrder> trOrderPendingPluList = trOrderPendingList?.ToDictionary(o => o.Plu, o => o);
 
-            var monthlyRequestedPlus = new List<string>();
-            var monthlyRequestedOrder = await _trOrderRepository.GetStoreMonthlyTrOrders(request.StoreId, (byte)request.Brand);
-            if (monthlyRequestedOrder?.TrOrderList != null && monthlyRequestedOrder?.TrOrderList.Count >= 0)
+            var pluList = trDtoCartList.Select(c => c.Plu).ToList();
+            Dictionary<string, int>? rtsDictionary = null;
+            try
             {
-                monthlyRequestedPlus = monthlyRequestedOrder!.TrOrderList.Select(o => o.Plu).ToList();
+                rtsDictionary = await _rtsService.GetMultipleProductSingleStore(new RTS.DTO.GetMultipleProductSingleStore.Request
+                {
+                    StoreID = request.StoreId,
+                    PluList = pluList
+                });
+                if (rtsDictionary == null || !rtsDictionary.Any())
+                {
+                    return ServiceResult<List<TrCartDto>>.Failure("Store Sales Band Not Found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<List<TrCartDto>>.Failure("Error while getting RTS stock");
             }
 
-            var requestPluList = request.TrCartDtoList.Select(c => c.Plu).ToList();
-            var rtsDto = await _rtsService.GetMultipleProductSingleStore(new RTS.DTO.GetMultipleProductSingleStore.Request
+            var storeSalesBand = await _storeSalesBandRepository.GetStoreSalesBandDetails(request.StoreId);
+            if (storeSalesBand == null)
             {
-                StoreID = request.StoreId,
-                PluList = requestPluList
+                return ServiceResult<List<TrCartDto>>.Failure("Store Sales Band Not Found.");
+            }
+            var storePluCapped = storeSalesBand?.PluCapped ?? 0;
+            var monthlyStoreOrder = await _trOrderRepository.GetProductQuantityOfMonthlyStoreOrder(request.StoreId, (byte)request.Brand);
+
+
+            var totalUploadedImagesList = await _uploadImageService.ListByStore(new ListByStoreRequest
+            {
+                StoreId = request.StoreId,
+                Brand = request.Brand
             });
+            var totalUploadedImages = totalUploadedImagesList.Data.Where(i => i.TrCartId != null).GroupBy(i => i.TrCartId).Select(i => i.Count()).ToList();
+            var totalUploadedImagesDictionary = totalUploadedImagesList.Data.Where(i => i.TrCartId != null).GroupBy(i => i.TrCartId).ToDictionary(i => i.Key, i => i.Count());
 
+            var requiredJustifyPluList = new Dictionary<string, bool>();
             var hasError = false;
-            foreach (var cart in request.TrCartDtoList)
+            foreach (var cart in trDtoCartList)
             {
-                var rtsProduct = rtsDto?.FirstOrDefault(rts => rts.Plu == cart.Plu);
-
                 if (!trCartIdList.Contains(cart.TrCartId))
                 {
                     // check if the item is in cart
                     cart.ErrorMessage = "Item is not in cart";
                     hasError = true;
+                    continue;
                 }
-                else if (trOrderPendingList.Any(o => o.Plu == cart.Plu))
-                {
-                    // check if the item is in pending order
-                    cart.ErrorMessage = "Item in pending order";
-                    hasError = true;
-                }
-                else if (monthlyRequestedPlus.Contains(cart.Plu) && cart.Justification.IsNullOrEmpty())
+
+                // check if the item is tester product
+
+                //if (!item.ItemStatus.Contains("1") && !item.ItemStatus.Contains("2"))
+                //{
+                //    return ServiceResult<TrCartDto>.Failure("Product is not tester product.");
+                //}
+
+                var itemStoreOrdered = monthlyStoreOrder.TryGetValue(cart.Plu, out var itemQuantityOrdered) ? itemQuantityOrdered : 0;
+                if (itemStoreOrdered > 0 && itemStoreOrdered > storePluCapped && cart.Justification.IsNullOrEmpty())
                 {
                     // check if the item is in monthly requested order
                     cart.ErrorMessage = "Required justify";
                     cart.RequireJustify = true;
                     hasError = true;
+                    requiredJustifyPluList.Add(cart.Plu, true);
                 }
-                else if (rtsProduct != null && rtsProduct.AvailableStock <= _rtsSettings.MinStockRequired)
+                else
                 {
-                    // check if the item is in stock
+                    requiredJustifyPluList.Add(cart.Plu, false);
+                    cart.RequireJustify = false;
+                }
+
+                if (request.Brand == Brand.Own && rtsDictionary.ContainsKey(cart.Plu) && rtsDictionary[cart.Plu] <= _rtsSettings.MinStockRequired)
+                {
                     cart.ErrorMessage = "Not enough stock";
                     cart.IsAvailableStock = false;
                     hasError = true;
+                }
+                else
+                {
+                    cart.IsAvailableStock = true;
+                }
+
+                if (cart.Reason == null)
+                {
+                    cart.ErrorMessage = "Reason required";
+                    hasError = true;
+                    continue;
+                }
+                else if (cart.Reason != TrReason.NewListing && cart.Reason != TrReason.Missing)
+                {
+                    //check min image upload if reason not new listing or missing
+                    if (totalUploadedImagesDictionary[cart.TrCartId] < _imageSettings.MinImageUpload)
+                    {
+                        cart.ErrorMessage = $"Minimum {_imageSettings.MinImageUpload} {(_imageSettings.MinImageUpload == 1 ? "image" : "images")} to be uploaded.";
+                        hasError = true;
+                    }
+                }
+
+                if (trOrderPendingPluList != null && trOrderPendingPluList.ContainsKey(cart.Plu))
+                {
+                    // check if the item is in pending order
+                    cart.ErrorMessage = "Item in order upon approval";
+                    hasError = true;
+                    continue;
                 }
             }
 
             if (hasError)
             {
-                return ServiceResult<List<TrCartDto>>.FailureData(request.TrCartDtoList, "Error in cart");
+                return ServiceResult<List<TrCartDto>>.FailureData(trDtoCartList, "Error in cart");
             }
 
-            var trCart = trCartList.FirstOrDefault();
-            var trOrderBatchId = Guid.NewGuid().ToString();
+            var trCart = trDtoCartList.FirstOrDefault();
             TrOrderBatch trOrderBatch = new TrOrderBatch
             {
-                TrOrderBatchId = trOrderBatchId,
                 StoreId = request.StoreId,
-                BrandId = (byte)request.Brand,
-                Status = (byte)TrOrderBatchStatus.Pending,
+                Brand = (byte)request.Brand,
+                TrOrderBatchStatus = (byte)TrOrderBatchStatus.Pending,
                 CreatedBy = request.CreatedBy
             };
             await _trOrderBatchRepository.Insert(trOrderBatch);
 
             var trOrderList = new List<TrOrder>();
-            foreach (var cart in trCartList)
+            foreach (var cart in trDtoCartList)
             {
                 var trOrder = new TrOrder
                 {
-                    TrOrderBatchId = trOrderBatchId,
                     ProductName = cart.ProductName,
                     BrandName = cart.BrandName,
                     Plu = cart.Plu,
@@ -185,23 +253,32 @@ namespace Watsons.TRV2.Services.Mobile
                     SupplierName = cart.SupplierName,
                     SupplierCode = cart.SupplierCode,
                     CreatedBy = cart.CreatedBy,
-                    RequireJustify = cart.RequireJustify,
-                    Reason = cart.Reason,
+                    CreatedAt = cart.CreatedAt,
+                    IsRequireJustify = requiredJustifyPluList[cart.Plu],
+                    Reason = cart.Reason != null ? (byte)cart.Reason : null,
                     Justification = cart.Justification,
-                    Status = (byte)TrOrderStatus.Pending
+                    SalesBandPluCappedSnapshot = storePluCapped,
+                    TrOrderStatus = (byte)TrOrderStatus.Pending,
+                    TrOrderBatchId = trOrderBatch.TrOrderBatchId,
+                    TrCartId = cart.TrCartId
                 };
+                await _trOrderRepository.InsertTrOrder(trOrder);
                 trOrderList.Add(trOrder);
-                // TODO: transfer image from cart to order
+
+                var transferImages = new TransferImageFromCartToOrderRequest()
+                {
+                    StoreId = request.StoreId,
+                    TrCartId = cart.TrCartId,
+                    TrOrderId = trOrder.TrOrderId,
+                };
+                await _uploadImageService.TransferImageFromCartToOrder(transferImages);
             }
 
-            await _trOrderRepository.InsertRangeTrOrder(trOrderList);
+            //await _trOrderRepository.InsertRangeTrOrder(trOrderList);
 
-            // remove from cart
             await _trCartRepository.DeleteRange(trCartIdList);
 
-            // TODO : adjustment stock
-
-            return ServiceResult<List<TrCartDto>>.Success(request.TrCartDtoList);
+            return ServiceResult<List<TrCartDto>>.Success(trDtoCartList);
         }
     }
 }

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Watsons.Common\Watsons.Common\Watsons.Common.csproj" />
+    <ProjectReference Include="..\Watsons.TRV2.DA.CashManage\Watsons.TRV2.DA.CashManage.csproj" />
+    <ProjectReference Include="..\Watsons.TRV2.DA.MyMaster\Watsons.TRV2.DA.MyMaster.csproj" />
+    <ProjectReference Include="..\Watsons.TRV2.DA.SysCred\Watsons.TRV2.DA.SysCred.csproj" />
+    <ProjectReference Include="..\Watsons.TRV2.DA.TR\Watsons.TRV2.DA.TR.csproj" />
+    <ProjectReference Include="..\Watsons.TRV2.Services.CredEncryptor\Watsons.TRV2.Services.CredEncryptor.csproj" />
+    <ProjectReference Include="..\Watsons.TRV2.Services.Portal\Watsons.TRV2.Services.Portal.csproj" />
+    <ProjectReference Include="..\Watsons.TRV2.Services.RTS\Watsons.TRV2.Services.RTS.csproj" />
+  </ItemGroup>
+
+</Project>

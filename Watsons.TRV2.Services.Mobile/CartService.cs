@@ -10,10 +10,7 @@ using Watsons.Common.ImageHelpers;
 using Watsons.Common;
 using Watsons.TRV2.DA.Repositories;
 using Watsons.TRV2.DA.TR.Repositories;
-using Watsons.TRV2.DTO.Common;
-using Watsons.TRV2.DTO.Mobile;
-using Brand = Watsons.TRV2.DTO.Common.Brand;
-using static Watsons.TRV2.DTO.Mobile.TrCartListDto;
+using Watsons.TRV2.DTO.Mobile.TrCart;
 
 namespace Watsons.TRV2.Services.Mobile
 {
@@ -26,19 +23,17 @@ namespace Watsons.TRV2.Services.Mobile
     public class CartService : ICartService
     {
         private readonly IMapper _mapper;
-        private readonly ITrRepository _trRepository;
         private readonly ITrImageRepository _trImageRepository;
         private readonly IItemMasterRepository _itemMasterRepository;
         private readonly IStoreMasterRepository _storeMasterRepository;
         private readonly IImageHelper _imageHelper;
 
         private readonly ImageSettings _imageSettings;
-        public CartService(IMapper mapper, ITrRepository trRepository, ITrImageRepository trImageRepository, IItemMasterRepository itemMasterRepository,
+        public CartService(IMapper mapper, ITrImageRepository trImageRepository, IItemMasterRepository itemMasterRepository,
             IStoreMasterRepository storeMasterRepository, IImageHelper imageHelper,
             IOptions<ImageSettings> imageSettings)
         {
             _mapper = mapper;
-            _trRepository = trRepository;
             _trImageRepository = trImageRepository;
             _itemMasterRepository = itemMasterRepository;
             _storeMasterRepository = storeMasterRepository;
@@ -68,7 +63,7 @@ namespace Watsons.TRV2.Services.Mobile
 
             // Check Cart 
 
-            // Check RTS 
+            // Check RTS
 
             // Check Order Pending
             long.TryParse(item.Item, out var pluId);
