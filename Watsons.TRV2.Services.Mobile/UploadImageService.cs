@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Watsons.Common;
 using Watsons.Common.ImageHelpers;
-using Watsons.TRV2.DA.Repositories;
+using Watsons.TRV2.DA.MyMaster.Repositories;
 using Watsons.TRV2.DA.TR.Entities;
 using Watsons.TRV2.DA.TR.Repositories;
 using Watsons.TRV2.DTO.Mobile.UploadedImage;
@@ -69,7 +69,7 @@ namespace Watsons.TRV2.Services.Mobile
             {
                 var cart = await _trCartRepository.Select(request.TrCartId, request.StoreId);
                 if (cart == null)
-                    return ServiceResult<List<UploadedImageDto>>.Failure("Image not found.");
+                    return ServiceResult<List<UploadedImageDto>>.Fail("Image not found.");
 
                 List<long> cartIds = new List<long> { request.TrCartId };
 
@@ -112,12 +112,12 @@ namespace Watsons.TRV2.Services.Mobile
                 var imagePath = string.Empty;
 
                 var cart = await _trCartRepository.Select(request.TrCartId, request.StoreId);
-                if (cart == null) return ServiceResult<UploadedImageDto>.Failure("Cart not found.");
+                if (cart == null) return ServiceResult<UploadedImageDto>.Fail("Cart not found.");
 
                 var imageUploaded = await _trImageRepository.ListByTrCartId(request.TrCartId);
                 if (imageUploaded.Count() + 1 > _imageSettings.MaxImageUpload)
                 {
-                    return ServiceResult<UploadedImageDto>.Failure("Max image upload is reached.");
+                    return ServiceResult<UploadedImageDto>.Fail("Max image upload is reached.");
                 }
                 var base64imageString = request.Base64Image;
                 var mimeType = "jpeg";
@@ -180,7 +180,7 @@ namespace Watsons.TRV2.Services.Mobile
             {
                 if(request.TrCartId == null && request.TrOrderId == null)
                 {
-                    return ServiceResult<List<UploadedImageDto>>.Failure("Uploaded image not found.");
+                    return ServiceResult<List<UploadedImageDto>>.Fail("Uploaded image not found.");
                 }
 
                 List<TrImage>? imageUploaded = new();
@@ -188,14 +188,14 @@ namespace Watsons.TRV2.Services.Mobile
                 {
                     var trCart = await _trCartRepository.Select(request.TrCartId ?? 0, request.StoreId);
                     if(trCart == null)
-                        return ServiceResult<List<UploadedImageDto>>.Failure("Uploaded image not found.");
+                        return ServiceResult<List<UploadedImageDto>>.Fail("Uploaded image not found.");
                     imageUploaded = await _trImageRepository.ListByTrCartId(request.TrCartId ?? 0) as List<TrImage>;
                 }
                 else if (request.TrCartId != null)
                 {
                     var trOrder = await _trOrderRepository.Select(request.TrOrderId ?? 0, request.StoreId);
                     if(trOrder == null)
-                        return ServiceResult<List<UploadedImageDto>>.Failure("Uploaded image not found.");
+                        return ServiceResult<List<UploadedImageDto>>.Fail("Uploaded image not found.");
                     imageUploaded = await _trImageRepository.ListByTrOrderId(request.TrOrderId ?? 0) as List<TrImage>;
                 }
 
@@ -220,23 +220,23 @@ namespace Watsons.TRV2.Services.Mobile
         public async Task<ServiceResult<bool>> DeleteUploadedImagesByImageIds(DeleteUploadedImagesRequest request)
         {
             if (request.ImageIds == null || request.ImageIds.Count <= 0)
-                return ServiceResult<bool>.Failure("No image is deleted.");
+                return ServiceResult<bool>.Fail("No image is deleted.");
             
 
             var trCart = await _trCartRepository.Select(request.TrCartId, request.StoreId);
             if(trCart == null)  
-                return ServiceResult<bool>.Failure("Cart not found.");
+                return ServiceResult<bool>.Fail("Cart not found.");
 
             var imagesUploaded = await _trImageRepository.ListByTrCartId(request.TrCartId) as List<TrImage>;
 
             if(imagesUploaded == null || imagesUploaded.Count <= 0) 
-                return ServiceResult<bool>.Failure("Image not found.");
+                return ServiceResult<bool>.Fail("Image not found.");
             
 
             List<long> imageIds = imagesUploaded.Select(image => image.TrImageId).ToList();
 
             if (request.ImageIds.Any(x => !imageIds.Contains(x)))
-                return ServiceResult<bool>.Failure("Image not found.");
+                return ServiceResult<bool>.Fail("Image not found.");
 
             foreach(var imageUploaded in imagesUploaded.Where(i => request.ImageIds.Contains(i.TrImageId)))
             {
@@ -254,7 +254,7 @@ namespace Watsons.TRV2.Services.Mobile
         {
             var trCart = await _trCartRepository.Select(request.TrCartId, request.StoreId);
             if (trCart == null)
-                return ServiceResult<bool>.Failure("Cart not found.");
+                return ServiceResult<bool>.Fail("Cart not found.");
 
             var imagesUploaded = await _trImageRepository.ListByTrCartId(request.TrCartId) as List<TrImage>;
 
@@ -279,15 +279,15 @@ namespace Watsons.TRV2.Services.Mobile
         {
             var trCart = await _trCartRepository.Select(request.TrCartId, request.StoreId);
             if (trCart == null)
-                return ServiceResult<bool>.Failure("Cart not found.");
+                return ServiceResult<bool>.Fail("Cart not found.");
 
             var trOrder = await _trOrderRepository.Select(request.TrOrderId, request.StoreId);
             if (trOrder == null)
-                return ServiceResult<bool>.Failure("Order not found.");
+                return ServiceResult<bool>.Fail("Order not found.");
 
             var imagesUploaded = await _trImageRepository.ListByTrCartId(request.TrCartId) as List<TrImage>;
             if(imagesUploaded == null || imagesUploaded.Count <= 0)
-                return ServiceResult<bool>.Failure("Image not found.");
+                return ServiceResult<bool>.Fail("Image not found.");
 
             foreach(var imageUploaded in imagesUploaded)
             {

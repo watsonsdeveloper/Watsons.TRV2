@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,21 +7,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Watsons.Common;
 using Watsons.TRV2.DA.TR.Entities;
+using Watsons.TRV2.DA.TR.Models.Order;
 
 namespace Watsons.TRV2.DA.TR.Repositories
 {
-    public interface ITrOrderBatchRepository : IRepository<TrOrderBatch>
-    {
-        Task<TrOrderBatch?> Select(long id);
-        Task<TrOrderBatch?> Select(long id, int storeId);
-        Task<IEnumerable<TrOrderBatch>> List(List<int> storeIds, byte? brandId, byte? status, string? pluOrBarcode);
-    }
     public class TrOrderBatchRepository : ITrOrderBatchRepository
     {
         private readonly TrContext _context;
-        public TrOrderBatchRepository(TrContext context)
+        private readonly IMapper _mapper;
+        public TrOrderBatchRepository(TrContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         public Task<bool> Delete(TrOrderBatch entity)
         {
@@ -54,30 +52,40 @@ namespace Watsons.TRV2.DA.TR.Repositories
         /// <param name="status"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<IEnumerable<TrOrderBatch>> List(List<int> storeIds, byte? brandId, byte? status, string? pluOrBarcode)
+        public async Task<IEnumerable<TrOrderBatch>> List(OrderBatchList entity)
         {
             var list = new List<TrOrderBatch>();
-            try
+            var query = _context.TrOrderBatches
+                .Include(o => o.TrOrders)
+                .Where(o => o.Brand == entity.BrandId);
+
+            if(entity.TrOrderBatchId != null)
             {
-                var query = _context.TrOrderBatches
-                    .Include(o => o.TrOrders)
-                    .Where(o => storeIds.Contains(o.StoreId));
-
-                if (status != null)
-                    query = query.Where(o => o.TrOrders.Any(o => o.TrOrderStatus == status));
-
-                if (brandId != null)
-                    query = query.Where(o => o.Brand == brandId);
-
-                if(!string.IsNullOrEmpty(pluOrBarcode))
-                    query.Where(o => o.TrOrders.Any(o => o.Plu == pluOrBarcode || o.Barcode == pluOrBarcode));
-
-                list = await query.OrderByDescending(o => o.TrOrderBatchId).AsNoTracking().ToListAsync();
+                query = query.Where(o => o.TrOrderBatchId == entity.TrOrderBatchId);
             }
-            catch (Exception e)
+
+            if (entity.StoreIds != null && entity.StoreIds.Count > 0)
             {
-                throw new Exception();
+                query = query.Where(o => entity.StoreIds.Contains(o.StoreId));
             }
+
+            if (entity.TrOrderBatchStatus != null && entity.TrOrderBatchStatus != 0)
+            {
+                query = query.Where(o => o.TrOrderBatchStatus == entity.TrOrderBatchStatus);
+            }
+
+            if (entity.StartDate != null && entity.EndDate != null)
+            {
+                query = query.Where(o => o.CreatedAt >= entity.StartDate && o.CreatedAt <= entity.EndDate);
+            }
+
+            if (!string.IsNullOrEmpty(entity.PluOrBarcode))
+            {
+                query.Where(o => o.TrOrders.Any(o => o.Plu == entity.PluOrBarcode || o.Barcode == entity.PluOrBarcode));
+            }
+
+            list = await query.OrderByDescending(o => o.TrOrderBatchId).AsNoTracking().ToListAsync();
+
             return list;
         }
 
@@ -88,28 +96,46 @@ namespace Watsons.TRV2.DA.TR.Repositories
 
         public async Task<TrOrderBatch?> Select(long id)
         {
-            try
-            {
-                return await _context.TrOrderBatches
-                    .FirstOrDefaultAsync(o => o.TrOrderBatchId == id);
-            }
-            catch (Exception e)
-            {
-                throw new Exception();
-            }
+            return await _context.TrOrderBatches
+                .FirstOrDefaultAsync(o => o.TrOrderBatchId == id);
         }
 
         public async Task<TrOrderBatch?> Select(long id, int storeId)
         {
-            try
-            {
-                return await _context.TrOrderBatches
-                    .FirstOrDefaultAsync(o => o.TrOrderBatchId == id && o.StoreId == storeId);
-            }
-            catch (Exception e)
-            {
-                throw new Exception();
-            }
+            return await _context.TrOrderBatches
+                .FirstOrDefaultAsync(o => o.TrOrderBatchId == id && o.StoreId == storeId);
+        }
+
+        public async Task<TrOrderBatch?> SelectWithOrderCost(long id)
+        {
+            return await _context.TrOrderBatches
+                .Include(o => o.OrderCost)
+                .Where(o => o.TrOrderBatchId == id)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<OrderSummary?> SelectSummary(long id)
+        {
+            var result = await _context.TrOrderBatches
+                .Include(o => o.OrderCost)
+                .Where(o => o.TrOrderBatchId == id)
+                .Select(o => new OrderSummary
+                {
+                    TrOrderBatchId = o.TrOrderBatchId,
+                    StoreId = o.StoreId,
+                    TrOrderBatchStatus = o.TrOrderBatchStatus,
+                    CreatedAt = o.CreatedAt,
+                    CreatedBy = o.CreatedBy ?? string.Empty,
+                    UpdatedAt = o.UpdatedAt,
+                    UpdatedBy = o.UpdatedBy,
+                    CostThresholdSnapshot = o.OrderCost != null ? o.OrderCost.CostThresholdSnapshot : null,
+                    AccumulatedCostApproved = o.OrderCost != null ? o.OrderCost.AccumulatedCostApproved : null,
+                    TotalCostApproved = o.OrderCost != null ? o.OrderCost.TotalCostApproved : null,
+                    TotalCostRejected = o.OrderCost != null ? o.OrderCost.TotalCostRejected : null,
+                    TotalOrderCost = o.OrderCost != null ? o.OrderCost.TotalOrderCost : null
+                }).FirstOrDefaultAsync();
+
+            return result;
         }
 
         public Task<TrOrderBatch> Update(TrOrderBatch entity)
@@ -117,6 +143,24 @@ namespace Watsons.TRV2.DA.TR.Repositories
             throw new NotImplementedException();
         }
 
-        
+        public async Task<bool> UpdateWithOrderCost(TrOrderBatch entity)
+        {
+            var updatedEntity = await _context.TrOrderBatches
+                .Include(o => o.OrderCost)
+                .Where(o => o.TrOrderBatchId == entity.TrOrderBatchId)
+                .FirstOrDefaultAsync();
+
+            if (updatedEntity == null)
+            {
+                return false;
+            }
+
+            updatedEntity = _mapper.Map<TrOrderBatch>(entity);
+            _context.TrOrderBatches.Update(updatedEntity);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
     }
 }

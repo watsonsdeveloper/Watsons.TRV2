@@ -14,8 +14,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Watsons.Common\Watsons.Common\Watsons.Common.csproj" />
+    <ProjectReference Include="..\Watsons.TRV2.DA.CashManage\Watsons.TRV2.DA.CashManage.csproj" />
+    <ProjectReference Include="..\Watsons.TRV2.DA.MyMaster\Watsons.TRV2.DA.MyMaster.csproj" />
+    <ProjectReference Include="..\Watsons.TRV2.DA.TR\Watsons.TRV2.DA.TR.csproj" />
     <ProjectReference Include="..\Watsons.TRV2.DTO.Portal\Watsons.TRV2.DTO.Portal.csproj" />
     <ProjectReference Include="..\Watsons.TRV2.Services.CredEncryptor\Watsons.TRV2.Services.CredEncryptor.csproj" />
+    <ProjectReference Include="..\Watsons.TRV2.Services.RTS\Watsons.TRV2.Services.RTS.csproj" />
   </ItemGroup>
 
 </Project>

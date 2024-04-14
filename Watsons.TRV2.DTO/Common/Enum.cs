@@ -34,7 +34,7 @@ namespace Watsons.TRV2.DTO.Common
     {
         All = 0,
         Pending = 1,
-        Completed = 2,
+        Processed = 2,
         Overdue = 3
     }
     public enum TrOrderStatus : byte
@@ -43,6 +43,10 @@ namespace Watsons.TRV2.DTO.Common
         Pending = 1,
         Approved = 2,
         Rejected = 3,
+        Processed = 4,
+        Fulfilled = 5,
+        Unfulfilled = 6,
+        Cancelled = 7
     }
 
     public enum TrReason : byte
@@ -56,5 +60,19 @@ namespace Watsons.TRV2.DTO.Common
     {
         Own = 1,
         Supplier = 2,
+    }
+
+    //public static class SalesBand 
+    //{
+    //    public static readonly int PLU_UNIT_LIMIT_SUPPLIER = 1;
+    //    public static readonly int PLU_UNIT_LIMIT_OWN = 2;
+    //    public static readonly int COST_LIMIT_OWN = 3;
+    //}
+
+    public enum SalesBand : byte
+    {
+        PLU_UNIT_LIMIT_SUPPLIER = 1,
+        PLU_UNIT_LIMIT_OWN = 2,
+        COST_LIMIT_OWN = 3
     }
 }

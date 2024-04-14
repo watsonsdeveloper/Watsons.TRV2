@@ -15,9 +15,9 @@ public partial class CashManageContext : DbContext
     {
     }
 
-    public virtual DbSet<UserLogin> UserLogins { get; set; }
+    internal virtual DbSet<UserLogin> UserLogins { get; set; }
 
-    public virtual DbSet<UserStoreId> UserStoreIds { get; set; }
+    internal virtual DbSet<UserStoreId> UserStoreIds { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

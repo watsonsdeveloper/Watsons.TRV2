@@ -7,9 +7,11 @@ public partial class SalesBand
 {
     public int SalesBandId { get; set; }
 
+    public string Type { get; set; } = null!;
+
     public string SalesBand1 { get; set; } = null!;
 
-    public int PluCapped { get; set; }
+    public decimal Value { get; set; }
 
     public string CreatedBy { get; set; } = null!;
 

@@ -4,16 +4,6 @@ using Watsons.TRV2.DA.TR.Entities;
 
 namespace Watsons.TRV2.DA.TR.Repositories
 {
-    public interface ITrImageRepository : IRepository<TrImage>
-    {
-        
-        Task<bool> DeleteRange(List<long> imageIds);
-        Task<List<TrImage>> UpdateRange(List<TrImage> entities);
-        Task<IEnumerable<TrImage>> ListByTrCartIds(List<long> trCartIds);
-        Task<IEnumerable<TrImage>> ListByTrCartId(long trCartId);
-        Task<IEnumerable<TrImage>> ListByTrOrderId(long trOrderId);
-    }
-
     public class TrImageRepository : ITrImageRepository
     {
         private readonly TrContext _trContext;
@@ -90,17 +80,26 @@ namespace Watsons.TRV2.DA.TR.Repositories
 
         public async Task<IEnumerable<TrImage>> ListByTrCartIds(List<long> trCartIds)
         {
-            return await _trContext.TrImages.Where(i => i.TrCartId != null && trCartIds.Contains(i.TrCartId ?? 0) && !i.IsDeleted).ToListAsync();
+            return await _trContext.TrImages.Where(i => !i.IsDeleted && i.TrCartId != null && trCartIds.Contains(i.TrCartId ?? 0)).ToListAsync();
         }
 
         public async Task<IEnumerable<TrImage>> ListByTrCartId(long trCartId)
         {
-            return await _trContext.TrImages.Where(i => i.TrCartId == trCartId && !i.IsDeleted).ToListAsync();
+            return await _trContext.TrImages.Where(i => !i.IsDeleted && i.TrCartId == trCartId).ToListAsync();
+        }
+        public async Task<Dictionary<long, TrImage>> DictionaryByTrOrderIds(List<long> trOrderIds)
+        {
+            return await _trContext.TrImages.Where(i => !i.IsDeleted && i.TrOrderId != null && trOrderIds.Contains(i.TrOrderId ?? 0)).ToDictionaryAsync(i => i.TrOrderId ?? 0, i => i);
+        }
+
+        public async Task<List<TrImage>> ListByTrOrderIds(List<long> trOrderIds)
+        {
+            return await _trContext.TrImages.Where(i => !i.IsDeleted && i.TrOrderId != null && trOrderIds.Contains(i.TrOrderId ?? 0)).ToListAsync();
         }
 
         public async Task<IEnumerable<TrImage>> ListByTrOrderId(long trOrderId)
         {
-            return await _trContext.TrImages.Where(i => i.TrOrderId == trOrderId && !i.IsDeleted).ToListAsync();
+            return await _trContext.TrImages.Where(i => !i.IsDeleted &&i.TrOrderId == trOrderId).ToListAsync();
         }
     }
 }

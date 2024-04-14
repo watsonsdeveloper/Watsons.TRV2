@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Watsons.Common;
+using Watsons.Common.ConnectionHelpers;
 using Watsons.Common.EmailHelpers;
 using Watsons.Common.ImageHelpers;
 using Watsons.TRV2.API.Mobile;
 using Watsons.TRV2.API.Mobile.Middlewares;
 using Watsons.TRV2.DA.MyMaster.Entities;
-using Watsons.TRV2.DA.Repositories;
+using Watsons.TRV2.DA.MyMaster.Repositories;
 using Watsons.TRV2.DA.TR.Entities;
 using Watsons.TRV2.DA.TR.Repositories;
 using Watsons.TRV2.Mobile;
@@ -15,8 +16,16 @@ using Watsons.TRV2.Services.RTS;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var tRV2Connection = SysCredential.GetConnectionString("Server248", "TRV2");
-var myMasterConnection = SysCredential.GetConnectionString("Server121", "MyMaster");
+//var tRV2Connection = SysCredential.GetConnectionString("Server248", "TRV2");
+//var myMasterConnection = SysCredential.GetConnectionString("Server121", "MyMaster");
+
+var trv2ConnectionSettings = new ConnectionSettings();
+builder.Configuration.GetSection("Trv2ConnectionSettings").Bind(trv2ConnectionSettings);
+var myMasterConnectionSettings = new ConnectionSettings();
+builder.Configuration.GetSection("MyMasterConnectionSettings").Bind(myMasterConnectionSettings);
+
+var tRV2Connection = SysCredential.GetConnectionString(trv2ConnectionSettings.Server, trv2ConnectionSettings.Database);
+var myMasterConnection = SysCredential.GetConnectionString(myMasterConnectionSettings.Server, myMasterConnectionSettings.Database);
 
 builder.Services.AddDbContextFactory<TrContext>(options =>
 {

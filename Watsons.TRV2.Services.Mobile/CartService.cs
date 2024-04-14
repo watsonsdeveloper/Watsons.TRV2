@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Watsons.Common.ImageHelpers;
 using Watsons.Common;
-using Watsons.TRV2.DA.Repositories;
 using Watsons.TRV2.DA.TR.Repositories;
 using Watsons.TRV2.DTO.Mobile.TrCart;
+using Watsons.TRV2.DA.MyMaster.Repositories;
 
 namespace Watsons.TRV2.Services.Mobile
 {
@@ -47,18 +47,19 @@ namespace Watsons.TRV2.Services.Mobile
             var store = await _storeMasterRepository.SelectStore(request.StoreId);
             if (store == null)
             {
-                return ServiceResult<AddToTrCartResponse>.Failure("Store Not Found.");
+                return ServiceResult<AddToTrCartResponse>.Fail("Store Not Found.");
             }
 
             var item = await _itemMasterRepository.SearchByPluOrBarcode(request.PluOrBarcode);
             if (item == null)
             {
-                return ServiceResult<AddToTrCartResponse>.Failure("Product Not Found.");
+                return ServiceResult<AddToTrCartResponse>.Fail("Product Not Found.");
             }
 
-            if (item.Trid != 1)
+            var isTesterProducts = new List<int>() { 1, 2, 3 };
+            if (!isTesterProducts.Contains(item.Trid ?? 0))
             {
-                return ServiceResult<AddToTrCartResponse>.Failure("Product is not tester product.");
+                return ServiceResult<AddToTrCartResponse>.Fail("Product is not tester product.");
             }
 
             // Check Cart 
@@ -88,7 +89,7 @@ namespace Watsons.TRV2.Services.Mobile
             //await _trRepository.Insert(trEntity);
             //var response = new AddToCartResponse(Code: ResponseCode.Success, Message: "Successful Requested.");`
 
-            return ServiceResult<AddToTrCartResponse>.Failure("");
+            return ServiceResult<AddToTrCartResponse>.Fail("");
         }
 
         //public async Task<ServiceResult<RequestTrResponse>> RequestTr(RequestTrRequest request)

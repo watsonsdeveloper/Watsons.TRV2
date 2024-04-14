@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Watsons.Common;
+using Watsons.Common.ConnectionHelpers;
 using Watsons.Common.HttpServices;
 using Watsons.TRV2.Services.CredEncryptor.DTO.OtpDto;
 
@@ -14,11 +15,11 @@ namespace Watsons.TRV2.Services.CredEncryptor
 {
     public class OtpService : IOtpService
     {
-        private readonly CredEncryptorSettings _credEncryptorSettings;
+        private readonly ConnectionSettings _sysCredSettings;
         private readonly IHttpService _httpService;
-        public OtpService(IOptions<CredEncryptorSettings> credEncryptorSettings, IHttpService httpService)
+        public OtpService(IOptionsSnapshot<ConnectionSettings> sysCredSettings, IHttpService httpService)
         {
-            _credEncryptorSettings = credEncryptorSettings.Value;
+            _sysCredSettings = sysCredSettings.Get("SysCredConnectionSettings");
             _httpService = httpService;
         }
 
@@ -28,7 +29,7 @@ namespace Watsons.TRV2.Services.CredEncryptor
 
             try
             {
-                var url = _credEncryptorSettings.Url + CredEncryptorApi.SendOtpByEmail;
+                var url = _sysCredSettings.Url + CredEncryptorApi.SendOtpByEmail;
                 var response = await _httpService.PostAsnyc<SendOtpByEmailRequest, ServiceResult<bool>>(url, request);
 
                 if (response == null || !response.IsSuccess)
@@ -51,7 +52,7 @@ namespace Watsons.TRV2.Services.CredEncryptor
 
             try
             {
-                var url = _credEncryptorSettings.Url + CredEncryptorApi.VerifyOtp;
+                var url = _sysCredSettings.Url + CredEncryptorApi.VerifyOtp;
                 var response = await _httpService.PostAsnyc<VerifyOtpRequest, ServiceResult<bool>>(url, request);
 
                 if (response == null || !response.IsSuccess)

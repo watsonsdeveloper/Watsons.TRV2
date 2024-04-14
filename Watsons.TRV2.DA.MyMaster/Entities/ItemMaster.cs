@@ -62,4 +62,8 @@ public partial class ItemMaster
     public string? ChildPlu { get; set; }
 
     public string? Indent { get; set; }
+
+    public int? LabelType { get; set; }
+
+    public double? Avcost { get; set; }
 }

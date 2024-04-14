@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Watsons.Common;
 using Watsons.Common.ImageHelpers;
 using Watsons.TRV2.DA.TR.Entities;
-using Watsons.TRV2.DA.Repositories;
 using Watsons.TRV2.DA.TR.Repositories;
 using Watsons.TRV2.DTO.Common;
 using Watsons.TRV2.DTO.Mobile;

@@ -7,14 +7,10 @@ using System.Threading.Tasks;
 using Watsons.Common;
 using Watsons.TRV2.DA.TR.Entities;
 using Watsons.TRV2.DA.TR.Models;
+using Watsons.TRV2.DA.TR.Models.SalesBand;
 
 namespace Watsons.TRV2.DA.TR.Repositories
 {
-    public interface IStoreSalesBandRepository : IRepository<StoreSalesBand>
-    {
-        Task<GetStoreSalesBandDetailsResult?> GetStoreSalesBandDetails(int storeId);
-    }
-
     public class StoreSalesBandRepository : IStoreSalesBandRepository
     {
         private readonly TrContext _context;
@@ -57,9 +53,21 @@ namespace Watsons.TRV2.DA.TR.Repositories
                 .Select(x => new GetStoreSalesBandDetailsResult
                 {
                     StoreId = x.StoreId,
-                    PluCapped = x.SalesBand.PluCapped
+                    //PluCapped = x.SalesBand.PluCapped
                 })
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<Dictionary<string, StoreSalesBandTypeValue>?> GetTypeValue(int storeId)
+        {
+            return await _context.StoreSalesBands
+                .Include(s => s.SalesBand)
+                .Where(s => s.StoreId == storeId)
+                .ToDictionaryAsync(s => s.Type, s => new StoreSalesBandTypeValue()
+                {
+                    Type = s.Type,
+                    Value = s.SalesBand.Value
+                });
         }
     }   
 }

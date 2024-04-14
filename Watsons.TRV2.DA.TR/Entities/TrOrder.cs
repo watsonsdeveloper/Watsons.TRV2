@@ -31,9 +31,11 @@ public partial class TrOrder
 
     public string? SupplierCode { get; set; }
 
-    public decimal? WeightCost { get; set; }
+    public decimal? AverageCost { get; set; }
 
-    public decimal? SalesBandPluCappedSnapshot { get; set; }
+    public decimal? PluCappedSnapshot { get; set; }
+
+    public string? Remark { get; set; }
 
     public string CreatedBy { get; set; } = null!;
 

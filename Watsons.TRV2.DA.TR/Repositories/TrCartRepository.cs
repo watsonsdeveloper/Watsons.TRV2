@@ -47,15 +47,8 @@ namespace Watsons.TRV2.DA.TR.Repositories
 
         public async Task<TrCart> Insert(TrCart entity)
         {
-            try
-            {
-                await _context.AddAsync(entity);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
-                throw new Exception();
-            }
+            await _context.AddAsync(entity);
+            await _context.SaveChangesAsync();
             return entity;
         }
 
@@ -79,49 +72,21 @@ namespace Watsons.TRV2.DA.TR.Repositories
 
         public async Task<TrCart> Update(TrCart entity)
         {
-            try
-            {
-                _context.Update(entity);
-                await _context.SaveChangesAsync();
-                return entity;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            _context.Update(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
-
-
 
         public async Task<TrCart?> Select(long trCartId, int storeId)
         {
-            TrCart? trCart;
-            try
-            {
-                trCart = await _context.TrCarts
-                    .FirstOrDefaultAsync(c => c.TrCartId == trCartId && c.StoreId == storeId && !c.IsDeleted);
-            }
-            catch (Exception e)
-            {
-                throw new Exception();
-            }
-            return trCart;
+            return await _context.TrCarts.FirstOrDefaultAsync(c => c.TrCartId == trCartId && c.StoreId == storeId && !c.IsDeleted);
         }
 
         public async Task<bool> HasInCart(int storeId, string plu)
         {
-            var result = false;
-            try
-            {
-                result = await _context.TrCarts.AsNoTracking()
-                    .Where(c => c.StoreId == storeId && c.Plu == plu && !c.IsDeleted)
-                    .AnyAsync();
-            }
-            catch (Exception e)
-            {
-                throw new Exception();
-            }
-            return result;
+            return await _context.TrCarts.AsNoTracking()
+                .Where(c => c.StoreId == storeId && c.Plu == plu && !c.IsDeleted)
+                .AnyAsync();
         }
 
 

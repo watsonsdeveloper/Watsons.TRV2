@@ -2,7 +2,7 @@
 
 2.Open Package Manager Console, run command below:
 (a) MyMaster Database
-`Scaffold-DbContext 'Server=10.98.32.121;Database=MyMaster;User ID=Digital;Password=!QAZ2wsx#EDC;TrustServerCertificate=true;' Microsoft.EntityFrameworkCore.SqlServer -Force -Context MyMasterContext -OutputDir Entities/MyMaster -ContextDir Entities/MyMaster -Namespace Watsons.TRV2.DA.Entities.MyMaster -ContextNamespace Watsons.TRV2.DA.Entities.MyMaster -Tables ItemMaster -Project Watsons.TRV2.DA -StartupProject Watsons.TRV2.DA`
+`Scaffold-DbContext 'Server=10.98.32.121;Database=MyMaster;User ID=Digital;Password=!QAZ2wsx#EDC;TrustServerCertificate=true;' Microsoft.EntityFrameworkCore.SqlServer -Force -Context MyMasterContext -OutputDir Entities -ContextDir Entities -Namespace Watsons.TRV2.DA.MyMaster.Entities -ContextNamespace Watsons.TRV2.DA.MyMaster.Entities -Tables ItemMaster, StoreMaster -Project Watsons.TRV2.DA.MyMaster -StartupProject Watsons.TRV2.DA.MyMaster`
 
 3.Remove OnConfiguring from <project_name>Context.cs
 

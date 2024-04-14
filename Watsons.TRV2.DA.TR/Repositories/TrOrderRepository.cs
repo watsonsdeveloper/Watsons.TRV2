@@ -1,32 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Watsons.Common;
 using Watsons.TRV2.DA.TR.Entities;
-using Watsons.TRV2.DA.TR.Models;
+using Watsons.TRV2.DA.TR.Models.Order;
 using Watsons.TRV2.DTO.Common;
 
 namespace Watsons.TRV2.DA.TR.Repositories
 {
-    public interface ITrOrderRepository : IRepository<TrOrder>
-    {
-        Task<TrOrder?> Select(long id);
-        Task<TrOrder?> Select(long id, int storeId);
-        Task<TrOrder> InsertTrOrder(TrOrder entity);
-        Task<List<TrOrder>> InsertRangeTrOrder(List<TrOrder> entities);
-        Task<IEnumerable<TrOrder>> List(long? trOrderBatchId, byte? status, string? pluOrBarcode);
-        Task<IEnumerable<TrOrder>> List(int storeId, byte? status);
-        Task<GetStoreMonthlyTrOrdersResult?> GetStoreMonthlyTrOrders(int storeId, byte brand);
-        Task<Dictionary<string, int>> GetProductQuantityOfMonthlyStoreOrder(int storeId, byte brand);
-        Task<bool> HasOrderPending(int storeId, string plu);
-    }
     public class TrOrderRepository : ITrOrderRepository
     {
         private readonly TrContext _context;
+
         public TrOrderRepository(TrContext context)
         {
             _context = context;
@@ -56,6 +46,38 @@ namespace Watsons.TRV2.DA.TR.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public async Task<bool> UpdateRange(List<TrOrder> entities)
+        {
+            //var trOrderBatchId = entities.FirstOrDefault()?.TrOrderBatchId;
+            //var list = await _context.TrOrders.Where(o => o.TrOrderBatchId == trOrderBatchId).ToListAsync();
+
+            //foreach (var entity in entities)
+            //{
+            //    var item = list.FirstOrDefault(o => o.TrOrderId == entity.TrOrderId);
+            //    if (item != null)
+            //    {
+            //        item.Plu = entity.Plu;
+            //        item.Barcode = entity.Barcode;
+            //        item.Reason = entity.Reason;
+            //        item.Justification = entity.Justification;
+            //        item.TrOrderStatus = entity.TrOrderStatus;
+            //        item.SupplierName = entity.SupplierName;
+            //        item.SupplierCode = entity.SupplierCode;
+            //        item.CreatedAt = entity.CreatedAt;
+            //        item.CreatedBy = entity.CreatedBy;
+            //    }
+            //}
+
+            //_mapper.Map(entities, list);
+
+            _context.TrOrders.UpdateRange(entities);
+            await _context.SaveChangesAsync();
+
+            return true;
+
+        }
+
         public async Task<TrOrder?> Select(long id)
         {
             return await _context.TrOrders
@@ -67,6 +89,26 @@ namespace Watsons.TRV2.DA.TR.Repositories
                 .Include(o => o.TrOrderBatch)
                 .Where(o => o.TrOrderId == id && o.TrOrderBatch.StoreId == storeId)
                 .FirstOrDefaultAsync();
+        }
+        public async Task<decimal?> TotalAccumulatedApprovedCost(long trBatchOrderId)
+        {
+            var trBatchOrder = _context.TrOrderBatches
+                .Where(o => o.TrOrderBatchId == trBatchOrderId)
+                .AsNoTracking()
+                .FirstOrDefault();
+
+            if (trBatchOrder == null)
+            {
+                return null;
+            }
+
+            return await _context.TrOrders
+                .Include(o => o.TrOrderBatch)
+                .Where(o => o.TrOrderBatch.StoreId == trBatchOrder.StoreId
+                    && o.TrOrderBatch.Brand == trBatchOrder.Brand
+                    && o.TrOrderBatchId != trBatchOrderId
+                    && o.TrOrderStatus == (byte)TrOrderStatus.Approved)
+                .SumAsync(o => o.AverageCost);
         }
 
         public async Task<TrOrder> InsertTrOrder(TrOrder entity)
@@ -94,25 +136,66 @@ namespace Watsons.TRV2.DA.TR.Repositories
         /// <param name="pluOrBarcode"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<IEnumerable<TrOrder>> List(long? trOrderBatchId, byte? status, string? pluOrBarcode)
+        public async Task<IEnumerable<TrOrder>> ListSearch(ListSearchParams parameters)
         {
-            var list = new List<TrOrder>();
-            var query = _context.TrOrders
-                .Include(o => o.TrOrderBatch)
-                .AsNoTracking();
+            IQueryable<TrOrder> query = _context.TrOrders
+                .Include(o => o.TrOrderBatch);
 
-            if (trOrderBatchId != null)
-                query = query.Where(o => o.TrOrderBatchId == trOrderBatchId);
+            if (parameters.TrOrderBatchId != null)
+                query = query.Where(o => o.TrOrderBatchId == parameters.TrOrderBatchId);
 
-            if (status != null)
-                query = query.Where(o => o.TrOrderStatus == status);
+            if (parameters.StoreIds != null && parameters.StoreIds.Count > 0)
+                query = query.Where(o => parameters.StoreIds.Contains(o.TrOrderBatch.StoreId));
 
-            if (!string.IsNullOrWhiteSpace(pluOrBarcode))
-                query = query.Where(o => o.Plu.Contains(pluOrBarcode) || (o.Barcode != null && o.Barcode.Contains(pluOrBarcode)));
+            if (parameters.Brand != null)
+                query = query.Where(o => o.TrOrderBatch.Brand == parameters.Brand);
+
+            if (parameters.Status != null)
+                query = query.Where(o => o.TrOrderStatus == parameters.Status);
+
+            if (parameters.StartDate != null && parameters.EndDate != null)
+                query = query.Where(o => o.TrOrderBatch.CreatedAt >= parameters.StartDate && o.TrOrderBatch.CreatedAt <= parameters.EndDate);
+
+            if (!string.IsNullOrWhiteSpace(parameters.PluOrBarcode))
+                query = query.Where(o => o.Plu.Contains(parameters.PluOrBarcode) || (o.Barcode != null && o.Barcode.Contains(parameters.PluOrBarcode)));
 
             return await query.ToListAsync();
         }
+
+        public async Task<IEnumerable<ReportSupplierFulFillmentResult>> ReportSupplierFulFillment(List<int>? storeIds, DateTime? startDate, DateTime? endDate, string? supplierName)
+        {
+            IQueryable<TrOrder> query = _context.TrOrders
+               .Include(o => o.TrOrderBatch);
+
+            if (storeIds != null && storeIds.Count > 0)
+                query = query.Where(o => storeIds.Contains(o.TrOrderBatch.StoreId));
+
+            //query = query.Where(o => o.TrOrderBatch.Brand == (byte)Brand.Supplier);
+
+            //query = query.Where(o => o.TrOrderStatus == (byte)TrOrderStatus.Fulfilled || o.TrOrderStatus == (byte)TrOrderStatus.Unfulfilled);
+            query = query.Where(o => o.TrOrderStatus == (byte)TrOrderStatus.Approved || o.TrOrderStatus == (byte)TrOrderStatus.Rejected);
+
+            if (startDate != null && endDate != null)
+                query = query.Where(o => o.TrOrderBatch.CreatedAt >= startDate && o.TrOrderBatch.CreatedAt <= endDate);
+
+            if (!string.IsNullOrWhiteSpace(supplierName))
+                query = query.Where(o => o.SupplierName != null && o.SupplierName.Contains(supplierName));
+
+            var result = await query.GroupBy(o => o.SupplierCode)
+                .Select(o => new ReportSupplierFulFillmentResult
+                {
+                    SupplierName = o.FirstOrDefault().SupplierName,
+                    TotalOrder = o.Count(),
+                    TotalOrderFulfilled = o.Where(t => t.TrOrderStatus == (byte)TrOrderStatus.Approved).Count(),
+                    TotalOrderUnfulfill = o.Where(t => t.TrOrderStatus == (byte)TrOrderStatus.Rejected).Count(),
+                })
+                .ToListAsync();
+
+            return result;
+        }
+
         /// <summary>
+        /// for add to cart checking purpose.
         /// return store order list.
         /// </summary>
         /// <param name="storeId"></param>
@@ -131,6 +214,46 @@ namespace Watsons.TRV2.DA.TR.Repositories
             return await query.AsNoTracking().ToListAsync();
         }
 
+        //public async Task<OrderItemsWithCostSummary?> GetOrderItemsWithCostSummary(long trOrderBatchId, byte? trOrderStatus, string? pluOrBarcode)
+        //{
+        //    var list = new List<TrOrder>();
+
+        //    var query = _context.TrOrders
+        //        .AsNoTracking()
+        //        .Where(o => o.TrOrderBatchId == trOrderBatchId);
+
+        //    if (trOrderStatus != null)
+        //        query = query.Where(o => o.TrOrderStatus == trOrderStatus);
+
+        //    var trOrde = await query.ToListAsync();
+
+        //    if (!string.IsNullOrWhiteSpace(pluOrBarcode))
+        //        query = query.Where(o => o.Plu.Contains(pluOrBarcode) || (o.Barcode != null && o.Barcode.Contains(pluOrBarcode)));
+
+        //    var orderItems = await query.ToListAsync();
+
+        //    var orderSummary = _context.TrOrderBatches
+        //        .Include(o => o.OrderCost)
+        //        .Where(o => o.TrOrderBatchId == trOrderBatchId)
+        //        .Select(o => new OrderItemsWithCostSummary()
+        //        {
+        //            TrOrderItems = orderItems,
+        //            StoreId = o.StoreId,
+        //            CostThresholdSnapshot = o.OrderCost != null ? o.OrderCost.CostThresholdSnapshot : null,
+        //            AccumulatedCostApproved = o.OrderCost != null ? o.OrderCost.AccumulatedCostApproved : null,
+        //            TotalOrderCost = o.OrderCost != null ? o.OrderCost.TotalOrderCost : null,
+        //            TotalCostApproved = o.OrderCost != null ? o.OrderCost.TotalCostApproved : null,
+        //            TotalCostRejected = o.OrderCost != null ? o.OrderCost.TotalCostRejected : null,
+        //            CreatedAt = o.CreatedAt,
+        //            CreatedBy = o.CreatedBy ?? string.Empty,
+        //            UpdatedAt = o.UpdatedAt,
+        //            UpdatedBy = o.UpdatedBy
+        //        })
+        //        .FirstOrDefault();
+
+        //    return orderSummary;
+        //}
+
         public async Task<GetStoreMonthlyTrOrdersResult?> GetStoreMonthlyTrOrders(int storeId, byte brand)
         {
             GetStoreMonthlyTrOrdersResult? result;
@@ -141,7 +264,7 @@ namespace Watsons.TRV2.DA.TR.Repositories
 
             var list = await _context.TrOrderBatches
                 .Where(o => o.StoreId == storeId && o.Brand == brand
-                && o.TrOrderBatchStatus == (byte)TrOrderBatchStatus.Completed
+                && o.TrOrderBatchStatus == (byte)TrOrderBatchStatus.Processed
                 //&& o.TrOrders.Any(t => t.Status == (byte)TrOrderStatus.Approved)
                 && o.CreatedAt >= startDT && o.CreatedAt <= endDT)
                 .SelectMany(o => o.TrOrders
@@ -182,12 +305,12 @@ namespace Watsons.TRV2.DA.TR.Repositories
 
             Dictionary<string, int> result = await _context.TrOrderBatches
                 .Where(o => o.StoreId == storeId && o.Brand == brand
-                && o.TrOrderBatchStatus == (byte)TrOrderBatchStatus.Completed
+                && o.TrOrderBatchStatus == (byte)TrOrderBatchStatus.Processed
                 && o.CreatedAt >= startDT && o.CreatedAt <= endDT)
-                .SelectMany(o => o.TrOrders.Where(t => t.TrOrderStatus == (byte)TrOrderStatus.Approved))
+                .SelectMany(o => o.TrOrders.Where(t => t.TrOrderStatus == (byte)TrOrderStatus.Approved || t.TrOrderStatus == (byte)TrOrderStatus.Fulfilled))
                 .GroupBy(x => x.Plu)
                 .ToDictionaryAsync(x => x.Key, x => x.Count());
-            
+
             return result;
         }
 
@@ -203,6 +326,14 @@ namespace Watsons.TRV2.DA.TR.Repositories
             return await _context.TrOrders
                 .Include(o => o.TrOrderBatch)
                 .Where(o => o.TrOrderBatch.StoreId == storeId && o.Plu == plu && o.TrOrderStatus == (byte)TrOrderStatus.Pending)
+                .AnyAsync();
+        }
+
+        public async Task<bool> HasOrderProcessed(int storeId, string plu)
+        {
+            return await _context.TrOrders
+                .Include(o => o.TrOrderBatch)
+                .Where(o => o.TrOrderBatch.StoreId == storeId && o.Plu == plu && o.TrOrderStatus == (byte)TrOrderStatus.Processed)
                 .AnyAsync();
         }
     }

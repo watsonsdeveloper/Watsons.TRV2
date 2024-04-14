@@ -15,9 +15,9 @@ public partial class MyMasterContext : DbContext
     {
     }
 
-    public virtual DbSet<ItemMaster> ItemMasters { get; set; }
+    internal virtual DbSet<ItemMaster> ItemMasters { get; set; }
 
-    public virtual DbSet<StoreMaster> StoreMasters { get; set; }
+    internal virtual DbSet<StoreMaster> StoreMasters { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,6 +28,7 @@ public partial class MyMasterContext : DbContext
             entity.ToTable("ItemMaster");
 
             entity.Property(e => e.Item).HasMaxLength(10);
+            entity.Property(e => e.Avcost).HasColumnName("AVCost");
             entity.Property(e => e.Barcode).HasMaxLength(50);
             entity.Property(e => e.Brand).HasMaxLength(100);
             entity.Property(e => e.ChildPlu)

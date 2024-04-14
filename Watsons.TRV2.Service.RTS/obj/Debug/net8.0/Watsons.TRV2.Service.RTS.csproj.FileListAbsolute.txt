@@ -1,5 +1,0 @@
-C:\Projects\Watsons.TRV2\Watsons.TRV2.Service.RTS\obj\Debug\net8.0\Watsons.TRV2.Service.RTS.csproj.AssemblyReference.cache
-C:\Projects\Watsons.TRV2\Watsons.TRV2.Service.RTS\obj\Debug\net8.0\Watsons.TRV2.Service.RTS.GeneratedMSBuildEditorConfig.editorconfig
-C:\Projects\Watsons.TRV2\Watsons.TRV2.Service.RTS\obj\Debug\net8.0\Watsons.TRV2.Service.RTS.AssemblyInfoInputs.cache
-C:\Projects\Watsons.TRV2\Watsons.TRV2.Service.RTS\obj\Debug\net8.0\Watsons.TRV2.Service.RTS.AssemblyInfo.cs
-C:\Projects\Watsons.TRV2\Watsons.TRV2.Service.RTS\obj\Debug\net8.0\Watsons.TRV2.Service.RTS.csproj.CoreCompileInputs.cache

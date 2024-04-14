@@ -4,17 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Watsons.Common;
 using Watsons.TRV2.DA.MyMaster.Entities;
 
-namespace Watsons.TRV2.DA.Repositories
-{
-    public interface IItemMasterRepository : IRepository<ItemMaster>
-    {
-        Task<ItemMaster?> SearchByPluOrBarcode(string pluOrBarcode);
-        Task<ItemMaster?> SearchByPlu(string plu);
-        Task<ItemMaster?> SearchByBarcode(string barcode);
-    }
+namespace Watsons.TRV2.DA.MyMaster.Repositories 
+{ 
     public class ItemMasterRepository : IItemMasterRepository
     {
         private readonly MyMasterContext _context;
@@ -57,6 +50,11 @@ namespace Watsons.TRV2.DA.Repositories
         public async Task<ItemMaster?> SearchByBarcode(string barcode)
         {
             return await _context.ItemMasters.AsNoTracking().FirstOrDefaultAsync(x => x.Item == barcode);
+        }
+        public async Task<Dictionary<string, ItemMaster>> Dictionary(List<string> plus)
+        {
+            var result = await _context.ItemMasters.AsNoTracking().Where(x => x.Item != null && plus.Contains(x.Item)).ToListAsync();
+            return result.ToDictionary(x => x.Item, x => x);
         }
     }
 }

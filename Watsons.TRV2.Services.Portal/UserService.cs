@@ -6,37 +6,85 @@ using System.Threading.Tasks;
 using Watsons.Common;
 using Watsons.TRV2.DTO.Portal.User;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Watsons.Common.JwtHelpers;
 using Watsons.TRV2.Services.CredEncryptor;
 using Microsoft.Extensions.Options;
 using AutoMapper;
 using Watsons.TRV2.Services.CredEncryptor.DTO.OtpDto;
+using Microsoft.AspNetCore.Http;
+using Watsons.TRV2.DA.TR.Repositories;
+using Watsons.TRV2.DA.CashManage;
+using Microsoft.AspNetCore.Mvc;
+using Watsons.TRV2.DTO.Portal;
+using Watsons.TRV2.DA.CashManage.Entities;
+using Microsoft.Extensions.Configuration;
 
 namespace Watsons.TRV2.Services.Portal
 {
     public class UserService : IUserService
     {
         private readonly IMapper _mapper;
-        //private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _configuration;
         private readonly IMfaService _mfaService;
         private readonly IOtpService _otpService;
         private readonly JwtHelper _jwtHelper;
         private readonly JwtSettings _jwtSettings;
+        private readonly IRoleRepository _roleRepository;
+        private readonly ICashManageRepository _cashManageRepository;
         public UserService(
             IMapper mapper,
-            //IHttpContextAccessor httpContextAccessor,
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration,
             IMfaService mfaService, IOtpService otpService,
-            IOptions<JwtSettings> jwtSettings, JwtHelper jwtHelper
+            IOptions<JwtSettings> jwtSettings, JwtHelper jwtHelper,
+            IRoleRepository roleRepository, ICashManageRepository cashManageRepository
             )
         {
             _mapper = mapper;
-            //_httpContextAccessor = httpContextAccessor;
+            _httpContextAccessor = httpContextAccessor;
+            _configuration = configuration;
             _mfaService = mfaService;
             _otpService = otpService;
             _jwtSettings = jwtSettings.Value;
             _jwtHelper = jwtHelper;
+            _roleRepository = roleRepository;
+            _cashManageRepository = cashManageRepository;
         }
+
+        internal async Task<UserDto> GetUserProfile(Guid applicationId, Guid userId)
+        {
+            var response = new UserDto();
+            var user = await _mfaService.GetMfaUser(new CredEncryptor.DTO.GetMfaUserDto.Request()
+            {
+                UserId = userId,
+                ApplicationId = applicationId,
+            });
+
+            var modules = await _roleRepository.GetRoleModuleAccesses(user.DepartmentId);
+
+            // get store access
+            var storeIds = new List<int>();
+            var rolesLimitedAccess = _configuration.GetSection(AppSettings.ROLE_LIMITED_STORE_ACCESS).Get<List<string>>();
+            if (rolesLimitedAccess != null && rolesLimitedAccess.Contains(user.DepartmentName))
+            {
+                storeIds = await _cashManageRepository.GetUserStoreIds(user.Email);
+            }
+
+            response = _mapper.Map<UserDto>(user);
+            response.StoreAccess = storeIds;
+            response.ModuleAccesses = _mapper.Map<List<ModuleAccess>>(modules);
+
+            return response;
+        }
+
+        public async Task<string?> DecodeJwtToken()
+        {
+            _httpContextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out var token);
+            var jwtToken = _jwtHelper.DecodeJwtToken(token);
+            return jwtToken;
+        }
+
         public async Task<ServiceResult<DTO.Portal.User.MfaLoginDto.Response>> MfaLogin(DTO.Portal.User.MfaLoginDto.Request request)
         {
             CredEncryptor.DTO.MfaLoginDto.Response? mfaLoginResponse;
@@ -58,16 +106,31 @@ namespace Watsons.TRV2.Services.Portal
 
                 if (!isOtpSend)
                 {
-                    return ServiceResult<DTO.Portal.User.MfaLoginDto.Response>.Failure("Invalid username or password");
+                    return ServiceResult<DTO.Portal.User.MfaLoginDto.Response>.Fail("Invalid username or password");
                 }
             }
             catch (Exception ex)
             {
-                return ServiceResult<DTO.Portal.User.MfaLoginDto.Response>.Failure(ex.Message);
+                return ServiceResult<DTO.Portal.User.MfaLoginDto.Response>.Fail(ex.Message);
             }
 
             var response = _mapper.Map<DTO.Portal.User.MfaLoginDto.Response>(mfaLoginResponse);
             return ServiceResult<DTO.Portal.User.MfaLoginDto.Response>.Success(response);
+        }
+
+        public async Task<ServiceResult<bool>> MfaLogout()
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(-1), // Set to a past date to expire the cookie
+            };
+
+
+            _httpContextAccessor.HttpContext.Response.Cookies.Append(_jwtSettings.CookieName, "", cookieOptions);
+            return ServiceResult<bool>.Success(true);
         }
 
         public async Task<ServiceResult<string>> VerifyMfaLoginOtp(VerifyLoginOtpRequest request)
@@ -83,19 +146,44 @@ namespace Watsons.TRV2.Services.Portal
             }
             catch (Exception ex)
             {
-                return ServiceResult<string>.Failure(ex.Message);
+                return ServiceResult<string>.Fail(ex.Message);
             }
 
+            var user = await GetUserProfile(request.ApplicationId ?? Guid.Empty, request.UserId ?? Guid.Empty);
+
             var claims = new List<Claim>() {
-                new Claim(ClaimTypes.NameIdentifier, request.UserId.ToString()),
-                new Claim(ClaimTypes.Role, request.UserId.ToString())
+                new Claim(ClaimTypes.NameIdentifier, request.UserId.ToString()!),
+                new Claim(ClaimTypes.Role, user.DepartmentName),
+                new Claim(ClaimTypes.Email, user.Email),
             };
-            //Initialize a new instance of the ClaimsIdentity with the claims and authentication scheme    
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            //Initialize a new instance of the ClaimsPrincipal with ClaimsIdentity    
-            var principal = new ClaimsPrincipal(identity);
+
+            foreach (var module in user.ModuleAccesses)
+            {
+                claims.Add(new Claim(module.ModuleName, module.Action));
+            }
+
+            foreach (var storeId in user.StoreAccess)
+            {
+                claims.Add(new Claim("StoreId", storeId.ToString()));
+            }
+
+            ////Initialize a new instance of the ClaimsIdentity with the claims and authentication scheme    
+            //var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            ////Initialize a new instance of the ClaimsPrincipal with ClaimsIdentity    
+            //var principal = new ClaimsPrincipal(identity);
 
             var token = _jwtHelper.GenerateJwtToken(claims);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                //Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.Now.AddMinutes(60)
+            };
+
+            _httpContextAccessor.HttpContext.Response.Cookies.Append(_jwtSettings.CookieName, token, cookieOptions);
 
             //await _httpContextAccessor.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties()
             //{
@@ -104,5 +192,56 @@ namespace Watsons.TRV2.Services.Portal
 
             return ServiceResult<string>.Success(token);
         }
+
+        public async Task<ServiceResult<FetchUserProfileResponse>> FetchUserProfile(FetchUserProfileRequest request)
+        {
+            try
+            {
+                var user = await GetUserProfile(request?.ApplicationId ?? Guid.Empty, request?.UserId ?? Guid.Empty);
+
+                var response = _mapper.Map<FetchUserProfileResponse>(user);
+                return ServiceResult<FetchUserProfileResponse>.Success(response);
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<FetchUserProfileResponse>.Fail(ex.Message);
+            }
+        }
+
+        public ServiceResult<bool> AuthorizeStoreAccess(int storeId)
+        {
+            var roleLimitedStoreAccess = _configuration.GetSection(AppSettings.ROLE_LIMITED_STORE_ACCESS).Get<List<string>>();
+            var role = _jwtHelper.GetRole();
+            if (roleLimitedStoreAccess != null && roleLimitedStoreAccess.Contains(role))
+            {
+                var jwtPayload = _jwtHelper.Payload();
+                var storeIds = jwtPayload.Claims.Where(c => c.Type == "StoreId").Select(c => int.Parse(c.Value)).ToList();
+                if (!storeIds.Contains(storeId))
+                {
+                    return ServiceResult<bool>.Fail("User not allowed to access this store");
+                }
+            }
+
+            return ServiceResult<bool>.Success(true);
+        }
+
+
+        //[HttpPost]
+        //[Route("logout")]
+        //public IActionResult Logout()
+        //{
+        //    var cookieOptions = new CookieOptions
+        //    {
+        //        HttpOnly = true,
+        //        Secure = true,
+        //        Expires = DateTime.UtcNow.AddDays(-1), // Set to a past date to expire the cookie
+        //    };
+
+        //    Response.Cookies.Append("AuthCookie", "", cookieOptions);
+
+        //    return Ok(new { message = "Logout successful" });
+        //}
+
+
     }
 }

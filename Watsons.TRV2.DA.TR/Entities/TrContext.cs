@@ -15,19 +15,25 @@ public partial class TrContext : DbContext
     {
     }
 
-    public virtual DbSet<EnumLookUp> EnumLookUps { get; set; }
+    internal virtual DbSet<EnumLookUp> EnumLookUps { get; set; }
 
-    public virtual DbSet<SalesBand> SalesBands { get; set; }
+    internal virtual DbSet<Module> Modules { get; set; }
 
-    public virtual DbSet<StoreSalesBand> StoreSalesBands { get; set; }
+    internal virtual DbSet<OrderCost> OrderCosts { get; set; }
 
-    public virtual DbSet<TrCart> TrCarts { get; set; }
+    internal virtual DbSet<RoleModuleAccess> RoleModuleAccesses { get; set; }
 
-    public virtual DbSet<TrImage> TrImages { get; set; }
+    internal virtual DbSet<SalesBand> SalesBands { get; set; }
 
-    public virtual DbSet<TrOrder> TrOrders { get; set; }
+    internal virtual DbSet<StoreSalesBand> StoreSalesBands { get; set; }
 
-    public virtual DbSet<TrOrderBatch> TrOrderBatches { get; set; }
+    internal virtual DbSet<TrCart> TrCarts { get; set; }
+
+    internal virtual DbSet<TrImage> TrImages { get; set; }
+
+    internal virtual DbSet<TrOrder> TrOrders { get; set; }
+
+    internal virtual DbSet<TrOrderBatch> TrOrderBatches { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,7 +43,7 @@ public partial class TrContext : DbContext
                 .HasNoKey()
                 .ToTable("EnumLookUp");
 
-            entity.HasIndex(e => new { e.EnumName, e.EnumId }, "UQ__EnumLook__AB52D1D259B5A9DE").IsUnique();
+            entity.HasIndex(e => new { e.EnumName, e.EnumId }, "UQ__EnumLook__AB52D1D28856552A").IsUnique();
 
             entity.Property(e => e.Description)
                 .HasMaxLength(255)
@@ -51,11 +57,82 @@ public partial class TrContext : DbContext
             entity.Property(e => e.Status).HasDefaultValue((byte)1);
         });
 
+        modelBuilder.Entity<Module>(entity =>
+        {
+            entity.HasKey(e => e.ModuleId).HasName("PK__Module__2B7477A7189EC7AB");
+
+            entity.ToTable("Module");
+
+            entity.Property(e => e.Action)
+                .HasMaxLength(3)
+                .IsUnicode(false);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.CreatedBy)
+                .HasMaxLength(150)
+                .IsUnicode(false);
+            entity.Property(e => e.ModuleName)
+                .HasMaxLength(70)
+                .IsUnicode(false);
+            entity.Property(e => e.Status).HasDefaultValue((byte)1);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(150)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<OrderCost>(entity =>
+        {
+            entity.HasKey(e => e.OderCostId).HasName("PK__OrderCos__79F80376C325CB63");
+
+            entity.ToTable("OrderCost");
+
+            entity.HasIndex(e => e.TrOrderBatchId, "UQ__OrderCos__DC57238C6F31B7AD").IsUnique();
+
+            entity.Property(e => e.AccumulatedCostApproved).HasColumnType("decimal(19, 6)");
+            entity.Property(e => e.CostThresholdSnapshot).HasColumnType("decimal(19, 6)");
+            entity.Property(e => e.TotalCostApproved).HasColumnType("decimal(19, 6)");
+            entity.Property(e => e.TotalCostRejected).HasColumnType("decimal(19, 6)");
+            entity.Property(e => e.TotalOrderCost).HasColumnType("decimal(19, 6)");
+
+            entity.HasOne(d => d.TrOrderBatch).WithOne(p => p.OrderCost)
+                .HasForeignKey<OrderCost>(d => d.TrOrderBatchId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrderBatchId");
+        });
+
+        modelBuilder.Entity<RoleModuleAccess>(entity =>
+        {
+            entity.HasKey(e => e.RoleModuleAccessId).HasName("PK__RoleModu__06D8C239C1D45645");
+
+            entity.ToTable("RoleModuleAccess");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.CreatedBy)
+                .HasMaxLength(150)
+                .IsUnicode(false);
+            entity.Property(e => e.Status).HasDefaultValue((byte)1);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(150)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Module).WithMany(p => p.RoleModuleAccesses)
+                .HasForeignKey(d => d.ModuleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_RoleModuleAccess_ModuleId");
+        });
+
         modelBuilder.Entity<SalesBand>(entity =>
         {
-            entity.HasKey(e => e.SalesBandId).HasName("PK__SalesBan__D823A91596BA2564");
+            entity.HasKey(e => e.SalesBandId).HasName("PK__SalesBan__D823A91564AE6BF6");
 
             entity.ToTable("SalesBand");
+
+            entity.HasIndex(e => new { e.Type, e.SalesBand1 }, "idx_unique_salesband").IsUnique();
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -64,20 +141,26 @@ public partial class TrContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.SalesBand1)
-                .HasMaxLength(25)
+                .HasMaxLength(3)
                 .IsUnicode(false)
                 .HasColumnName("SalesBand");
+            entity.Property(e => e.Type)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             entity.Property(e => e.UpdatedBy)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.Value).HasColumnType("decimal(12, 4)");
         });
 
         modelBuilder.Entity<StoreSalesBand>(entity =>
         {
-            entity.HasKey(e => e.StoreSalesBandId).HasName("PK__StoreSal__19B5EBDFB48FC744");
+            entity.HasKey(e => e.StoreSalesBandId).HasName("PK__StoreSal__19B5EBDFCADBEB46");
 
             entity.ToTable("StoreSalesBand");
+
+            entity.HasIndex(e => new { e.StoreId, e.Type }, "UQ__StoreSal__84197B48C7F11141").IsUnique();
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -85,18 +168,27 @@ public partial class TrContext : DbContext
             entity.Property(e => e.CreatedBy)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.Type)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(100)
+                .IsUnicode(false);
 
             entity.HasOne(d => d.SalesBand).WithMany(p => p.StoreSalesBands)
                 .HasForeignKey(d => d.SalesBandId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_StoreSalesBand_SalesBandId");
+                .HasConstraintName("FK_StoreBand_SalesBandId");
         });
 
         modelBuilder.Entity<TrCart>(entity =>
         {
-            entity.HasKey(e => e.TrCartId).HasName("PK__TrCart__6B0492B26A4CD8B9");
+            entity.HasKey(e => e.TrCartId).HasName("PK__TrCart__6B0492B214083B72");
 
             entity.ToTable("TrCart");
+
+            entity.HasIndex(e => e.StoreId, "idx_store");
 
             entity.Property(e => e.Barcode)
                 .HasMaxLength(100)
@@ -131,7 +223,7 @@ public partial class TrContext : DbContext
 
         modelBuilder.Entity<TrImage>(entity =>
         {
-            entity.HasKey(e => e.TrImageId).HasName("PK__TrImage__D6BA17141620212E");
+            entity.HasKey(e => e.TrImageId).HasName("PK__TrImage__D6BA17142CE76803");
 
             entity.ToTable("TrImage");
 
@@ -151,10 +243,11 @@ public partial class TrContext : DbContext
 
         modelBuilder.Entity<TrOrder>(entity =>
         {
-            entity.HasKey(e => e.TrOrderId).HasName("PK__TrOrder__11569D3ECA14E949");
+            entity.HasKey(e => e.TrOrderId).HasName("PK__TrOrder__11569D3E3851B48F");
 
             entity.ToTable("TrOrder");
 
+            entity.Property(e => e.AverageCost).HasColumnType("decimal(14, 8)");
             entity.Property(e => e.Barcode)
                 .HasMaxLength(100)
                 .IsUnicode(false);
@@ -172,15 +265,15 @@ public partial class TrContext : DbContext
             entity.Property(e => e.Plu)
                 .HasMaxLength(20)
                 .IsUnicode(false);
+            entity.Property(e => e.PluCappedSnapshot).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.ProductName)
                 .HasMaxLength(255)
                 .IsUnicode(false);
-            entity.Property(e => e.SalesBandPluCappedSnapshot).HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.Remark).HasMaxLength(500);
             entity.Property(e => e.SupplierCode)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.SupplierName).HasMaxLength(200);
-            entity.Property(e => e.WeightCost).HasColumnType("decimal(5, 2)");
 
             entity.HasOne(d => d.TrCart).WithMany(p => p.TrOrders)
                 .HasForeignKey(d => d.TrCartId)
@@ -195,20 +288,18 @@ public partial class TrContext : DbContext
 
         modelBuilder.Entity<TrOrderBatch>(entity =>
         {
-            entity.HasKey(e => e.TrOrderBatchId).HasName("PK__TrOrderB__DC57238D976D9BC9");
+            entity.HasKey(e => e.TrOrderBatchId).HasName("PK__TrOrderB__DC57238D5DF06F15");
 
             entity.ToTable("TrOrderBatch");
 
             entity.HasIndex(e => e.StoreId, "idx_store");
 
-            entity.Property(e => e.CostThresholdSnapshot).HasColumnType("decimal(8, 2)");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.CreatedBy)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.TotalCostUponApproval).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             entity.Property(e => e.UpdatedBy)
                 .HasMaxLength(50)

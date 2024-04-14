@@ -10,8 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Watsons.Common;
 using Watsons.Common.ImageHelpers;
-using Watsons.TRV2.DA.Repositories;
+using Watsons.TRV2.DA.MyMaster.Repositories;
 using Watsons.TRV2.DA.TR.Entities;
+using Watsons.TRV2.DA.TR.Models.Order;
 using Watsons.TRV2.DA.TR.Repositories;
 using Watsons.TRV2.DTO.Common;
 using Watsons.TRV2.DTO.Mobile;
@@ -66,8 +67,17 @@ namespace Watsons.TRV2.Services.Mobile
 
         public async Task<ServiceResult<List<TrOrderBatchDto>>> GetTrOrderBatchList(GetTrOrderBatchListRequest request)
         {
-            byte? status = request.Status != TrOrderStatus.All ? (byte)request.Status : null;
-            var trOrderBatchList = await _trOrderBatchRepository.List(new List<int>() { request.StoreId }, (byte)request.Brand, status, request.PluOrBarcode);
+            var parameters = new OrderBatchList()
+            {
+                BrandId = request.Brand != null ? (byte)request.Brand : null,
+                TrOrderBatchId = request.TrOrderBatchId,
+                StoreIds = new List<int>() { request.StoreId },
+                TrOrderBatchStatus = request.TrOrderBatchStatus != null ? (byte)request.TrOrderBatchStatus : null,
+                PluOrBarcode = request.PluOrBarcode,
+                Page = request.Page,
+                PageSize = request.PageSize,
+            };
+            var trOrderBatchList = await _trOrderBatchRepository.List(parameters);
 
             var trOrderBatchListDto = _mapper.Map<List<TrOrderBatchDto>>(trOrderBatchList);
             return ServiceResult<List<TrOrderBatchDto>>.Success(trOrderBatchListDto);
@@ -77,10 +87,18 @@ namespace Watsons.TRV2.Services.Mobile
         {
             var trOrderBatch = await _trOrderBatchRepository.Select(request.TrOrderBatchId, request.StoreId);
             if (trOrderBatch == null)
-                return ServiceResult<List<TrOrderDto>>.Failure("TrOrderBatch not found");
+                return ServiceResult<List<TrOrderDto>>.Fail("TrOrderBatch not found");
 
             byte? status = request.Status != TrOrderStatus.All ? (byte)request.Status : null;
-            var trOrderList = await _trOrderRepository.List(request.TrOrderBatchId, status, request.PluOrBarcode);
+            ListSearchParams parameters = new ListSearchParams()
+            {
+                TrOrderBatchId = request.TrOrderBatchId,
+                Status = status,
+                PluOrBarcode = request.PluOrBarcode,
+                StoreIds = new List<int>() { request.StoreId },
+                Brand = (byte)request.Brand,
+            };
+            var trOrderList = await _trOrderRepository.ListSearch(parameters);
 
             var trOrderListDto = _mapper.Map<List<TrOrderDto>>(trOrderList);
             return ServiceResult<List<TrOrderDto>>.Success(trOrderListDto);
@@ -90,11 +108,11 @@ namespace Watsons.TRV2.Services.Mobile
         {
             var trOrder = await _trOrderRepository.Select(request.TrOrderId);
             if (trOrder == null)
-                return ServiceResult<TrOrderDto>.Failure("TrOrder not found");
+                return ServiceResult<TrOrderDto>.Fail("TrOrder not found");
 
             var trOrderBatch = await _trOrderBatchRepository.Select(trOrder.TrOrderBatchId, request.StoreId);
             if (trOrderBatch == null)
-                return ServiceResult<TrOrderDto>.Failure("TrOrder not found");
+                return ServiceResult<TrOrderDto>.Fail("TrOrder not found");
 
             // TODO : uploaded image
             //var uploadedImages = await 
@@ -112,7 +130,7 @@ namespace Watsons.TRV2.Services.Mobile
             var trCartList = await _trCartRepository.List(request.StoreId, (byte)request.Brand);
             if (trCartList == null || trCartList.Count() <= 0)
             {
-                return ServiceResult<List<TrCartDto>>.Failure("No item in cart.");
+                return ServiceResult<List<TrCartDto>>.Fail("No item in cart.");
             }
             var trDtoCartList = _mapper.Map<List<TrCartDto>>(trCartList);
             var trCartIdList = trDtoCartList.Select(c => c.TrCartId).ToList();
@@ -131,22 +149,21 @@ namespace Watsons.TRV2.Services.Mobile
                 });
                 if (rtsDictionary == null || !rtsDictionary.Any())
                 {
-                    return ServiceResult<List<TrCartDto>>.Failure("Store Sales Band Not Found.");
+                    return ServiceResult<List<TrCartDto>>.Fail("Store Sales Band Not Found.");
                 }
             }
             catch (Exception ex)
             {
-                return ServiceResult<List<TrCartDto>>.Failure("Error while getting RTS stock");
+                return ServiceResult<List<TrCartDto>>.Fail("Error while getting RTS stock");
             }
 
             var storeSalesBand = await _storeSalesBandRepository.GetStoreSalesBandDetails(request.StoreId);
             if (storeSalesBand == null)
             {
-                return ServiceResult<List<TrCartDto>>.Failure("Store Sales Band Not Found.");
+                return ServiceResult<List<TrCartDto>>.Fail("Store Sales Band Not Found.");
             }
             var storePluCapped = storeSalesBand?.PluCapped ?? 0;
             var monthlyStoreOrder = await _trOrderRepository.GetProductQuantityOfMonthlyStoreOrder(request.StoreId, (byte)request.Brand);
-
 
             var totalUploadedImagesList = await _uploadImageService.ListByStore(new ListByStoreRequest
             {
@@ -169,7 +186,6 @@ namespace Watsons.TRV2.Services.Mobile
                 }
 
                 // check if the item is tester product
-
                 //if (!item.ItemStatus.Contains("1") && !item.ItemStatus.Contains("2"))
                 //{
                 //    return ServiceResult<TrCartDto>.Failure("Product is not tester product.");
@@ -183,6 +199,7 @@ namespace Watsons.TRV2.Services.Mobile
                     cart.RequireJustify = true;
                     hasError = true;
                     requiredJustifyPluList.Add(cart.Plu, true);
+                    continue;
                 }
                 else
                 {
@@ -195,6 +212,7 @@ namespace Watsons.TRV2.Services.Mobile
                     cart.ErrorMessage = "Not enough stock";
                     cart.IsAvailableStock = false;
                     hasError = true;
+                    continue;
                 }
                 else
                 {
@@ -257,7 +275,7 @@ namespace Watsons.TRV2.Services.Mobile
                     IsRequireJustify = requiredJustifyPluList[cart.Plu],
                     Reason = cart.Reason != null ? (byte)cart.Reason : null,
                     Justification = cart.Justification,
-                    SalesBandPluCappedSnapshot = storePluCapped,
+                    //SalesBandPluCappedSnapshot = storePluCapped,
                     TrOrderStatus = (byte)TrOrderStatus.Pending,
                     TrOrderBatchId = trOrderBatch.TrOrderBatchId,
                     TrCartId = cart.TrCartId
