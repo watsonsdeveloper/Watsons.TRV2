@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,12 @@ namespace Watsons.TRV2.DA.TR.Repositories
     public class TrOrderRepository : ITrOrderRepository
     {
         private readonly TrContext _context;
+        private readonly IConfiguration _configuration;
 
-        public TrOrderRepository(TrContext context)
+        public TrOrderRepository(TrContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public Task<bool> Delete(TrOrder entity)
@@ -336,5 +339,42 @@ namespace Watsons.TRV2.DA.TR.Repositories
                 .Where(o => o.TrOrderBatch.StoreId == storeId && o.Plu == plu && o.TrOrderStatus == (byte)TrOrderStatus.Processed)
                 .AnyAsync();
         }
+
+        public async Task<bool> InsertStoreAdjustment(long TrOrderBatchId)
+        {
+            var orders = await _context.TrOrders
+                .Include(o => o.TrOrderBatch)
+                .Where(o => o.TrOrderBatchId == TrOrderBatchId
+                    && o.TrOrderStatus == (byte)TrOrderStatus.Approved
+                    && o.TrOrderBatch.TrOrderBatchStatus == (byte)TrOrderBatchStatus.Processed
+                    && o.TrOrderBatch.Brand == (byte)Brand.Own)
+                .ToListAsync();
+
+            if(orders == null || orders.Count == 0)
+            {
+                return false;
+            }
+
+            foreach (var order in orders)
+            {
+                var storeAdjustmentItem = new StoreAdjustment()
+                {
+                    TrOrderBatchId = TrOrderBatchId,
+                    TrOrderId = order.TrOrderId,
+                    StoreId = order.TrOrderBatch.StoreId,
+                    Plu = order.Plu,
+                    Qty = 1,
+                    ReasonCode = "40",
+                    CreatedBy = $"{_configuration["AppName"]} - {order.TrOrderId}",
+                };
+                await _context.StoreAdjustments.AddAsync(storeAdjustmentItem);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
+
+    //public async Task<bool> 
 }

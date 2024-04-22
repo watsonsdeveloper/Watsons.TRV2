@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Microsoft.Extensions.Logging;
+using System.Linq;
 using Watsons.Common;
 using Watsons.TRV2.DA.MyMaster.Repositories;
 using Watsons.TRV2.DTO.Common;
@@ -12,13 +13,17 @@ namespace Watsons.TRV2.Services.Mobile
     }
     public class ProductService : IProductService
     {
+        ILoggerFactory _loggerFactory;
         private readonly IItemMasterRepository _itemMasterRepository;
-        public ProductService(IItemMasterRepository itemMasterRepository)
+        public ProductService(ILoggerFactory loggerFactory, IItemMasterRepository itemMasterRepository)
         {
+            _loggerFactory = loggerFactory;
             _itemMasterRepository = itemMasterRepository;
         }
         public async Task<ServiceResult<ProductDetailResponse>> SearchByPluOrBarcode(string pluOrBarcode)
         {
+            _loggerFactory.CreateLogger<ProductService>().LogInformation($"SearchByPluOrBarcode: {pluOrBarcode}");
+
             var result = await _itemMasterRepository.SearchByPluOrBarcode(pluOrBarcode);
             if (result == null)
             {

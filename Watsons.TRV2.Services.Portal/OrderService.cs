@@ -11,6 +11,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Watsons.Common;
+using Watsons.Common.ConnectionHelpers;
 using Watsons.Common.JwtHelpers;
 using Watsons.TRV2.DA.MyMaster.Entities;
 using Watsons.TRV2.DA.MyMaster.Repositories;
@@ -36,7 +37,12 @@ namespace Watsons.TRV2.Services.Portal
         private readonly IUserService _userService;
         private readonly IRtsService _rtsService;
         private readonly JwtHelper _jwtHelper;
+        private readonly ConnectionSettings _migrationSettings;
+        private readonly RtsSettings _rtsSettings;
+
         public OrderService(IMapper mapper, IConfiguration configuration,
+            IOptionsSnapshot<ConnectionSettings> migrationSettings,
+            IOptionsSnapshot<RtsSettings> rtsSettings,
             IItemMasterRepository itemMasterRepository,
             ITrOrderBatchRepository trOrderBatchRepository, ITrOrderRepository trOrderRepository,
             ITrImageRepository trImageRepository, IStoreMasterRepository storeMasterRepository,
@@ -55,6 +61,8 @@ namespace Watsons.TRV2.Services.Portal
             _userService = userService;
             _rtsService = rtsService;
             _jwtHelper = jwtHelper;
+            _migrationSettings = migrationSettings.Get("MigrationConnectionSettings");
+            _rtsSettings = rtsSettings.Value;
         }
         public async Task<ServiceResult<FetchOrderListResponse>> FetchOrderList(FetchOrderListRequest request)
         {
@@ -228,21 +236,24 @@ namespace Watsons.TRV2.Services.Portal
 
             var pluList = trOrderItems.Select(c => c.Plu).ToList();
             Dictionary<string, int>? rtsDictionary = null;
-            try
+            if (trOrderBatch.Brand == (byte)Brand.Own)
             {
-                rtsDictionary = await _rtsService.GetMultipleProductSingleStore(new RTS.DTO.GetMultipleProductSingleStore.Request
+                try
                 {
-                    StoreID = trOrderBatch.StoreId,
-                    PluList = pluList
-                });
-                if (rtsDictionary == null || !rtsDictionary.Any())
-                {
-                    return ServiceResult<UpdateOrderOwnResponse>.Fail("Store Sales Band Not Found.");
+                    rtsDictionary = await _rtsService.GetMultipleProductSingleStore(new RTS.DTO.GetMultipleProductSingleStore.Request
+                    {
+                        StoreID = trOrderBatch.StoreId,
+                        PluList = pluList
+                    });
+                    if (rtsDictionary == null || !rtsDictionary.Any())
+                    {
+                        return ServiceResult<UpdateOrderOwnResponse>.Fail("Store Sales Band Not Found.");
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                return ServiceResult<UpdateOrderOwnResponse>.Fail($"RTS Error - {ex.Message}");
+                catch (Exception ex)
+                {
+                    return ServiceResult<UpdateOrderOwnResponse>.Fail($"RTS Error - {ex.Message}");
+                }
             }
 
             var trOrderItemsDict = trOrderItems.ToDictionary(x => x.TrOrderId, x => x);
@@ -279,11 +290,14 @@ namespace Watsons.TRV2.Services.Portal
                     continue;
                 }
 
-                var availableStock = rtsDictionary[item.Plu];
-                if (availableStock <= 0 && orderItem.TrOrderStatus != TrOrderStatus.Rejected)
+                if(rtsDictionary != null)
                 {
-                    orderItem.ErrorMessage = "Stock is not available.";
-                    continue;
+                    var availableStock = rtsDictionary[item.Plu];
+                    if (availableStock <= _rtsSettings.MinStockRequired && orderItem.TrOrderStatus != TrOrderStatus.Rejected)
+                    {
+                        orderItem.ErrorMessage = "Stock is not available.";
+                        continue;
+                    }
                 }
 
                 if (orderItem.TrOrderStatus != TrOrderStatus.Rejected && item.IsRequireJustify == false)
@@ -369,7 +383,7 @@ namespace Watsons.TRV2.Services.Portal
             {
                 if (trOrderBatch.OrderCost == null) // EF auto upsert if not found.
                 {
-                    trOrderBatch.OrderCost = new DA.TR.Entities.OrderCost()
+                    trOrderBatch.OrderCost = new OrderCost()
                     {
                         AccumulatedCostApproved = response.AccumulatedCostApproved,
                         CostThresholdSnapshot = response.CostThresholdSnapshot,
@@ -396,6 +410,16 @@ namespace Watsons.TRV2.Services.Portal
                 if (isUpdatedSuccess)
                 {
                     await _trOrderRepository.UpdateRange(trOrderItems.ToList());
+                }
+
+                await _trOrderRepository.InsertStoreAdjustment(trOrderBatch.TrOrderBatchId);
+                try
+                {
+                    
+                }
+                catch (Exception ex)
+                {
+                    return ServiceResult<UpdateOrderOwnResponse>.Fail("Stock adjustment failed.");
                 }
             }
 

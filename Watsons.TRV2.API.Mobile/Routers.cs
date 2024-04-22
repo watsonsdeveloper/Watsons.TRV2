@@ -15,6 +15,7 @@ namespace Watsons.TRV2.API.Mobile
         {
             app.MapGet("/", () =>
             {
+                
                 return "WELCOME TO TRV2 MOBILE API";
             });
 

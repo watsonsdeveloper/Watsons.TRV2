@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Reflection;
 using System.Text;
 using Watsons.Common;
@@ -12,6 +13,7 @@ using Watsons.Common.EmailHelpers;
 using Watsons.Common.HttpServices;
 using Watsons.Common.ImageHelpers;
 using Watsons.Common.JwtHelpers;
+using Watsons.Common.TrafficLogHelpers;
 using Watsons.TRV2.API.Portal;
 using Watsons.TRV2.DA.CashManage;
 using Watsons.TRV2.DA.CashManage.Entities;
@@ -27,43 +29,61 @@ using Watsons.TRV2.Services.RTS;
 var builder = WebApplication.CreateBuilder(args);
 
 var trv2ConnectionSettings = new ConnectionSettings();
-builder.Configuration.GetSection("Trv2ConnectionSettings").Bind(trv2ConnectionSettings);
 var cashManageConnectionSettings = new ConnectionSettings();
-builder.Configuration.GetSection("CashManageConnectionSettings").Bind(cashManageConnectionSettings);
 var myMasterConnectionSettings = new ConnectionSettings();
-builder.Configuration.GetSection("MyMasterConnectionSettings").Bind(myMasterConnectionSettings);
 var sysCredConnectionSettings = new ConnectionSettings();
-builder.Configuration.GetSection("SysCredConnectionSettings").Bind(sysCredConnectionSettings);
+var migrationConnectionSettings = new ConnectionSettings();
 
-var tRV2Connection = SysCredential.GetConnectionString(trv2ConnectionSettings.Server, trv2ConnectionSettings.Database);
-var cashManageConnection = SysCredential.GetConnectionString(cashManageConnectionSettings.Server, cashManageConnectionSettings.Database);
-var myMasterConnection = SysCredential.GetConnectionString(myMasterConnectionSettings.Server, myMasterConnectionSettings.Database);
-var sysCredConnection = SysCredential.GetConnectionString(sysCredConnectionSettings.Server, sysCredConnectionSettings.Database);
+builder.Configuration.GetSection("Trv2ConnectionSettings").Bind(trv2ConnectionSettings);
+builder.Configuration.GetSection("CashManageConnectionSettings").Bind(cashManageConnectionSettings);
+builder.Configuration.GetSection("MyMasterConnectionSettings").Bind(myMasterConnectionSettings);
+builder.Configuration.GetSection("SysCredConnectionSettings").Bind(sysCredConnectionSettings);
+builder.Configuration.GetSection("MigrationConnectionSettings").Bind(migrationConnectionSettings);
+
+var trv2ConnectionString = SysCredential.GetConnectionString(trv2ConnectionSettings.Server, trv2ConnectionSettings.Database);
+var cashManageConnectionString = SysCredential.GetConnectionString(cashManageConnectionSettings.Server, cashManageConnectionSettings.Database);
+var myMasterConnectionString = SysCredential.GetConnectionString(myMasterConnectionSettings.Server, myMasterConnectionSettings.Database);
+var sysCredConnectionString = SysCredential.GetConnectionString(sysCredConnectionSettings.Server, sysCredConnectionSettings.Database);
+var migrationConnectionString = SysCredential.GetConnectionString(migrationConnectionSettings.Server, migrationConnectionSettings.Database);
+
+builder.Services.AddDbContextFactory<TrafficContext>(options =>
+{
+    options.UseSqlServer(trv2ConnectionString,
+        sqlOptions => sqlOptions.EnableRetryOnFailure())
+    .EnableServiceProviderCaching(true);
+});
+
+builder.Services.AddSingleton<TrafficContext>(provider =>
+{
+    var dbContextFactory = provider.GetRequiredService<IDbContextFactory<TrafficContext>>();
+    return dbContextFactory.CreateDbContext();
+});
 
 builder.Services.AddDbContextFactory<TrContext>(options =>
 {
-    options.UseSqlServer(tRV2Connection,
+    options.UseSqlServer(trv2ConnectionString,
          sqlOptions => sqlOptions.EnableRetryOnFailure())
     .EnableServiceProviderCaching(true);
 });
 
+
 builder.Services.AddDbContextFactory<CashManageContext>(options =>
 {
-    options.UseSqlServer(cashManageConnection,
+    options.UseSqlServer(cashManageConnectionString,
         sqlOptions => sqlOptions.EnableRetryOnFailure())
     .EnableServiceProviderCaching(true);
 });
 
 builder.Services.AddDbContextFactory<SysCredContext>(options =>
 {
-    options.UseSqlServer(cashManageConnection,
+    options.UseSqlServer(cashManageConnectionString,
          sqlOptions => sqlOptions.EnableRetryOnFailure())
     .EnableServiceProviderCaching(true);
 });
 
 builder.Services.AddDbContextFactory<MyMasterContext>(options =>
 {
-    options.UseSqlServer(myMasterConnection,
+    options.UseSqlServer(myMasterConnectionString,
          sqlOptions => {
              sqlOptions.UseCompatibilityLevel(120); // https://github.com/dotnet/efcore/issues/31362 # to fix EF contains error OPENJSON $ With 
              sqlOptions.EnableRetryOnFailure();
@@ -71,13 +91,21 @@ builder.Services.AddDbContextFactory<MyMasterContext>(options =>
     .EnableServiceProviderCaching(true);
 });
 
+//builder.Services.AddDbContextFactory<MigrationContext>(options =>
+//{
+//    options.UseSqlServer(migrationConnection,
+//         sqlOptions => sqlOptions.EnableRetryOnFailure())
+//    .EnableServiceProviderCaching(true);
+//});
+
 builder.Services.AddOptions();
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.Configure<ImageSettings>(builder.Configuration.GetSection("ImageSettings"));
 builder.Services.Configure<RtsSettings>(builder.Configuration.GetSection("RtsSettings"));
 builder.Services.Configure<ConnectionSettings>("SysCredConnectionSettings", builder.Configuration.GetSection("SysCredConnectionSettings"));
-
+builder.Services.Configure<ConnectionSettings>("MigrationConnectionSettings", builder.Configuration.GetSection("MigrationConnectionSettings"));
+//builder.Services.Configure<MigrationConnectionSettings>(builder.Configuration.GetSection("MigrationConnectionSettings"));
 
 var jwtSettings = new JwtSettings();
 builder.Configuration.GetSection("JwtSettings").Bind(jwtSettings);
@@ -162,6 +190,7 @@ builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<IOtpService, OtpService>();
 builder.Services.AddScoped<IMfaService, MfaService>();
+builder.Services.AddScoped<RtsService>();
 builder.Services.AddScoped<IRtsService, RtsService>();
 
 var corsSettings = new CorsSettings();
@@ -222,10 +251,8 @@ app.UseAuthorization();
 Routers.ConfigureEndpoints(app);
 
 
+app.UseMiddleware<TrafficLogMiddleware>();
 //app.UseMiddleware<ExceptionHandlerMiddleware>();
-//app.UseMiddleware<RequestResponseLoggingMiddleware>();
 //app.UseMiddleware<ResponseMiddleware>();
-
-
 
 app.Run();

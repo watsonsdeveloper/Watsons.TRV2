@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Watsons.Common;
 using Watsons.Common.ConnectionHelpers;
 using Watsons.Common.EmailHelpers;
 using Watsons.Common.ImageHelpers;
+using Watsons.Common.TrafficLogHelpers;
 using Watsons.TRV2.API.Mobile;
 using Watsons.TRV2.API.Mobile.Middlewares;
 using Watsons.TRV2.DA.MyMaster.Entities;
@@ -20,32 +22,59 @@ var builder = WebApplication.CreateBuilder(args);
 //var myMasterConnection = SysCredential.GetConnectionString("Server121", "MyMaster");
 
 var trv2ConnectionSettings = new ConnectionSettings();
-builder.Configuration.GetSection("Trv2ConnectionSettings").Bind(trv2ConnectionSettings);
 var myMasterConnectionSettings = new ConnectionSettings();
+
+builder.Configuration.GetSection("Trv2ConnectionSettings").Bind(trv2ConnectionSettings);
 builder.Configuration.GetSection("MyMasterConnectionSettings").Bind(myMasterConnectionSettings);
 
-var tRV2Connection = SysCredential.GetConnectionString(trv2ConnectionSettings.Server, trv2ConnectionSettings.Database);
-var myMasterConnection = SysCredential.GetConnectionString(myMasterConnectionSettings.Server, myMasterConnectionSettings.Database);
+var trv2ConnectionString = SysCredential.GetConnectionString(trv2ConnectionSettings.Server, trv2ConnectionSettings.Database);
+var myMasterConnectionString = SysCredential.GetConnectionString(myMasterConnectionSettings.Server, myMasterConnectionSettings.Database);
+
+
+builder.Services.AddDbContextFactory<TrafficContext>(options =>
+{
+    options.UseSqlServer(trv2ConnectionString,
+        sqlOptions => sqlOptions.EnableRetryOnFailure())
+    .EnableServiceProviderCaching(true);
+});
+
+builder.Services.AddSingleton<TrafficContext>(provider =>
+{
+    var dbContextFactory = provider.GetRequiredService<IDbContextFactory<TrafficContext>>();
+    return dbContextFactory.CreateDbContext();
+});
 
 builder.Services.AddDbContextFactory<TrContext>(options =>
 {
-    options.UseSqlServer(tRV2Connection,
+    options.UseSqlServer(trv2ConnectionString,
         sqlOptions => sqlOptions.EnableRetryOnFailure())
     .EnableServiceProviderCaching(true);
 });
 
 builder.Services.AddDbContextFactory<MyMasterContext>(options =>
 {
-    options.UseSqlServer(myMasterConnection,
-        sqlOptions => sqlOptions.EnableRetryOnFailure())
+    options.UseSqlServer(myMasterConnectionString,
+         sqlOptions => {
+             sqlOptions.UseCompatibilityLevel(120); // https://github.com/dotnet/efcore/issues/31362 # to fix EF contains error OPENJSON $ With 
+             sqlOptions.EnableRetryOnFailure();
+         })
     .EnableServiceProviderCaching(true);
 });
 
+
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpLogging(logging => {
+    logging.LoggingFields = HttpLoggingFields.All;
+    //logging.RequestHeaders.Add("sec-ch-ua");
+    //logging.RequestHeaders.Add("Authorization");
+    //logging.ResponseHeaders.Add("Authorization");
+    //logging.RequestHeaders.Add("AuthCookie");
+    //logging.CombineLogs = true;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddOptions();
+
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.Configure<ImageSettings>(builder.Configuration.GetSection("ImageSettings"));
 builder.Services.Configure<RtsSettings>(builder.Configuration.GetSection("RtsSettings"));
@@ -81,7 +110,12 @@ if (app.Environment.IsDevelopment())
     //app.UseDeveloperExceptionPage();
 }
 
-//app.UseHttpsRedirection();
+app.UseMiddleware<TrafficLogMiddleware>();
+app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseMiddleware<ResponseMiddleware>();
+
+app.UseHttpLogging();
+app.UseHttpsRedirection();
 var staticFilePath = app.Configuration.GetValue<string>("StaticFilePath");
 app.UseStaticFiles(new StaticFileOptions()
 {
@@ -90,10 +124,5 @@ app.UseStaticFiles(new StaticFileOptions()
 });
 
 Routers.ConfigureEndpoints(app);
-
-app.UseMiddleware<ExceptionHandlerMiddleware>();
-//app.UseMiddleware<RequestResponseLoggingMiddleware>();
-app.UseMiddleware<ResponseMiddleware>();
-
 
 app.Run();

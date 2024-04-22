@@ -26,6 +26,7 @@ namespace Watsons.TRV2.DA.TR.Repositories
         Task<Dictionary<string, int>> GetProductQuantityOfMonthlyStoreOrder(int storeId, byte brand);
         Task<bool> HasOrderPending(int storeId, string plu);
         Task<bool> HasOrderProcessed(int storeId, string plu);
+        Task<bool> InsertStoreAdjustment(long trOrderBatchId);
 
     }
 }

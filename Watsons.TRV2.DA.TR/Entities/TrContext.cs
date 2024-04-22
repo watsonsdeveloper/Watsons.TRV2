@@ -25,6 +25,8 @@ public partial class TrContext : DbContext
 
     internal virtual DbSet<SalesBand> SalesBands { get; set; }
 
+    internal virtual DbSet<StoreAdjustment> StoreAdjustments { get; set; }
+
     internal virtual DbSet<StoreSalesBand> StoreSalesBands { get; set; }
 
     internal virtual DbSet<TrCart> TrCarts { get; set; }
@@ -152,6 +154,48 @@ public partial class TrContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Value).HasColumnType("decimal(12, 4)");
+        });
+
+        modelBuilder.Entity<StoreAdjustment>(entity =>
+        {
+            entity.HasKey(e => e.StoreAdjustmentId).HasName("PK__StoreAdj__7930F22D47410319");
+
+            entity.ToTable("StoreAdjustment");
+
+            entity.HasIndex(e => e.TrOrderId, "UNIQUE_TrOrderId").IsUnique();
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.CreatedBy)
+                .HasMaxLength(150)
+                .IsUnicode(false);
+            entity.Property(e => e.InventoryAdjustmentNumber)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Plu)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.ReasonCode)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Remark)
+                .HasMaxLength(250)
+                .IsUnicode(false);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(150)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.TrOrderBatch).WithMany(p => p.StoreAdjustments)
+                .HasForeignKey(d => d.TrOrderBatchId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StoreAdjustment_TrOrderBatchId");
+
+            entity.HasOne(d => d.TrOrder).WithOne(p => p.StoreAdjustment)
+                .HasForeignKey<StoreAdjustment>(d => d.TrOrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StoreAdjustment_TrOrderId");
         });
 
         modelBuilder.Entity<StoreSalesBand>(entity =>

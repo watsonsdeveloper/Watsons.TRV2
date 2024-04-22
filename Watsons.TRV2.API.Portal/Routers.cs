@@ -5,6 +5,7 @@ using Watsons.TRV2.DTO.Portal;
 using Watsons.TRV2.DTO.Portal.OrderDto;
 using Watsons.TRV2.DTO.Portal.User;
 using Watsons.TRV2.Services.Portal;
+using Watsons.TRV2.Services.RTS;
 
 namespace Watsons.TRV2.API.Portal
 {
@@ -29,6 +30,17 @@ namespace Watsons.TRV2.API.Portal
                 var response = await service.DecodeJwtToken();
                 return Results.Ok(response);
             }).RequireAuthorization(PolicyRoles.ADMIN);
+
+            app.MapGet("/rts", async (int storeId, string plu, RtsService service) =>
+            {
+                var request = new Services.RTS.DTO.GetMultipleProductSingleStore.Request()
+                {
+                    StoreID = storeId,
+                    PluList = new List<string>() { plu }
+                };
+                var response = await service.GetMultipleProductSingleStore(request);
+                return response;
+            });
 
             var portalApi = app.MapGroup("/portalApi");
             portalApi.MapPost("/mfaLogin", async ([FromBody] DTO.Portal.User.MfaLoginDto.Request request, UserService service) =>

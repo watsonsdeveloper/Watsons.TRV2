@@ -23,5 +23,7 @@ public partial class TrOrderBatch
 
     public virtual OrderCost? OrderCost { get; set; }
 
+    public virtual ICollection<StoreAdjustment> StoreAdjustments { get; set; } = new List<StoreAdjustment>();
+
     public virtual ICollection<TrOrder> TrOrders { get; set; } = new List<TrOrder>();
 }

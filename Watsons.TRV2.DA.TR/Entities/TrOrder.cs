@@ -41,6 +41,8 @@ public partial class TrOrder
 
     public DateTime CreatedAt { get; set; }
 
+    public virtual StoreAdjustment? StoreAdjustment { get; set; }
+
     public virtual TrCart TrCart { get; set; } = null!;
 
     public virtual ICollection<TrImage> TrImages { get; set; } = new List<TrImage>();
