@@ -20,10 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Watsons.Common\Watsons.Common\Watsons.Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Watsons.Common">
       <HintPath>..\Packages\Watsons.Common.dll</HintPath>
     </Reference>

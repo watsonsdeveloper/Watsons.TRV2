@@ -11,7 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Watsons.Common\Watsons.Common\Watsons.Common.csproj" />
+    <Reference Include="Watsons.Common">
+      <HintPath>..\Packages\Watsons.Common.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

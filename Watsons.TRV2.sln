@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.TRV2.DA.TR", "Watso
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.TRV2.Services.RTS", "Watsons.TRV2.Services.RTS\Watsons.TRV2.Services.RTS.csproj", "{662F378C-8BEE-455D-A51C-2D12B63EB74C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.Common", "..\Watsons.Common\Watsons.Common\Watsons.Common.csproj", "{0692D967-92EB-4A07-B2B2-8E8B249C21D6}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.TRV2.MSTest", "Watsons.TRV2.MSTest\Watsons.TRV2.MSTest.csproj", "{491F6EE7-E10F-4C88-BB88-534909E38D71}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.TRV2.API.Portal", "Watsons.TRV2.API.Portal\Watsons.TRV2.API.Portal.csproj", "{3A193505-07B0-4CF0-9DCA-436339A4051B}"
@@ -27,9 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.TRV2.DA.SysCred", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.TRV2.DA.CashManage", "Watsons.TRV2.DA.CashManage\Watsons.TRV2.DA.CashManage.csproj", "{4185B4FB-2686-449E-B32C-44B44F019EEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watsons.TRV2.DTO.Portal", "Watsons.TRV2.DTO.Portal\Watsons.TRV2.DTO.Portal.csproj", "{D62A2CB2-C269-46FF-A90E-6036C18E2C77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.TRV2.DTO.Portal", "Watsons.TRV2.DTO.Portal\Watsons.TRV2.DTO.Portal.csproj", "{D62A2CB2-C269-46FF-A90E-6036C18E2C77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watsons.TRV2.Services.CredEncryptor", "Watsons.TRV2.Services.CredEncryptor\Watsons.TRV2.Services.CredEncryptor.csproj", "{AB0E087D-4D72-4E76-A562-14F28B6F84FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.TRV2.Services.CredEncryptor", "Watsons.TRV2.Services.CredEncryptor\Watsons.TRV2.Services.CredEncryptor.csproj", "{AB0E087D-4D72-4E76-A562-14F28B6F84FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,10 +59,6 @@ Global
 		{662F378C-8BEE-455D-A51C-2D12B63EB74C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{662F378C-8BEE-455D-A51C-2D12B63EB74C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{662F378C-8BEE-455D-A51C-2D12B63EB74C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0692D967-92EB-4A07-B2B2-8E8B249C21D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0692D967-92EB-4A07-B2B2-8E8B249C21D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0692D967-92EB-4A07-B2B2-8E8B249C21D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0692D967-92EB-4A07-B2B2-8E8B249C21D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{491F6EE7-E10F-4C88-BB88-534909E38D71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{491F6EE7-E10F-4C88-BB88-534909E38D71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{491F6EE7-E10F-4C88-BB88-534909E38D71}.Release|Any CPU.ActiveCfg = Release|Any CPU

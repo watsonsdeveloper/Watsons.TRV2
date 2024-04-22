@@ -14,7 +14,6 @@ using Watsons.TRV2.Services.CredEncryptor.DTO.OtpDto;
 using Microsoft.AspNetCore.Http;
 using Watsons.TRV2.DA.TR.Repositories;
 using Watsons.TRV2.DA.CashManage;
-using Microsoft.AspNetCore.Mvc;
 using Watsons.TRV2.DTO.Portal;
 using Watsons.TRV2.DA.CashManage.Entities;
 using Microsoft.Extensions.Configuration;

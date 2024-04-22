@@ -25,4 +25,10 @@
     <ProjectReference Include="..\Watsons.TRV2.Services.Mobile\Watsons.TRV2.Services.Mobile.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Watsons.Common">
+      <HintPath>..\Packages\Watsons.Common.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
