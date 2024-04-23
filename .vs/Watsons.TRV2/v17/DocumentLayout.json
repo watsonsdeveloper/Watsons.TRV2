@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Projects\\Watsons.TRV2\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{40E88EC3-E849-4C97-B743-8EAD9DA9BAEF}|Watsons.TRV2.API.Mobile\\Watsons.TRV2.API.Mobile.csproj|c:\\projects\\watsons.trv2\\watsons.trv2.api.mobile\\watsons.trv2.api.mobile.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{40E88EC3-E849-4C97-B743-8EAD9DA9BAEF}|Watsons.TRV2.API.Mobile\\Watsons.TRV2.API.Mobile.csproj|solutionrelative:watsons.trv2.api.mobile\\watsons.trv2.api.mobile.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{C83104B1-A704-43FC-BA63-017E81FF0A37}|Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj|c:\\projects\\watsons.trv2\\watsons.trv2.services.portal\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C83104B1-A704-43FC-BA63-017E81FF0A37}|Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj|solutionrelative:watsons.trv2.services.portal\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -99,83 +103,19 @@
       "DocumentGroups": [
         {
           "DockedHeight": 200,
-          "SelectedChildIndex": 28,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Watsons.TRV2.Services.Portal",
-              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
-              "RelativeDocumentMoniker": "Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
-              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
-              "RelativeToolTip": "Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
+              "DocumentIndex": 0,
+              "Title": "Watsons.TRV2.API.Mobile",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.API.Mobile\\Watsons.TRV2.API.Mobile.csproj",
+              "RelativeDocumentMoniker": "Watsons.TRV2.API.Mobile\\Watsons.TRV2.API.Mobile.csproj",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.API.Mobile\\Watsons.TRV2.API.Mobile.csproj*",
+              "RelativeToolTip": "Watsons.TRV2.API.Mobile\\Watsons.TRV2.API.Mobile.csproj*",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAABMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-04-22T09:19:14.233Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "TrOrderRepository.cs",
-              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.DA.TR\\Repositories\\TrOrderRepository.cs",
-              "RelativeDocumentMoniker": "Watsons.TRV2.DA.TR\\Repositories\\TrOrderRepository.cs",
-              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.DA.TR\\Repositories\\TrOrderRepository.cs",
-              "RelativeToolTip": "Watsons.TRV2.DA.TR\\Repositories\\TrOrderRepository.cs",
-              "ViewState": "AQIAAD4AAAAAAAAAAAAuwEAAAAAyAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-22T09:16:06.996Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ReportService.cs",
-              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\ReportService.cs",
-              "RelativeDocumentMoniker": "Watsons.TRV2.Services.Portal\\ReportService.cs",
-              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\ReportService.cs",
-              "RelativeToolTip": "Watsons.TRV2.Services.Portal\\ReportService.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACkAAABqAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-22T09:14:36.933Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "UserService.cs",
-              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\UserService.cs",
-              "RelativeDocumentMoniker": "Watsons.TRV2.Services.Portal\\UserService.cs",
-              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\UserService.cs",
-              "RelativeToolTip": "Watsons.TRV2.Services.Portal\\UserService.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAhAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-22T09:13:06.53Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "IOtpService.cs",
-              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.CredEncryptor\\IOtpService.cs",
-              "RelativeDocumentMoniker": "Watsons.TRV2.Services.CredEncryptor\\IOtpService.cs",
-              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.CredEncryptor\\IOtpService.cs",
-              "RelativeToolTip": "Watsons.TRV2.Services.CredEncryptor\\IOtpService.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAOAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-22T09:12:39.661Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Watsons.TRV2.Services.Portal",
-              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
-              "RelativeDocumentMoniker": "Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
-              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
-              "RelativeToolTip": "Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-04-22T09:11:51.688Z",
+              "WhenOpened": "2024-04-23T01:38:00.862Z",
               "EditorCaption": ""
             },
             {
@@ -204,7 +144,80 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Watsons.TRV2.Services.Portal",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
+              "RelativeDocumentMoniker": "Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
+              "RelativeToolTip": "Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-04-22T09:19:14.233Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "TrOrderRepository.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.DA.TR\\Repositories\\TrOrderRepository.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.DA.TR\\Repositories\\TrOrderRepository.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.DA.TR\\Repositories\\TrOrderRepository.cs",
+              "RelativeToolTip": "Watsons.TRV2.DA.TR\\Repositories\\TrOrderRepository.cs",
+              "ViewState": "AQIAAD4AAAAAAAAAAAAuwEAAAAAyAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-22T09:16:06.996Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ReportService.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\ReportService.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.Services.Portal\\ReportService.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\ReportService.cs",
+              "RelativeToolTip": "Watsons.TRV2.Services.Portal\\ReportService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACkAAABqAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-22T09:14:36.933Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\UserService.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.Services.Portal\\UserService.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\UserService.cs",
+              "RelativeToolTip": "Watsons.TRV2.Services.Portal\\UserService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAhAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-22T09:13:06.53Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 9,
+              "Title": "IOtpService.cs",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.CredEncryptor\\IOtpService.cs",
+              "RelativeDocumentMoniker": "Watsons.TRV2.Services.CredEncryptor\\IOtpService.cs",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.CredEncryptor\\IOtpService.cs",
+              "RelativeToolTip": "Watsons.TRV2.Services.CredEncryptor\\IOtpService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAOAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-22T09:12:39.661Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Watsons.TRV2.Services.Portal.csproj",
+              "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
+              "RelativeDocumentMoniker": "Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
+              "ToolTip": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
+              "RelativeToolTip": "Watsons.TRV2.Services.Portal\\Watsons.TRV2.Services.Portal.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-04-22T09:11:51.688Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "CartService.cs",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Mobile\\CartService.cs",
               "RelativeDocumentMoniker": "Watsons.TRV2.Services.Mobile\\CartService.cs",
@@ -212,12 +225,11 @@
               "RelativeToolTip": "Watsons.TRV2.Services.Mobile\\CartService.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAOAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-22T09:11:20.862Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-22T09:11:20.862Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.API.Portal\\Program.cs",
               "RelativeDocumentMoniker": "Watsons.TRV2.API.Portal\\Program.cs",
@@ -225,12 +237,11 @@
               "RelativeToolTip": "Watsons.TRV2.API.Portal\\Program.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAOAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-22T07:53:01.744Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-22T07:53:01.744Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "Microsoft.Common.CurrentVersion.targets",
               "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
               "RelativeDocumentMoniker": "..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
@@ -238,12 +249,11 @@
               "RelativeToolTip": "..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
               "ViewState": "AQIAAJYSAAAAAAAAAADwv8ASAAANAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
-              "WhenOpened": "2024-04-21T05:49:14.904Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-21T05:49:14.904Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 19,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\JhiWei.Wong\\AppData\\Local\\Temp\\.vsdbgsrc\\7f01241d4c2fa2ba3873c9845ce65d7d6dfb54208e923bbd22ea39fd868f318d\\Program.cs",
               "RelativeDocumentMoniker": "..\\..\\Users\\JhiWei.Wong\\AppData\\Local\\Temp\\.vsdbgsrc\\7f01241d4c2fa2ba3873c9845ce65d7d6dfb54208e923bbd22ea39fd868f318d\\Program.cs",
@@ -251,12 +261,11 @@
               "RelativeToolTip": "..\\..\\Users\\JhiWei.Wong\\AppData\\Local\\Temp\\.vsdbgsrc\\7f01241d4c2fa2ba3873c9845ce65d7d6dfb54208e923bbd22ea39fd868f318d\\Program.cs",
               "ViewState": "AQIAAEkAAAAAAAAAAAAmwGcAAAAFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-21T05:45:22.521Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-21T05:45:22.521Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.API.Mobile\\Program.cs",
               "RelativeDocumentMoniker": "Watsons.TRV2.API.Mobile\\Program.cs",
@@ -264,12 +273,11 @@
               "RelativeToolTip": "Watsons.TRV2.API.Mobile\\Program.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAOAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-20T08:02:15.729Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-20T08:02:15.729Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "TrCartRepository.cs",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.DA.TR\\Repositories\\TrCartRepository.cs",
               "RelativeDocumentMoniker": "Watsons.TRV2.DA.TR\\Repositories\\TrCartRepository.cs",
@@ -277,12 +285,11 @@
               "RelativeToolTip": "Watsons.TRV2.DA.TR\\Repositories\\TrCartRepository.cs",
               "ViewState": "AQIAAAMAAAAAAAAAAIBJwBgAAAAcAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-21T04:06:44.464Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-21T04:06:44.464Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "ITrOrderRepository.cs",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.DA.TR\\Repositories\\ITrOrderRepository.cs",
               "RelativeDocumentMoniker": "Watsons.TRV2.DA.TR\\Repositories\\ITrOrderRepository.cs",
@@ -290,12 +297,11 @@
               "RelativeToolTip": "Watsons.TRV2.DA.TR\\Repositories\\ITrOrderRepository.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAABkAAABlAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-21T04:06:41.025Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-21T04:06:41.025Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 20,
               "Title": "TrOrderBatch.cs",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.DA.TR\\Entities\\TrOrderBatch.cs",
               "RelativeDocumentMoniker": "Watsons.TRV2.DA.TR\\Entities\\TrOrderBatch.cs",
@@ -303,12 +309,11 @@
               "RelativeToolTip": "Watsons.TRV2.DA.TR\\Entities\\TrOrderBatch.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAABkAAABBAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-21T04:06:36.087Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-21T04:06:36.087Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 21,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.API.Mobile\\appsettings.json",
               "RelativeDocumentMoniker": "Watsons.TRV2.API.Mobile\\appsettings.json",
@@ -316,12 +321,11 @@
               "RelativeToolTip": "Watsons.TRV2.API.Mobile\\appsettings.json",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAZAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-04-21T04:03:52.613Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-21T04:03:52.613Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 18,
               "Title": "Readme.md",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.API.Mobile\\Readme.md",
               "RelativeDocumentMoniker": "Watsons.TRV2.API.Mobile\\Readme.md",
@@ -329,12 +333,11 @@
               "RelativeToolTip": "Watsons.TRV2.API.Mobile\\Readme.md",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAXAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2024-04-21T03:06:49.956Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-21T03:06:49.956Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 23,
               "Title": "ProductService.cs",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Mobile\\ProductService.cs",
               "RelativeDocumentMoniker": "Watsons.TRV2.Services.Mobile\\ProductService.cs",
@@ -342,12 +345,11 @@
               "RelativeToolTip": "Watsons.TRV2.Services.Mobile\\ProductService.cs",
               "ViewState": "AQIAAAkAAAAAAAAAAAA7wBUAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-21T02:46:02.734Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-21T02:46:02.734Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "TrContext.cs",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.DA.TR\\Entities\\TrContext.cs",
               "RelativeDocumentMoniker": "Watsons.TRV2.DA.TR\\Entities\\TrContext.cs",
@@ -355,12 +357,11 @@
               "RelativeToolTip": "Watsons.TRV2.DA.TR\\Entities\\TrContext.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAeAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-20T09:02:09.706Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-20T09:02:09.706Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "Routers.cs",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.API.Mobile\\Routers.cs",
               "RelativeDocumentMoniker": "Watsons.TRV2.API.Mobile\\Routers.cs",
@@ -368,12 +369,11 @@
               "RelativeToolTip": "Watsons.TRV2.API.Mobile\\Routers.cs",
               "ViewState": "AQIAABIAAAAAAAAAAAASwCsAAABuAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-20T08:33:41.805Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-20T08:33:41.805Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 22,
               "Title": "ResponseMiddleware.cs",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.API.Mobile\\Middlewares\\ResponseMiddleware.cs",
               "RelativeDocumentMoniker": "Watsons.TRV2.API.Mobile\\Middlewares\\ResponseMiddleware.cs",
@@ -381,12 +381,11 @@
               "RelativeToolTip": "Watsons.TRV2.API.Mobile\\Middlewares\\ResponseMiddleware.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAuwBIAAAAMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-20T08:04:37.333Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-20T08:04:37.333Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 17,
               "Title": "ExceptionHandler.cs",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.API.Mobile\\Middlewares\\ExceptionHandler.cs",
               "RelativeDocumentMoniker": "Watsons.TRV2.API.Mobile\\Middlewares\\ExceptionHandler.cs",
@@ -394,12 +393,11 @@
               "RelativeToolTip": "Watsons.TRV2.API.Mobile\\Middlewares\\ExceptionHandler.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAuwCgAAABFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-20T08:04:36.646Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-20T08:04:36.646Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\JhiWei.Wong\\AppData\\Local\\SourceServer\\74a21a8dc64b7488c002c57d0ddc0770863958dc27a5285dc3bfcb8412a50cc2\\Watsons.TRV2.API.Mobile\\Program.cs",
               "RelativeDocumentMoniker": "..\\..\\Users\\JhiWei.Wong\\AppData\\Local\\SourceServer\\74a21a8dc64b7488c002c57d0ddc0770863958dc27a5285dc3bfcb8412a50cc2\\Watsons.TRV2.API.Mobile\\Program.cs",
@@ -407,12 +405,11 @@
               "RelativeToolTip": "..\\..\\Users\\JhiWei.Wong\\AppData\\Local\\SourceServer\\74a21a8dc64b7488c002c57d0ddc0770863958dc27a5285dc3bfcb8412a50cc2\\Watsons.TRV2.API.Mobile\\Program.cs",
               "ViewState": "AQIAADgAAAAAAAAAAAAswEsAAAAwAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-20T08:04:16.371Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-20T08:04:16.371Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "OrderService.cs",
               "DocumentMoniker": "C:\\Projects\\Watsons.TRV2\\Watsons.TRV2.Services.Portal\\OrderService.cs",
               "RelativeDocumentMoniker": "Watsons.TRV2.Services.Portal\\OrderService.cs",

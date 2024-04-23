@@ -1,14 +1,6 @@
 {
   "ExpandedNodes": [
-    "",
-    "\\Watsons.TRV2.API.Mobile",
-    "\\Watsons.TRV2.API.Mobile\\Properties",
-    "\\Watsons.TRV2.DA.TR",
-    "\\Watsons.TRV2.DA.TR\\Repositories",
-    "\\Watsons.TRV2.DTO",
-    "\\Watsons.TRV2.DTO\\Mobile",
-    "\\Watsons.TRV2.Services.Mobile"
+    ""
   ],
-  "SelectedNode": "\\Watsons.TRV2.Services.Mobile\\TrOrderService.cs",
   "PreviewInSolutionExplorer": false
 }

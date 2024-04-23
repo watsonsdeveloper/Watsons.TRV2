@@ -9,7 +9,7 @@ myconfig.json
 # Ignore files with specific extensions
 *.log
 *.tmp
-*.dll
+#*.dll
 *.user
 *.suo
 *.exe
