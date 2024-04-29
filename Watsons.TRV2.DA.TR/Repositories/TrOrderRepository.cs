@@ -162,7 +162,7 @@ namespace Watsons.TRV2.DA.TR.Repositories
             if (!string.IsNullOrWhiteSpace(parameters.PluOrBarcode))
                 query = query.Where(o => o.Plu.Contains(parameters.PluOrBarcode) || (o.Barcode != null && o.Barcode.Contains(parameters.PluOrBarcode)));
 
-            return await query.ToListAsync();
+            return await query.OrderByDescending(x => x.TrOrderId).ToListAsync();
         }
 
         public async Task<IEnumerable<ReportSupplierFulFillmentResult>> ReportSupplierFulFillment(List<int>? storeIds, DateTime? startDate, DateTime? endDate, string? supplierName)

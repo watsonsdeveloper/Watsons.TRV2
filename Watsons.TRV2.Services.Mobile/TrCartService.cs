@@ -237,9 +237,17 @@ namespace Watsons.TRV2.Services.Mobile
                 return ServiceResult<TrCartDto>.Fail("This PLU is not available for tester request.");
             }
 
-            if (item.ItemStatus == null || !(item.ItemStatus.Contains("1") || item.ItemStatus.Contains("2")))
+            if (item.ItemStatus == null)
             {
                 return ServiceResult<TrCartDto>.Fail("This PLU is not available for tester request.");
+            }
+            else if (request.Brand == Brand.Own && (!(item.ItemStatus.Contains("1") || !item.ItemStatus.Contains("2") || !item.ItemStatus.Contains("3"))))
+            {
+                return ServiceResult<TrCartDto>.Fail("“Item Status - Deleted.");
+            }
+            else if (request.Brand == Brand.Supplier && (!(item.ItemStatus.Contains("1") || !item.ItemStatus.Contains("2"))))
+            {
+                return ServiceResult<TrCartDto>.Fail("“Item Status – Deleted or De-listed.");
             }
 
             var ownBrandLabel = new List<int>() { 1, 2, 4, 5, 6 };
@@ -270,6 +278,15 @@ namespace Watsons.TRV2.Services.Mobile
                 }
             }
 
+            // supplier accept dept is "3 – Skincare" or "4 –Cosmetic"
+            if (request.Brand == Brand.Supplier)
+            {
+                if (item.Dept == null || !item.Dept.StartsWith("3") || !item.Dept.StartsWith("4"))
+                {
+                    return ServiceResult<TrCartDto>.Fail("This PLU is not listed under Skincare or Cosmetic.");
+                }
+            }
+
             // Check Cart Pending
             if (await _trCartRepository.HasInCart(store.StoreId, item.Item))
             {
@@ -279,7 +296,7 @@ namespace Watsons.TRV2.Services.Mobile
             // Check Order Pending
             if (await _trOrderRepository.HasOrderPending(store.StoreId, item.Item))
             {
-                return ServiceResult<TrCartDto>.Fail("Product upon pending approval.");
+                return ServiceResult<TrCartDto>.Fail("You have submitted a request for this PLU.");
             }
 
             if (request.Brand == Brand.Supplier && await _trOrderRepository.HasOrderProcessed(store.StoreId, item.Item))
@@ -446,7 +463,7 @@ namespace Watsons.TRV2.Services.Mobile
 
                     var monthlyStoreOrder = await _trOrderRepository.GetProductQuantityOfMonthlyStoreOrder(request.StoreId, (byte)trCart.Brand);
                     monthlyStoreOrder.TryGetValue(trCart.Plu, out var monthlyOrderedUnit);
-                    if (monthlyOrderedUnit > pluUnitLimit)
+                    if (monthlyOrderedUnit >= pluUnitLimit)
                     {
                         if (string.IsNullOrEmpty(request.Justification))
                         {

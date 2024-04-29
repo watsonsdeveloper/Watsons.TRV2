@@ -55,6 +55,7 @@ namespace Watsons.TRV2.DTO.Common
         Damaged = 2,
         Depleted = 3,
         Missing = 4,
+        Expired = 5
     }
     public enum Brand : byte
     {

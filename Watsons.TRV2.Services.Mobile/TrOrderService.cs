@@ -209,7 +209,7 @@ namespace Watsons.TRV2.Services.Mobile
 
                 if (request.Brand == Brand.Own && rtsDictionary.ContainsKey(cart.Plu) && rtsDictionary[cart.Plu] <= _rtsSettings.MinStockRequired)
                 {
-                    cart.ErrorMessage = "Not enough stock";
+                    cart.ErrorMessage = "SOH is less than 4 units. Please request later after restock.";
                     cart.IsAvailableStock = false;
                     hasError = true;
                     continue;

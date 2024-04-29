@@ -19,9 +19,10 @@ namespace Watsons.TRV2.DTO.Portal
         public string? Reason { get; set; }
         public decimal? AverageCost { get; set; }
         public string CreatedBy { get; set; } = null!;
+        public DateTime CreatedAt { get; set; }
         public TrOrderStatus TrOrderStatus { get; set; }
         public string? UpdatedBy { get; set; }
-        public string? UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 
     public class ReportOwnRequest
@@ -54,9 +55,10 @@ namespace Watsons.TRV2.DTO.Portal
         public string? Reason { get; set; }
         public decimal? AverageCost { get; set; }
         public string CreatedBy { get; set; } = null!;
+        public DateTime CreatedAt { get; set; }
         public TrOrderStatus TrOrderStatus { get; set; }
         public string? UpdatedBy { get; set; }
-        public string? UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
     
     public class ReportSupplierRequest

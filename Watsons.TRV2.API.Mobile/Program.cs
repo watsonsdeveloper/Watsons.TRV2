@@ -30,7 +30,6 @@ builder.Configuration.GetSection("MyMasterConnectionSettings").Bind(myMasterConn
 var trv2ConnectionString = SysCredential.GetConnectionString(trv2ConnectionSettings.Server, trv2ConnectionSettings.Database);
 var myMasterConnectionString = SysCredential.GetConnectionString(myMasterConnectionSettings.Server, myMasterConnectionSettings.Database);
 
-
 builder.Services.AddDbContextFactory<TrafficContext>(options =>
 {
     options.UseSqlServer(trv2ConnectionString,
