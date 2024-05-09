@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Watsons.Common;
 using Watsons.TRV2.DA.TR.Entities;
 using Watsons.TRV2.DA.TR.Models.Order;
+using Watsons.TRV2.DTO.Common;
 
 namespace Watsons.TRV2.DA.TR.Repositories
 {
@@ -160,6 +161,13 @@ namespace Watsons.TRV2.DA.TR.Repositories
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<IEnumerable<TrOrderBatch>> PendingList()
+        {
+            return await _context.TrOrderBatches
+                .Where(o => o.TrOrderBatchStatus == (byte)TrOrderBatchStatus.Pending)
+                .ToListAsync();
         }
 
     }

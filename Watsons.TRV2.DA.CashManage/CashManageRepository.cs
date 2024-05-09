@@ -1,10 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Watsons.TRV2.DA.CashManage.Entities;
+using Watsons.TRV2.DA.CashManage.Models;
 
 namespace Watsons.TRV2.DA.CashManage
 {
@@ -27,6 +31,22 @@ namespace Watsons.TRV2.DA.CashManage
                           where ul.Email == email
                           select us.StoreId ?? 0).ToListAsync();
             return storeIds;
+        }
+
+        public async Task<List<UserStore>> UserStoreIds(List<int> storeIds, List<string> roles)
+        {
+            return await (from s in _cashManageContext.UserStoreIds
+                            join u in _cashManageContext.UserLogins on s.Username equals u.Username
+                            where s.StoreId != null && storeIds.Contains((int)s.StoreId)
+                            && !string.IsNullOrEmpty(s.RoleCode) && roles.Contains(s.RoleCode)
+                            select new UserStore
+                            {
+                                Username = u.Username,
+                                Email = u.Email,
+                                StoreId = s.StoreId,
+                                Name = u.Name,
+                                RoleCode = u.RoleCode
+                            }).ToListAsync();
         }
     }
 }

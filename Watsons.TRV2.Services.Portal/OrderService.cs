@@ -11,7 +11,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Watsons.Common;
 using Watsons.Common.ConnectionHelpers;
+using Watsons.Common.EmailHelpers;
+using Watsons.Common.EmailHelpers.DTO;
 using Watsons.Common.JwtHelpers;
+using Watsons.TRV2.DA.CashManage;
 using Watsons.TRV2.DA.MyMaster.Entities;
 using Watsons.TRV2.DA.MyMaster.Repositories;
 using Watsons.TRV2.DA.TR.Entities;
@@ -33,21 +36,24 @@ namespace Watsons.TRV2.Services.Portal
         private readonly ITrImageRepository _trImageRepository;
         private readonly IStoreMasterRepository _storeMasterRepository;
         private readonly IStoreSalesBandRepository _storeSalesBandRepository;
+        private readonly IMigrationRepository _migrationRepository;
+        private readonly ICashManageRepository _cashManageRepository;
         private readonly IUserService _userService;
         private readonly IRtsService _rtsService;
         private readonly JwtHelper _jwtHelper;
-        private readonly ConnectionSettings _migrationSettings;
+        private readonly EmailHelper _emailHelper;
         private readonly RtsSettings _rtsSettings;
 
         public OrderService(IMapper mapper, IConfiguration configuration,
-            IOptionsSnapshot<ConnectionSettings> migrationSettings,
             IOptionsSnapshot<RtsSettings> rtsSettings,
             IItemMasterRepository itemMasterRepository,
             ITrOrderBatchRepository trOrderBatchRepository, ITrOrderRepository trOrderRepository,
             ITrImageRepository trImageRepository, IStoreMasterRepository storeMasterRepository,
             IStoreSalesBandRepository storeSalesBandRepository,
+            IMigrationRepository migrationRepository,
+            ICashManageRepository cashManageRepository,
             IUserService userService, IRtsService rtsService,
-            JwtHelper jwtHelper)
+            EmailHelper emailHelper, JwtHelper jwtHelper)
         {
             _mapper = mapper;
             _configuration = configuration;
@@ -57,10 +63,12 @@ namespace Watsons.TRV2.Services.Portal
             _trImageRepository = trImageRepository;
             _storeMasterRepository = storeMasterRepository;
             _storeSalesBandRepository = storeSalesBandRepository;
+            _migrationRepository = migrationRepository;
+            _cashManageRepository = cashManageRepository;
             _userService = userService;
             _rtsService = rtsService;
+            _emailHelper = emailHelper;
             _jwtHelper = jwtHelper;
-            _migrationSettings = migrationSettings.Get("MigrationConnectionSettings");
             _rtsSettings = rtsSettings.Value;
         }
         public async Task<ServiceResult<FetchOrderListResponse>> FetchOrderList(FetchOrderListRequest request)
@@ -138,24 +146,28 @@ namespace Watsons.TRV2.Services.Portal
             var trOrderItems = await _trOrderRepository.ListSearch(parameters);
             var orderDtos = _mapper.Map<List<OrderDto>>(trOrderItems);
 
+            
             var orderItemIds = orderDtos.Select(x => x.OrderItemId).ToList();
             var orderItemImages = await _trImageRepository.ListByTrOrderIds(orderItemIds);
 
             Dictionary<string, ItemMaster>? items = null;
-            if(orderSummary.TrOrderBatchStatus == (byte)TrOrderBatchStatus.Pending)
+            Dictionary<string, DA.TR.Models.Order.LastWriteOffItem>? lastWriteOffItems = null;
+            if (orderSummary.TrOrderBatchStatus == (byte)TrOrderBatchStatus.Pending)
             {
                 var plus = orderDtos.Select(x => x.Plu).ToList();
                 items = await _itemMasterRepository.Dictionary(plus);
 
                 // get store cost threshold
                 var storeSalesBand = await _storeSalesBandRepository.GetTypeValue(orderSummary.StoreId);
-                if (storeSalesBand == null || !storeSalesBand.ContainsKey("COST_LIMIT_OWN"))
+                if (storeSalesBand == null || !storeSalesBand.ContainsKey(SalesBandConstants.COST_LIMIT_OWN))
                 {
                     return ServiceResult<FetchOrderOwnResponse>.Fail("Store Sales Band not found.");
                 }
-                orderSummary.CostThresholdSnapshot = storeSalesBand["COST_LIMIT_OWN"].Value;
+                orderSummary.CostThresholdSnapshot = storeSalesBand[SalesBandConstants.COST_LIMIT_OWN].Value;
 
                 orderSummary.AccumulatedCostApproved = await _trOrderRepository.TotalAccumulatedApprovedCost(orderSummary.TrOrderBatchId) ?? 0;
+
+                lastWriteOffItems = await _trOrderRepository.LastWriteOffDict(orderSummary.StoreId, plus);
             }
 
             decimal totalOrderItemCost = 0;
@@ -178,6 +190,11 @@ namespace Watsons.TRV2.Services.Portal
                 {
                     // mapping avcost from snapshot
                     totalOrderItemCost += (decimal)orderDto.AverageCost;
+                }
+
+                if(lastWriteOffItems != null && lastWriteOffItems.Count > 0 && lastWriteOffItems.ContainsKey(orderDto.Plu))
+                {
+                    orderDto.LastWriteOffAt = lastWriteOffItems[orderDto.Plu].LastWriteOffAt;
                 }
             }
             orderSummary.TotalOrderCost = totalOrderItemCost;
@@ -255,6 +272,8 @@ namespace Watsons.TRV2.Services.Portal
                 }
             }
 
+
+            var lastWriteOffItemsDict = await _trOrderRepository.LastWriteOffDict(trOrderBatch.StoreId, pluList);
             var trOrderItemsDict = trOrderItems.ToDictionary(x => x.TrOrderId, x => x);
             foreach (var orderItem in request.OrderItems)
             {
@@ -307,6 +326,11 @@ namespace Watsons.TRV2.Services.Portal
                 var trOrderItem = trOrderItemsDict[orderItem.TrOrderId];
                 trOrderItem.TrOrderStatus = (byte)orderItem.TrOrderStatus;
                 trOrderItem.Remark = orderItem.Remark;
+                if (lastWriteOffItemsDict != null && lastWriteOffItemsDict.Count > 0 && lastWriteOffItemsDict.ContainsKey(trOrderItem.Plu))
+                {
+                    trOrderItem.LastWriteOffAt = lastWriteOffItemsDict[trOrderItem.Plu].LastWriteOffAt;
+                }
+                
             }
 
             var response = new UpdateOrderOwnResponse()
@@ -358,7 +382,7 @@ namespace Watsons.TRV2.Services.Portal
             }
 
             var storeSalesBand = await _storeSalesBandRepository.GetTypeValue(trOrderBatch.StoreId);
-            if(storeSalesBand == null || !storeSalesBand.ContainsKey("COST_LIMIT_OWN"))
+            if(storeSalesBand == null || !storeSalesBand.ContainsKey(SalesBandConstants.COST_LIMIT_OWN))
             {
                 return ServiceResult<UpdateOrderOwnResponse>.Fail("Store Sales Band not found.");
             }
@@ -370,7 +394,7 @@ namespace Watsons.TRV2.Services.Portal
 
             response.TrOrderBatchId = trOrderBatch.TrOrderBatchId;
             response.TrOrderBatchStatus = TrOrderBatchStatus.Processed;
-            response.CostThresholdSnapshot = storeSalesBand["COST_LIMIT_OWN"].Value;
+            response.CostThresholdSnapshot = storeSalesBand[SalesBandConstants.COST_LIMIT_OWN].Value;
             response.AccumulatedCostApproved = accumulatedCostApproved;
             response.TotalOrderCost = totalOrderItemCost;
             response.TotalCostApproved = totalApprovedCost;
@@ -414,11 +438,29 @@ namespace Watsons.TRV2.Services.Portal
                 await _trOrderRepository.InsertStoreAdjustment(trOrderBatch.TrOrderBatchId);
                 try
                 {
-                    
+                    var writeOffOrderResult = await _migrationRepository.WriteOffOrder(trOrderBatch.TrOrderBatchId);
+                    if(!writeOffOrderResult)
+                    {
+                        return ServiceResult<UpdateOrderOwnResponse>.Fail("Stock adjustment failed.");
+                    }
                 }
                 catch (Exception ex)
                 {
                     return ServiceResult<UpdateOrderOwnResponse>.Fail("Stock adjustment failed.");
+                }
+
+                if(trOrderBatch.Brand == (byte)Brand.Own)
+                {
+                    var storeIds = new List<int>() { trOrderBatch.StoreId };
+                    var roles = new List<string>() { "STORE" };
+                    var userStores = await _cashManageRepository.UserStoreIds(storeIds, roles);
+                    var userStore = userStores.FirstOrDefault(x => x.StoreId == trOrderBatch.StoreId);
+                    await _emailHelper.SendEmailBySp(new SendEmailBySpParams()
+                    {
+                        Recipients = new List<string>() { userStore?.Email },
+                        Subject = $"Tester Store {userStore?.Name} Order Processed",
+                        Body = $"Tester Store {userStore?.Name} Order Processed : {trOrderBatch.TrOrderBatchId} <br/><br/><br/>"
+                    });
                 }
             }
 

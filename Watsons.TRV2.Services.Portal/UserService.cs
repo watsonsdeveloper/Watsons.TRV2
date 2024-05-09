@@ -17,11 +17,14 @@ using Watsons.TRV2.DA.CashManage;
 using Watsons.TRV2.DTO.Portal;
 using Watsons.TRV2.DA.CashManage.Entities;
 using Microsoft.Extensions.Configuration;
+using Watsons.Common.EmailHelpers;
+using Watsons.Common.EmailHelpers.DTO;
 
 namespace Watsons.TRV2.Services.Portal
 {
     public class UserService : IUserService
     {
+        private readonly EmailHelper _emailHelper;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
@@ -32,6 +35,7 @@ namespace Watsons.TRV2.Services.Portal
         private readonly IRoleRepository _roleRepository;
         private readonly ICashManageRepository _cashManageRepository;
         public UserService(
+            EmailHelper emailHelper,
             IMapper mapper,
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
@@ -40,6 +44,7 @@ namespace Watsons.TRV2.Services.Portal
             IRoleRepository roleRepository, ICashManageRepository cashManageRepository
             )
         {
+            _emailHelper = emailHelper;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
@@ -49,6 +54,26 @@ namespace Watsons.TRV2.Services.Portal
             _jwtHelper = jwtHelper;
             _roleRepository = roleRepository;
             _cashManageRepository = cashManageRepository;
+        }
+
+        public async Task<bool> SendEmail()
+        {
+            try
+            {
+                var sendEmailBySpParams = new SendEmailBySpParams()
+                {
+                    Recipients = new List<string>() { "jhiwei.wong@watsons.com.my" },
+                    Subject = "Test email subject",
+                    Body = "Test email body",
+                };
+                var isSent = await _emailHelper.SendEmailBySp(sendEmailBySpParams);
+                return isSent;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+          
         }
 
         internal async Task<UserDto> GetUserProfile(Guid applicationId, Guid userId)
@@ -82,7 +107,7 @@ namespace Watsons.TRV2.Services.Portal
             _httpContextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out var token);
             var jwtToken = _jwtHelper.DecodeJwtToken(token);
             return jwtToken;
-        }
+        }   
 
         public async Task<ServiceResult<DTO.Portal.User.MfaLoginDto.Response>> MfaLogin(DTO.Portal.User.MfaLoginDto.Request request)
         {
@@ -126,7 +151,6 @@ namespace Watsons.TRV2.Services.Portal
                 SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddDays(-1), // Set to a past date to expire the cookie
             };
-
 
             _httpContextAccessor.HttpContext.Response.Cookies.Append(_jwtSettings.CookieName, "", cookieOptions);
             return ServiceResult<bool>.Success(true);

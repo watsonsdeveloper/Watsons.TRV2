@@ -339,8 +339,8 @@ namespace Watsons.TRV2.Services.Mobile
                 {
                     return ServiceResult<TrCartDto>.Fail("Store sales band not found.");
                 }
-                string salesBand = Enum.GetName(typeof(DTO.Common.SalesBand), DTO.Common.SalesBand.PLU_UNIT_LIMIT_SUPPLIER);
-                var pluUnitLimit = storeSalesBand[salesBand].Value;
+                //string salesBand = Enum.GetName(typeof(DTO.Common.SalesBand), DTO.Common.SalesBand.PLU_UNIT_LIMIT_SUPPLIER);
+                var pluUnitLimit = storeSalesBand[SalesBandConstants.PLU_UNIT_LIMIT_SUPPLIER].Value;
                 if (pluUnitLimit == null)
                 {
                     return ServiceResult<TrCartDto>.Fail("Store sales band not found.");
@@ -454,8 +454,8 @@ namespace Watsons.TRV2.Services.Mobile
                     {
                         return ServiceResult<TrCartDto>.Fail("Store sales band not found.");
                     }
-                    string salesBand = Enum.GetName(typeof(DTO.Common.SalesBand), DTO.Common.SalesBand.PLU_UNIT_LIMIT_OWN);
-                    var pluUnitLimit = storeSalesBand[salesBand].Value;
+                    //string salesBand = Enum.GetName(typeof(DTO.Common.SalesBand), DTO.Common.SalesBand.PLU_UNIT_LIMIT_OWN);
+                    var pluUnitLimit = storeSalesBand[SalesBandConstants.PLU_UNIT_LIMIT_OWN].Value;
                     if (pluUnitLimit == null)
                     {
                         return ServiceResult<TrCartDto>.Fail("Store sales band not found.");

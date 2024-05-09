@@ -1,13 +1,16 @@
 ﻿using AutoMapper;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Watsons.Common.ConnectionHelpers;
 using Watsons.TRV2.DA.TR.Entities;
 using Watsons.TRV2.DA.TR.Models.Order;
 using Watsons.TRV2.DTO.Common;
@@ -350,7 +353,7 @@ namespace Watsons.TRV2.DA.TR.Repositories
                     && o.TrOrderBatch.Brand == (byte)Brand.Own)
                 .ToListAsync();
 
-            if(orders == null || orders.Count == 0)
+            if (orders == null || orders.Count == 0)
             {
                 return false;
             }
@@ -374,7 +377,23 @@ namespace Watsons.TRV2.DA.TR.Repositories
 
             return true;
         }
+
+        public async Task<Dictionary<string, LastWriteOffItem>?> LastWriteOffDict(int storeId, List<string> pluList)
+        {
+            Dictionary<string, LastWriteOffItem>? result = await _context.TrOrders.Include(o => o.TrOrderBatch)
+                .Where(o => o.TrOrderBatch.StoreId == storeId
+                    && o.TrOrderStatus == (byte)TrOrderStatus.Approved
+                    && pluList.Contains(o.Plu))
+                .GroupBy(o => o.Plu)
+                .Select(group => group.OrderByDescending(o => o.TrOrderBatch.UpdatedAt).First())
+                .ToDictionaryAsync(o => o.Plu, o => new LastWriteOffItem
+                {
+                    Plu = o.Plu,
+                    LastWriteOffAt = o.TrOrderBatch.UpdatedAt,
+                    WriteOffQuantity = 1
+                });
+            return result;
+        }
     }
 
-    //public async Task<bool> 
 }

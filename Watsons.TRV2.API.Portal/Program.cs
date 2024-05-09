@@ -10,6 +10,7 @@ using Watsons.Common;
 using Watsons.Common.ConnectionHelpers;
 using Watsons.Common.CorsHelpers;
 using Watsons.Common.EmailHelpers;
+using Watsons.Common.EmailHelpers.Entities;
 using Watsons.Common.HttpServices;
 using Watsons.Common.ImageHelpers;
 using Watsons.Common.JwtHelpers;
@@ -33,18 +34,21 @@ var cashManageConnectionSettings = new ConnectionSettings();
 var myMasterConnectionSettings = new ConnectionSettings();
 var sysCredConnectionSettings = new ConnectionSettings();
 var migrationConnectionSettings = new ConnectionSettings();
+var emailConnectionSettings = new ConnectionSettings();
 
 builder.Configuration.GetSection("Trv2ConnectionSettings").Bind(trv2ConnectionSettings);
 builder.Configuration.GetSection("CashManageConnectionSettings").Bind(cashManageConnectionSettings);
 builder.Configuration.GetSection("MyMasterConnectionSettings").Bind(myMasterConnectionSettings);
 builder.Configuration.GetSection("SysCredConnectionSettings").Bind(sysCredConnectionSettings);
 builder.Configuration.GetSection("MigrationConnectionSettings").Bind(migrationConnectionSettings);
+builder.Configuration.GetSection("EmailConnectionSettings").Bind(emailConnectionSettings);
 
 var trv2ConnectionString = SysCredential.GetConnectionString(trv2ConnectionSettings.Server, trv2ConnectionSettings.Database);
 var cashManageConnectionString = SysCredential.GetConnectionString(cashManageConnectionSettings.Server, cashManageConnectionSettings.Database);
 var myMasterConnectionString = SysCredential.GetConnectionString(myMasterConnectionSettings.Server, myMasterConnectionSettings.Database);
 var sysCredConnectionString = SysCredential.GetConnectionString(sysCredConnectionSettings.Server, sysCredConnectionSettings.Database);
 var migrationConnectionString = SysCredential.GetConnectionString(migrationConnectionSettings.Server, migrationConnectionSettings.Database);
+var emailConnectionString = SysCredential.GetConnectionString(emailConnectionSettings.Server, emailConnectionSettings.Database);
 
 builder.Services.AddDbContextFactory<TrafficContext>(options =>
 {
@@ -59,6 +63,19 @@ builder.Services.AddSingleton<TrafficContext>(provider =>
     return dbContextFactory.CreateDbContext();
 });
 
+builder.Services.AddDbContextFactory<EmailContext>(options =>
+{
+    options.UseSqlServer(emailConnectionString,
+        sqlOptions => sqlOptions.EnableRetryOnFailure())
+    .EnableServiceProviderCaching(true);
+});
+
+builder.Services.AddSingleton<EmailContext>(provider =>
+{
+    var dbContextFactory = provider.GetRequiredService<IDbContextFactory<EmailContext>>();
+    return dbContextFactory.CreateDbContext();
+});
+
 builder.Services.AddDbContextFactory<TrContext>(options =>
 {
     options.UseSqlServer(trv2ConnectionString,
@@ -66,20 +83,22 @@ builder.Services.AddDbContextFactory<TrContext>(options =>
     .EnableServiceProviderCaching(true);
 });
 
-
 builder.Services.AddDbContextFactory<CashManageContext>(options =>
 {
     options.UseSqlServer(cashManageConnectionString,
-        sqlOptions => sqlOptions.EnableRetryOnFailure())
+         sqlOptions => {
+             sqlOptions.UseCompatibilityLevel(120); // https://github.com/dotnet/efcore/issues/31362 # to fix EF contains error OPENJSON $ With 
+             sqlOptions.EnableRetryOnFailure();
+         })
     .EnableServiceProviderCaching(true);
 });
 
-builder.Services.AddDbContextFactory<SysCredContext>(options =>
-{
-    options.UseSqlServer(cashManageConnectionString,
-         sqlOptions => sqlOptions.EnableRetryOnFailure())
-    .EnableServiceProviderCaching(true);
-});
+//builder.Services.AddDbContextFactory<SysCredContext>(options =>
+//{
+//    options.UseSqlServer(sysCredConnectionString,
+//         sqlOptions => sqlOptions.EnableRetryOnFailure())
+//    .EnableServiceProviderCaching(true);
+//});
 
 builder.Services.AddDbContextFactory<MyMasterContext>(options =>
 {
@@ -91,12 +110,12 @@ builder.Services.AddDbContextFactory<MyMasterContext>(options =>
     .EnableServiceProviderCaching(true);
 });
 
-//builder.Services.AddDbContextFactory<MigrationContext>(options =>
-//{
-//    options.UseSqlServer(migrationConnection,
-//         sqlOptions => sqlOptions.EnableRetryOnFailure())
-//    .EnableServiceProviderCaching(true);
-//});
+builder.Services.AddDbContextFactory<MigrationContext>(options =>
+{
+    options.UseSqlServer(migrationConnectionString,
+         sqlOptions => sqlOptions.EnableRetryOnFailure())
+    .EnableServiceProviderCaching(true);
+});
 
 builder.Services.AddOptions();
 
@@ -192,6 +211,8 @@ builder.Services.AddScoped<IOtpService, OtpService>();
 builder.Services.AddScoped<IMfaService, MfaService>();
 builder.Services.AddScoped<RtsService>();
 builder.Services.AddScoped<IRtsService, RtsService>();
+builder.Services.AddScoped<JobService>();
+builder.Services.AddScoped<IJobService, JobService>();
 
 var corsSettings = new CorsSettings();
 builder.Configuration.GetSection("CorsSettings").Bind(corsSettings);
@@ -217,6 +238,7 @@ builder.Services.AddScoped<ITrOrderBatchRepository, TrOrderBatchRepository>();
 builder.Services.AddScoped<IItemMasterRepository, ItemMasterRepository>();
 builder.Services.AddScoped<IStoreMasterRepository, StoreMasterRepository>();
 builder.Services.AddScoped<ICashManageRepository, CashManageRepository>();
+builder.Services.AddScoped<IMigrationRepository, MigrationRepository>();
 //builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 //{
 //    options.SuppressModelStateInvalidFilter = false;

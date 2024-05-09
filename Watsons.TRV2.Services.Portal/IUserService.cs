@@ -12,6 +12,7 @@ namespace Watsons.TRV2.Services.Portal
 {
     public interface IUserService
     {
+        Task<bool> SendEmail();
         Task<string> DecodeJwtToken();
         Task<ServiceResult<Response>> MfaLogin(Request request);
         Task<ServiceResult<bool>> MfaLogout();

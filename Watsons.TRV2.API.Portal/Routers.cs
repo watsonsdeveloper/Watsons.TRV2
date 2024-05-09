@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using Watsons.Common;
+using Watsons.Common.EmailHelpers;
 using Watsons.TRV2.DTO.Portal;
 using Watsons.TRV2.DTO.Portal.OrderDto;
 using Watsons.TRV2.DTO.Portal.User;
@@ -24,6 +25,16 @@ namespace Watsons.TRV2.API.Portal
             {
                 return Results.Ok("JWT is valid!");
             }).RequireAuthorization(PolicyRoles.ADMIN);
+
+            app.MapPost("/testSendEmail", async ([FromBody] Common.EmailHelpers.DTO.SendEmailBySpParams request, UserService service) =>
+            {
+                if(await service.SendEmail())
+                {
+                    return Results.Ok("Email sent successful.");
+                }
+                
+                return Results.Ok("Failed");
+            });
 
             app.MapPost("/decodeJwt", async (UserService service) =>
             {
@@ -236,6 +247,17 @@ namespace Watsons.TRV2.API.Portal
                 return Results.Ok(response);
 
             }).RequireAuthorization(PolicyClaims.REPORT_FULFILLMENT_R);
+
+            #endregion
+
+            #region jobApi
+
+            var jobApi = app.MapGroup("/job");
+            jobApi.MapGet("/emailNotifyStoreOrderPending", async (JobService service) =>
+            {
+                await service.EmailNotifyStoreOrderPending();
+                return Results.Ok("EmailNotifyStoreOrderPending completed.");
+            });
 
             #endregion
         }

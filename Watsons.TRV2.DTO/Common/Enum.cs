@@ -70,10 +70,10 @@ namespace Watsons.TRV2.DTO.Common
     //    public static readonly int COST_LIMIT_OWN = 3;
     //}
 
-    public enum SalesBand : byte
-    {
-        PLU_UNIT_LIMIT_SUPPLIER = 1,
-        PLU_UNIT_LIMIT_OWN = 2,
-        COST_LIMIT_OWN = 3
-    }
+    //public enum SalesBand : byte
+    //{
+    //    PLU_UNIT_LIMIT_SUPPLIER = 1,
+    //    PLU_UNIT_LIMIT_OWN = 2,
+    //    COST_LIMIT_OWN = 3
+    //}
 }

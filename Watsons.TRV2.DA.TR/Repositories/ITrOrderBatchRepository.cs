@@ -17,5 +17,6 @@ namespace Watsons.TRV2.DA.TR.Repositories
         Task<TrOrderBatch?> SelectWithOrderCost(long id);
         Task<OrderSummary?> SelectSummary(long id);
         Task<IEnumerable<TrOrderBatch>> List(OrderBatchList entity);
+        Task<IEnumerable<TrOrderBatch>> PendingList();
     }
 }

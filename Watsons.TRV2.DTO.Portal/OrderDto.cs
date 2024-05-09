@@ -62,6 +62,7 @@ namespace Watsons.TRV2.DTO.Portal.OrderDto
         public string CreatedBy { get; set; } = null!;
         public DateTime? UpdatedAt { get; set; }
         public string? UpdatedBy { get; set; }
+        public DateTime? LastWriteOffAt { get; set; }
     }
 
     public class FetchOrderOwnRequest
@@ -133,4 +134,6 @@ namespace Watsons.TRV2.DTO.Portal.OrderDto
         public string? UpdatedBy { get; set; }
         public List<UpdateOrderItem>? OrderItems { get; set; }
     }
+
+    public record LastWriteOffItem(string Plu, DateTime LastWriteOffDT, int WriteOffQuantity);
 }

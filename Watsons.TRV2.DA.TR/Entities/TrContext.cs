@@ -15,27 +15,33 @@ public partial class TrContext : DbContext
     {
     }
 
-    internal virtual DbSet<EnumLookUp> EnumLookUps { get; set; }
+    public virtual DbSet<EnumLookUp> EnumLookUps { get; set; }
 
-    internal virtual DbSet<Module> Modules { get; set; }
+    public virtual DbSet<Module> Modules { get; set; }
 
-    internal virtual DbSet<OrderCost> OrderCosts { get; set; }
+    public virtual DbSet<OrderCost> OrderCosts { get; set; }
 
-    internal virtual DbSet<RoleModuleAccess> RoleModuleAccesses { get; set; }
+    public virtual DbSet<RoleModuleAccess> RoleModuleAccesses { get; set; }
 
-    internal virtual DbSet<SalesBand> SalesBands { get; set; }
+    public virtual DbSet<SalesBand> SalesBands { get; set; }
 
-    internal virtual DbSet<StoreAdjustment> StoreAdjustments { get; set; }
+    public virtual DbSet<StoreAdjustment> StoreAdjustments { get; set; }
 
-    internal virtual DbSet<StoreSalesBand> StoreSalesBands { get; set; }
+    public virtual DbSet<StoreSalesBand> StoreSalesBands { get; set; }
 
-    internal virtual DbSet<TrCart> TrCarts { get; set; }
+    public virtual DbSet<TrCart> TrCarts { get; set; }
 
-    internal virtual DbSet<TrImage> TrImages { get; set; }
+    public virtual DbSet<TrImage> TrImages { get; set; }
 
-    internal virtual DbSet<TrOrder> TrOrders { get; set; }
+    public virtual DbSet<TrOrder> TrOrders { get; set; }
 
-    internal virtual DbSet<TrOrderBatch> TrOrderBatches { get; set; }
+    public virtual DbSet<TrOrderBatch> TrOrderBatches { get; set; }
+
+    public virtual DbSet<TrafficLog> TrafficLogs { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=10.98.32.248;Database=TRV2_UAT;User ID=sa;Password=!QAZ2wsx#EDC;TrustServerCertificate=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -306,6 +312,7 @@ public partial class TrContext : DbContext
             entity.Property(e => e.Justification)
                 .HasMaxLength(255)
                 .IsUnicode(false);
+            entity.Property(e => e.LastWriteOffAt).HasColumnType("datetime");
             entity.Property(e => e.Plu)
                 .HasMaxLength(20)
                 .IsUnicode(false);
@@ -348,6 +355,30 @@ public partial class TrContext : DbContext
             entity.Property(e => e.UpdatedBy)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<TrafficLog>(entity =>
+        {
+            entity.HasKey(e => e.RequestId).HasName("PK__TrafficL__33A8517A4A641DD8");
+
+            entity.ToTable("TrafficLog");
+
+            entity.Property(e => e.RequestId).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.AbsoluteUrlWithQuery).IsUnicode(false);
+            entity.Property(e => e.AccessToken)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.Action)
+                .HasMaxLength(250)
+                .IsUnicode(false);
+            entity.Property(e => e.Headers).IsUnicode(false);
+            entity.Property(e => e.RequestDt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("RequestDT");
+            entity.Property(e => e.ResponseDt)
+                .HasColumnType("datetime")
+                .HasColumnName("ResponseDT");
         });
 
         OnModelCreatingPartial(modelBuilder);
