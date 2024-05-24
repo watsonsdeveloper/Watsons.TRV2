@@ -48,9 +48,21 @@ namespace Watsons.TRV2.DA.TR.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<TrOrder> Update(TrOrder entity)
+        public async Task<TrOrder> Update(TrOrder entity)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateTrOrderStatus(long trOrderId, TrOrderStatus trOrderStatus)
+        {
+            var entity = await _context.TrOrders.FindAsync(trOrderId);
+            if(entity != null)
+            {
+                entity.TrOrderStatus = (byte)trOrderStatus;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task<bool> UpdateRange(List<TrOrder> entities)

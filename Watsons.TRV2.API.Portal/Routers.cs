@@ -259,6 +259,16 @@ namespace Watsons.TRV2.API.Portal
                 return Results.Ok("EmailNotifyStoreOrderPending completed.");
             });
 
+            jobApi.MapGet("/submitToB2B", async (JobService service) =>
+            {
+                return await service.SubmitToB2B();
+            });
+
+            jobApi.MapGet("/createStoreHhtOrder", async (JobService service) =>
+            {
+                return await service.CreateStoreHhtOrder();
+            });
+
             #endregion
         }
     }

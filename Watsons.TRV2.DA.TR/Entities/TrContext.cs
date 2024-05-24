@@ -15,36 +15,65 @@ public partial class TrContext : DbContext
     {
     }
 
-    public virtual DbSet<EnumLookUp> EnumLookUps { get; set; }
+    internal virtual DbSet<B2bOrder> B2bOrders { get; set; }
 
-    public virtual DbSet<Module> Modules { get; set; }
+    internal virtual DbSet<EnumLookUp> EnumLookUps { get; set; }
 
-    public virtual DbSet<OrderCost> OrderCosts { get; set; }
+    internal virtual DbSet<Module> Modules { get; set; }
 
-    public virtual DbSet<RoleModuleAccess> RoleModuleAccesses { get; set; }
+    internal virtual DbSet<OrderCost> OrderCosts { get; set; }
 
-    public virtual DbSet<SalesBand> SalesBands { get; set; }
+    internal virtual DbSet<RoleModuleAccess> RoleModuleAccesses { get; set; }
 
-    public virtual DbSet<StoreAdjustment> StoreAdjustments { get; set; }
+    internal virtual DbSet<SalesBand> SalesBands { get; set; }
 
-    public virtual DbSet<StoreSalesBand> StoreSalesBands { get; set; }
+    internal virtual DbSet<StoreAdjustment> StoreAdjustments { get; set; }
 
-    public virtual DbSet<TrCart> TrCarts { get; set; }
+    internal virtual DbSet<StoreSalesBand> StoreSalesBands { get; set; }
 
-    public virtual DbSet<TrImage> TrImages { get; set; }
+    internal virtual DbSet<SysParam> SysParams { get; set; }
 
-    public virtual DbSet<TrOrder> TrOrders { get; set; }
+    internal virtual DbSet<TrCart> TrCarts { get; set; }
 
-    public virtual DbSet<TrOrderBatch> TrOrderBatches { get; set; }
+    internal virtual DbSet<TrImage> TrImages { get; set; }
 
-    public virtual DbSet<TrafficLog> TrafficLogs { get; set; }
+    internal virtual DbSet<TrOrder> TrOrders { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=10.98.32.248;Database=TRV2_UAT;User ID=sa;Password=!QAZ2wsx#EDC;TrustServerCertificate=true;");
+    internal virtual DbSet<TrOrderBatch> TrOrderBatches { get; set; }
+
+    internal virtual DbSet<TrafficLog> TrafficLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<B2bOrder>(entity =>
+        {
+            entity.HasKey(e => e.TrOrderId).HasName("PK__B2bOrder__11569D3EE16F0FF2");
+
+            entity.ToTable("B2bOrder");
+
+            entity.Property(e => e.TrOrderId).ValueGeneratedNever();
+            entity.Property(e => e.B2bFileName)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.HhtInsertAt).HasColumnType("datetime");
+            entity.Property(e => e.HhtRemark)
+                .HasMaxLength(250)
+                .IsUnicode(false);
+            entity.Property(e => e.OrderNumber)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.StoreReceivedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.TrOrder).WithOne(p => p.B2bOrder)
+                .HasForeignKey<B2bOrder>(d => d.TrOrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_B2BOrder_TrOrderId");
+        });
+
         modelBuilder.Entity<EnumLookUp>(entity =>
         {
             entity
@@ -230,6 +259,20 @@ public partial class TrContext : DbContext
                 .HasForeignKey(d => d.SalesBandId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_StoreBand_SalesBandId");
+        });
+
+        modelBuilder.Entity<SysParam>(entity =>
+        {
+            entity.HasKey(e => e.Param).HasName("PK_Param");
+
+            entity.ToTable("SysParam");
+
+            entity.Property(e => e.Param)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Value)
+                .HasMaxLength(100)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<TrCart>(entity =>

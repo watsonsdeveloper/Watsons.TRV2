@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using Watsons.Common;
 using Watsons.TRV2.DA.TR.Entities;
 using Watsons.TRV2.DA.TR.Models.Order;
+using Watsons.TRV2.DTO.Common;
 
 namespace Watsons.TRV2.DA.TR.Repositories
 {
 
     public interface ITrOrderRepository : IRepository<TrOrder>
     {
+        Task<bool> UpdateTrOrderStatus(long trOrderId, TrOrderStatus trOrderStatus);
         Task<bool> UpdateRange(List<TrOrder> entities);
         Task<TrOrder?> Select(long id);
         Task<TrOrder?> Select(long id, int storeId);

@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using Watsons.Common;
 using Watsons.TRV2.DA.TR.Entities;
 using Watsons.TRV2.DA.TR.Models.Order;
+using Watsons.TRV2.DTO.Common;
 
 namespace Watsons.TRV2.DA.TR.Repositories
 {
     public interface ITrOrderBatchRepository : IRepository<TrOrderBatch>
     {
-        Task<bool> UpdateWithOrderCost(TrOrderBatch entity);        
+        Task<bool> UpdateTrOrderBatchStatus(long trOrderBatchId, TrOrderBatchStatus trOrderBatchStatus);
+        Task<bool> UpdateWithOrderCost(TrOrderBatch entity);      
         Task<TrOrderBatch?> Select(long id);
         Task<TrOrderBatch?> Select(long id, int storeId);
         Task<TrOrderBatch?> SelectWithOrderCost(long id);

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Watsons.TRV2.DA.MyMaster.Entities;
+using Watsons.TRV2.DA.MyMaster.Models.ItemMaster;
 
 namespace Watsons.TRV2.DA.MyMaster.Repositories 
 { 
@@ -55,6 +56,17 @@ namespace Watsons.TRV2.DA.MyMaster.Repositories
         {
             var result = await _context.ItemMasters.AsNoTracking().Where(x => x.Item != null && plus.Contains(x.Item)).ToListAsync();
             return result.ToDictionary(x => x.Item, x => x);
+        }
+        public async Task<IEnumerable<ItemMaster>>? Search(SearchFilter entity)
+        {
+            IQueryable<ItemMaster> query = _context.ItemMasters;
+
+            if (entity.Plus != null)
+            {
+                query = query.Where(x => entity.Plus.Contains(x.Item));
+            }
+
+            return await query.ToListAsync();
         }
     }
 }

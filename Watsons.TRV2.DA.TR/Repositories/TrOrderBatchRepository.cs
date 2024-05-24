@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Watsons.Common;
 using Watsons.TRV2.DA.TR.Entities;
 using Watsons.TRV2.DA.TR.Models.Order;
@@ -65,7 +67,7 @@ namespace Watsons.TRV2.DA.TR.Repositories
                 query = query.Where(o => o.TrOrderBatchId == entity.TrOrderBatchId);
             }
 
-            if (entity.StoreIds != null && entity.StoreIds.Count > 0)
+            if (entity.StoreIds != null)
             {
                 query = query.Where(o => entity.StoreIds.Contains(o.StoreId));
             }
@@ -144,6 +146,18 @@ namespace Watsons.TRV2.DA.TR.Repositories
             throw new NotImplementedException();
         }
 
+        public async Task<bool> UpdateTrOrderBatchStatus(long trOrderBatchId, TrOrderBatchStatus trOrderBatchStatus)
+        {
+            var entity = await _context.TrOrderBatches.FindAsync(trOrderBatchId);
+            if (entity != null)
+            {
+                entity.TrOrderBatchStatus = (byte)trOrderBatchStatus;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
         public async Task<bool> UpdateWithOrderCost(TrOrderBatch entity)
         {
             var updatedEntity = await _context.TrOrderBatches
@@ -170,5 +184,6 @@ namespace Watsons.TRV2.DA.TR.Repositories
                 .ToListAsync();
         }
 
+        
     }
 }

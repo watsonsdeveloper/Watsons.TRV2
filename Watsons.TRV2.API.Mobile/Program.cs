@@ -4,6 +4,7 @@ using Microsoft.Extensions.FileProviders;
 using Watsons.Common;
 using Watsons.Common.ConnectionHelpers;
 using Watsons.Common.EmailHelpers;
+using Watsons.Common.EmailHelpers.Entities;
 using Watsons.Common.ImageHelpers;
 using Watsons.Common.TrafficLogHelpers;
 using Watsons.TRV2.API.Mobile;
@@ -14,6 +15,7 @@ using Watsons.TRV2.DA.TR.Entities;
 using Watsons.TRV2.DA.TR.Repositories;
 using Watsons.TRV2.Mobile;
 using Watsons.TRV2.Services.Mobile;
+using Watsons.TRV2.Services.Portal.Settings;
 using Watsons.TRV2.Services.RTS;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,12 +25,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 var trv2ConnectionSettings = new ConnectionSettings();
 var myMasterConnectionSettings = new ConnectionSettings();
+var emailConnectionSettings = new ConnectionSettings();
 
 builder.Configuration.GetSection("Trv2ConnectionSettings").Bind(trv2ConnectionSettings);
 builder.Configuration.GetSection("MyMasterConnectionSettings").Bind(myMasterConnectionSettings);
+builder.Configuration.GetSection("EmailConnectionSettings").Bind(emailConnectionSettings);
 
 var trv2ConnectionString = SysCredential.GetConnectionString(trv2ConnectionSettings.Server, trv2ConnectionSettings.Database);
 var myMasterConnectionString = SysCredential.GetConnectionString(myMasterConnectionSettings.Server, myMasterConnectionSettings.Database);
+var emailConnectionString = SysCredential.GetConnectionString(emailConnectionSettings.Server, emailConnectionSettings.Database);
 
 builder.Services.AddDbContextFactory<TrafficContext>(options =>
 {
@@ -41,6 +46,13 @@ builder.Services.AddSingleton<TrafficContext>(provider =>
 {
     var dbContextFactory = provider.GetRequiredService<IDbContextFactory<TrafficContext>>();
     return dbContextFactory.CreateDbContext();
+});
+
+builder.Services.AddDbContextFactory<EmailContext>(options =>
+{
+    options.UseSqlServer(emailConnectionString,
+        sqlOptions => sqlOptions.EnableRetryOnFailure())
+    .EnableServiceProviderCaching(true);
 });
 
 builder.Services.AddDbContextFactory<TrContext>(options =>
@@ -73,6 +85,7 @@ builder.Services.AddHttpLogging(logging => {
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddOptions();
+
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.Configure<ImageSettings>(builder.Configuration.GetSection("ImageSettings"));

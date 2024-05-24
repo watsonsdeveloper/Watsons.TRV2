@@ -13,6 +13,7 @@ using Watsons.TRV2.DA.MyMaster.Repositories;
 using AutoMapper;
 using Watsons.TRV2.DA.TR.Repositories;
 using Watsons.TRV2.DTO.Portal;
+using Watsons.TRV2.Services.Portal.Settings;
 
 namespace Watsons.TRV2.Services.Portal
 {

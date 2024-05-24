@@ -22,6 +22,7 @@ using Watsons.TRV2.DA.TR.Models.Order;
 using Watsons.TRV2.DA.TR.Repositories;
 using Watsons.TRV2.DTO.Common;
 using Watsons.TRV2.DTO.Portal.OrderDto;
+using Watsons.TRV2.Services.Portal.Settings;
 using Watsons.TRV2.Services.RTS;
 
 namespace Watsons.TRV2.Services.Portal

@@ -25,6 +25,7 @@ using Watsons.TRV2.DA.TR.Entities;
 using Watsons.TRV2.DA.TR.Repositories;
 using Watsons.TRV2.Services.CredEncryptor;
 using Watsons.TRV2.Services.Portal;
+using Watsons.TRV2.Services.Portal.Settings;
 using Watsons.TRV2.Services.RTS;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -119,6 +120,7 @@ builder.Services.AddDbContextFactory<MigrationContext>(options =>
 
 builder.Services.AddOptions();
 
+builder.Services.Configure<SupplierOrderSettings>(builder.Configuration.GetSection("SupplierOrderSettings"));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.Configure<ImageSettings>(builder.Configuration.GetSection("ImageSettings"));
 builder.Services.Configure<RtsSettings>(builder.Configuration.GetSection("RtsSettings"));
@@ -230,13 +232,16 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<ITrCommonRepository, TrCommonRepository>();
 builder.Services.AddScoped<ITrImageRepository, TrImageRepository>();
 //builder.Services.AddScoped<ITrCartRepository, TrCartRepository>();
 builder.Services.AddScoped<ITrOrderRepository, TrOrderRepository>();
 builder.Services.AddScoped<IStoreSalesBandRepository, StoreSalesBandRepository>();
 builder.Services.AddScoped<ITrOrderBatchRepository, TrOrderBatchRepository>();
+builder.Services.AddScoped<IB2bOrderRepository, B2bOrderRepository>();
 builder.Services.AddScoped<IItemMasterRepository, ItemMasterRepository>();
 builder.Services.AddScoped<IStoreMasterRepository, StoreMasterRepository>();
+builder.Services.AddScoped<ISupplierMasterRepository, SupplierMasterRepository>();
 builder.Services.AddScoped<ICashManageRepository, CashManageRepository>();
 builder.Services.AddScoped<IMigrationRepository, MigrationRepository>();
 //builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>

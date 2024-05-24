@@ -241,13 +241,13 @@ namespace Watsons.TRV2.Services.Mobile
             {
                 return ServiceResult<TrCartDto>.Fail("This PLU is not available for tester request.");
             }
-            else if (request.Brand == Brand.Own && (!(item.ItemStatus.Contains("1") || !item.ItemStatus.Contains("2") || !item.ItemStatus.Contains("3"))))
+            else if (request.Brand == Brand.Own && !item.ItemStatus.Contains("1") && !item.ItemStatus.Contains("2") && !item.ItemStatus.Contains("3"))
             {
-                return ServiceResult<TrCartDto>.Fail("“Item Status - Deleted.");
+                return ServiceResult<TrCartDto>.Fail("Item Status - Deleted.");
             }
-            else if (request.Brand == Brand.Supplier && (!(item.ItemStatus.Contains("1") || !item.ItemStatus.Contains("2"))))
+            else if (request.Brand == Brand.Supplier && !item.ItemStatus.Contains("1") && !item.ItemStatus.Contains("2"))
             {
-                return ServiceResult<TrCartDto>.Fail("“Item Status – Deleted or De-listed.");
+                return ServiceResult<TrCartDto>.Fail("Item Status – Deleted or De-listed.");
             }
 
             var ownBrandLabel = new List<int>() { 1, 2, 4, 5, 6 };
@@ -281,9 +281,9 @@ namespace Watsons.TRV2.Services.Mobile
             // supplier accept dept is "3 – Skincare" or "4 –Cosmetic"
             if (request.Brand == Brand.Supplier)
             {
-                if (item.Dept == null || !item.Dept.StartsWith("3") || !item.Dept.StartsWith("4"))
+                if (item.Dept == null || (!item.Dept.StartsWith("3") && !item.Dept.StartsWith("4")))
                 {
-                    return ServiceResult<TrCartDto>.Fail("This PLU is not listed under Skincare or Cosmetic.");
+                    return ServiceResult<TrCartDto>.Fail("This PLU is not available for tester request.");
                 }
             }
 
@@ -306,6 +306,19 @@ namespace Watsons.TRV2.Services.Mobile
 
             if (request.Brand == Brand.Own)
             {
+                // check sales band
+                var storeSalesBand = await _storeSalesBandRepository.GetTypeValue(request.StoreId);
+                if (storeSalesBand == null || storeSalesBand.Count == 0)
+                {
+                    return ServiceResult<TrCartDto>.Fail("Store sales band not found.");
+                }
+
+                var pluUnitLimit = storeSalesBand[SalesBandConstants.PLU_UNIT_LIMIT_OWN].Value;
+                if (pluUnitLimit == null)
+                {
+                    return ServiceResult<TrCartDto>.Fail("Store sales band not found.");
+                }
+
                 Dictionary<string, int>? rtsDictionary;
                 try
                 {
@@ -335,21 +348,44 @@ namespace Watsons.TRV2.Services.Mobile
             {
                 // check sales band
                 var storeSalesBand = await _storeSalesBandRepository.GetTypeValue(request.StoreId);
-                if (storeSalesBand == null)
+                if (storeSalesBand == null || storeSalesBand.Count == 0)
                 {
                     return ServiceResult<TrCartDto>.Fail("Store sales band not found.");
                 }
                 //string salesBand = Enum.GetName(typeof(DTO.Common.SalesBand), DTO.Common.SalesBand.PLU_UNIT_LIMIT_SUPPLIER);
-                var pluUnitLimit = storeSalesBand[SalesBandConstants.PLU_UNIT_LIMIT_SUPPLIER].Value;
-                if (pluUnitLimit == null)
+                //var pluUnitLimit = storeSalesBand[SalesBandConstants.PLU_UNIT_LIMIT_SUPPLIER].Value;
+                //if (pluUnitLimit == null)
+                //{
+                //    return ServiceResult<TrCartDto>.Fail("Store sales band not found.");
+                //}
+                decimal pluUnitLimit = -1;
+                if(item.Dept.StartsWith("3"))
                 {
-                    return ServiceResult<TrCartDto>.Fail("Store sales band not found.");
+                    if (!storeSalesBand.ContainsKey(SalesBandConstants.PLU_UNIT_LIMIT_SKINCARE))
+                    {
+                        return ServiceResult<TrCartDto>.Fail("Store sales band not found.");
+                    }
+                    pluUnitLimit = storeSalesBand[SalesBandConstants.PLU_UNIT_LIMIT_SKINCARE].Value;
+                   
                 }
+                else if (item.Dept.StartsWith("4"))
+                {
+                    if (!storeSalesBand.ContainsKey(SalesBandConstants.PLU_UNIT_LIMIT_COSMETIC))
+                    {
+                        return ServiceResult<TrCartDto>.Fail("Store sales band not found.");
+                    }
+                    pluUnitLimit = storeSalesBand[SalesBandConstants.PLU_UNIT_LIMIT_COSMETIC].Value;
+                }
+                else
+                {
+                    return ServiceResult<TrCartDto>.Fail("Plu limit is not set");
+                }
+
                 var monthlyStoreOrder = await _trOrderRepository.GetProductQuantityOfMonthlyStoreOrder(request.StoreId, (byte)request.Brand);
                 monthlyStoreOrder.TryGetValue(item.Item, out var monthlyOrderedUnit);
-                if (monthlyOrderedUnit > pluUnitLimit)
+                if (monthlyOrderedUnit >= pluUnitLimit)
                 {
-                    return ServiceResult<TrCartDto>.Fail("“You have exceeded the limit set.");
+                    return ServiceResult<TrCartDto>.Fail("You have exceeded the limit set.");
                 }
             }
 

@@ -19,6 +19,7 @@ using Watsons.TRV2.DA.CashManage.Entities;
 using Microsoft.Extensions.Configuration;
 using Watsons.Common.EmailHelpers;
 using Watsons.Common.EmailHelpers.DTO;
+using Watsons.TRV2.Services.Portal.Settings;
 
 namespace Watsons.TRV2.Services.Portal
 {

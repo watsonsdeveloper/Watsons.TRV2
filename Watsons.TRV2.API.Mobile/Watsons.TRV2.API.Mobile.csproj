@@ -23,6 +23,7 @@
     <ProjectReference Include="..\Watsons.TRV2.DA.MyMaster\Watsons.TRV2.DA.MyMaster.csproj" />
     <ProjectReference Include="..\Watsons.TRV2.DA.TR\Watsons.TRV2.DA.TR.csproj" />
     <ProjectReference Include="..\Watsons.TRV2.Services.Mobile\Watsons.TRV2.Services.Mobile.csproj" />
+    <ProjectReference Include="..\Watsons.TRV2.Services.Portal\Watsons.TRV2.Services.Portal.csproj" />
   </ItemGroup>
 
   <ItemGroup>

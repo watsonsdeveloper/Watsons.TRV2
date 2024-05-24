@@ -43,6 +43,8 @@ public partial class TrOrder
 
     public DateTime? LastWriteOffAt { get; set; }
 
+    public virtual B2bOrder? B2bOrder { get; set; }
+
     public virtual StoreAdjustment? StoreAdjustment { get; set; }
 
     public virtual TrCart TrCart { get; set; } = null!;

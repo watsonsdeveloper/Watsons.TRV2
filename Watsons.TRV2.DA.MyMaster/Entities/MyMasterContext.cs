@@ -19,6 +19,8 @@ public partial class MyMasterContext : DbContext
 
     internal virtual DbSet<StoreMaster> StoreMasters { get; set; }
 
+    internal virtual DbSet<SupplierMaster> SupplierMasters { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ItemMaster>(entity =>
@@ -94,6 +96,23 @@ public partial class MyMasterContext : DbContext
             entity.Property(e => e.StoreName).HasMaxLength(200);
             entity.Property(e => e.StoreOpenDate).HasColumnType("datetime");
             entity.Property(e => e.StorePostCode).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<SupplierMaster>(entity =>
+        {
+            entity.HasKey(e => e.SupplierCode);
+
+            entity.ToTable("SupplierMaster");
+
+            entity.Property(e => e.SupplierCode).HasMaxLength(50);
+            entity.Property(e => e.Address1).HasMaxLength(200);
+            entity.Property(e => e.Address2).HasMaxLength(200);
+            entity.Property(e => e.Address3).HasMaxLength(200);
+            entity.Property(e => e.City).HasMaxLength(200);
+            entity.Property(e => e.ContactEmail).HasMaxLength(100);
+            entity.Property(e => e.ContactName).HasMaxLength(200);
+            entity.Property(e => e.ImportDateTime).HasColumnType("datetime");
+            entity.Property(e => e.SupplierName).HasMaxLength(200);
         });
 
         OnModelCreatingPartial(modelBuilder);

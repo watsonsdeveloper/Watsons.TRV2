@@ -29,8 +29,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.TRV2.DTO.Portal", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.TRV2.Services.CredEncryptor", "Watsons.TRV2.Services.CredEncryptor\Watsons.TRV2.Services.CredEncryptor.csproj", "{AB0E087D-4D72-4E76-A562-14F28B6F84FA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.Common", "..\Watsons.Common\Watsons.Common\Watsons.Common.csproj", "{0E0EC8C9-6CDE-49BF-B786-194446953749}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,10 +87,6 @@ Global
 		{AB0E087D-4D72-4E76-A562-14F28B6F84FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB0E087D-4D72-4E76-A562-14F28B6F84FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB0E087D-4D72-4E76-A562-14F28B6F84FA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0E0EC8C9-6CDE-49BF-B786-194446953749}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0E0EC8C9-6CDE-49BF-B786-194446953749}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0E0EC8C9-6CDE-49BF-B786-194446953749}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0E0EC8C9-6CDE-49BF-B786-194446953749}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

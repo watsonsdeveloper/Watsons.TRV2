@@ -49,6 +49,17 @@ namespace Watsons.TRV2.DTO.Common
         Cancelled = 7
     }
 
+    public enum HhtOrderStatus : byte
+    {
+        Error = 0,
+        Pending = 1,
+        Shipping = 2,
+        Shipped = 3,
+        Cancelled = 4,
+        Expire = 5,
+        StoreReceived = 6
+    }
+
     public enum TrReason : byte
     {
         NewListing = 1,
