@@ -43,6 +43,10 @@ public partial class TrContext : DbContext
 
     internal virtual DbSet<TrafficLog> TrafficLogs { get; set; }
 
+//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+//        => optionsBuilder.UseSqlServer("Server=10.98.32.248;Database=TRV2;User ID=sa;Password=!QAZ2wsx#EDC;TrustServerCertificate=true;");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<B2bOrder>(entity =>
@@ -76,22 +80,50 @@ public partial class TrContext : DbContext
 
         modelBuilder.Entity<EnumLookUp>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("EnumLookUp");
+            entity.HasKey(e => new { e.EnumName, e.EnumId }).HasName("PK__EnumLook__AB52D1D3A9AB9B15");
 
-            entity.HasIndex(e => new { e.EnumName, e.EnumId }, "UQ__EnumLook__AB52D1D28856552A").IsUnique();
+            entity.ToTable("EnumLookUp");
 
-            entity.Property(e => e.Description)
-                .HasMaxLength(255)
-                .IsUnicode(false);
             entity.Property(e => e.EnumName)
                 .HasMaxLength(75)
+                .IsUnicode(false);
+            entity.Property(e => e.Description)
+                .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.EnumValue)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Status).HasDefaultValue((byte)1);
+
+            entity.HasData(
+                new EnumLookUp { EnumName = "TrOrderBatchStatus", EnumValue = "All", EnumId = 0 },
+                new EnumLookUp { EnumName = "TrOrderBatchStatus", EnumValue = "Pending", EnumId = 1 },
+                new EnumLookUp { EnumName = "TrOrderBatchStatus", EnumValue = "Completed", EnumId = 2 },
+                new EnumLookUp { EnumName = "TrOrderBatchStatus", EnumValue = "Overdue", EnumId = 3 },
+                new EnumLookUp { EnumName = "TrOrderStatus", EnumValue = "All", EnumId = 0 },
+                new EnumLookUp { EnumName = "TrOrderStatus", EnumValue = "Pending", EnumId = 1 },
+                new EnumLookUp { EnumName = "TrOrderStatus", EnumValue = "Approved", EnumId = 2 },
+                new EnumLookUp { EnumName = "TrOrderStatus", EnumValue = "Rejected", EnumId = 3 },
+                new EnumLookUp { EnumName = "TrOrderStatus", EnumValue = "Processed", EnumId = 4 },
+                new EnumLookUp { EnumName = "TrOrderStatus", EnumValue = "Fulfilled", EnumId = 5 },
+                new EnumLookUp { EnumName = "TrOrderStatus", EnumValue = "Unfulfilled", EnumId = 6 },
+                new EnumLookUp { EnumName = "TrOrderStatus", EnumValue = "Cancelled", EnumId = 7 },
+                new EnumLookUp { EnumName = "HhtOrderStatus", EnumValue = "Error", EnumId = 0 },
+                new EnumLookUp { EnumName = "HhtOrderStatus", EnumValue = "Pending", EnumId = 1 },
+                new EnumLookUp { EnumName = "HhtOrderStatus", EnumValue = "Shipping", EnumId = 2 },
+                new EnumLookUp { EnumName = "HhtOrderStatus", EnumValue = "Shipped", EnumId = 3 },
+                new EnumLookUp { EnumName = "HhtOrderStatus", EnumValue = "Cancelled", EnumId = 4 },
+                new EnumLookUp { EnumName = "HhtOrderStatus", EnumValue = "Expire", EnumId = 5 },
+                new EnumLookUp { EnumName = "HhtOrderStatus", EnumValue = "StoreReceived", EnumId = 6 },
+                new EnumLookUp { EnumName = "Brand", EnumValue = "Own", EnumId = 1 },
+                new EnumLookUp { EnumName = "Brand", EnumValue = "Supplier", EnumId = 2 },
+                new EnumLookUp { EnumName = "Reason", EnumValue = "None", EnumId = 0 },
+                new EnumLookUp { EnumName = "Reason", EnumValue = "NewListing", EnumId = 1 },
+                new EnumLookUp { EnumName = "Reason", EnumValue = "Damaged", EnumId = 2 },
+                new EnumLookUp { EnumName = "Reason", EnumValue = "Depleted", EnumId = 3 },
+                new EnumLookUp { EnumName = "Reason", EnumValue = "Missing", EnumId = 4 },
+                new EnumLookUp { EnumName = "Reason", EnumValue = "Expired", EnumId = 5 }
+            );
         });
 
         modelBuilder.Entity<Module>(entity =>
@@ -117,6 +149,18 @@ public partial class TrContext : DbContext
             entity.Property(e => e.UpdatedBy)
                 .HasMaxLength(150)
                 .IsUnicode(false);
+
+            entity.HasData(
+                new Module { ModuleId = 1, ModuleName = "ORDER_OWN", Action = "R", Status = 1, CreatedBy = "System" },
+                new Module { ModuleId = 2, ModuleName = "ORDER_OWN", Action = "W", Status = 1, CreatedBy = "System" },
+                new Module { ModuleId = 3, ModuleName = "ORDER_SUPPLIER", Action = "R", Status = 1, CreatedBy = "System" },
+                new Module { ModuleId = 4, ModuleName = "REPORT_OWN", Action = "R", Status = 1, CreatedBy = "System" },
+                new Module { ModuleId = 5, ModuleName = "REPORT_OWN", Action = "E", Status = 1, CreatedBy = "System" },
+                new Module { ModuleId = 6, ModuleName = "REPORT_SUPPLIER", Action = "R", Status = 1, CreatedBy = "System" },
+                new Module { ModuleId = 7, ModuleName = "REPORT_SUPPLIER", Action = "E", Status = 1, CreatedBy = "System" },
+                new Module { ModuleId = 8, ModuleName = "REPORT_FULFILLMENT", Action = "R", Status = 1, CreatedBy = "System" },
+                new Module { ModuleId = 9, ModuleName = "REPORT_FULFILLMENT", Action = "E", Status = 1, CreatedBy = "System" }
+            );
         });
 
         modelBuilder.Entity<OrderCost>(entity =>
@@ -161,6 +205,49 @@ public partial class TrContext : DbContext
                 .HasForeignKey(d => d.ModuleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_RoleModuleAccess_ModuleId");
+
+            entity.HasData(
+                new RoleModuleAccess { RoleModuleAccessId = 1, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 1, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 2, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 3, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 3, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 4, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 4, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 5, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 5, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 6, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 6, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 7, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 7, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 8, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 8, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 9, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 9, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 1, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 10, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 3, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 11, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 4, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 12, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 5, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 13, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 6, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 14, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 7, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 15, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 8, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 16, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 9, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 17, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 1, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 18, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 2, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 19, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 3, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 20, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 4, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 21, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 5, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 22, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 6, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 23, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 7, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 24, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 8, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 25, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 9, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 26, RoleId = new Guid("8D39CCA7-EDF9-49ED-A959-3D0057B055C2"), ModuleId = 1, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 27, RoleId = new Guid("8D39CCA7-EDF9-49ED-A959-3D0057B055C2"), ModuleId = 2, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 28, RoleId = new Guid("8D39CCA7-EDF9-49ED-A959-3D0057B055C2"), ModuleId = 3, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 29, RoleId = new Guid("BAC83BF7-9C2C-46EE-B79F-D64094FFF01E"), ModuleId = 1, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 30, RoleId = new Guid("BAC83BF7-9C2C-46EE-B79F-D64094FFF01E"), ModuleId = 2, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 31, RoleId = new Guid("BAC83BF7-9C2C-46EE-B79F-D64094FFF01E"), ModuleId = 3, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 32, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 1, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 33, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 2, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 34, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 3, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 35, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 4, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 36, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 5, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 37, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 6, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 38, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 7, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 39, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 8, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 40, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 9, CreatedBy = "System" }
+            );
         });
 
         modelBuilder.Entity<SalesBand>(entity =>
@@ -189,6 +276,39 @@ public partial class TrContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Value).HasColumnType("decimal(12, 4)");
+
+            entity.HasData(
+               new SalesBand { SalesBandId = 1, Type = "PLU_UNIT_LIMIT_OWN", SalesBand1 = "A", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 2, Type = "PLU_UNIT_LIMIT_OWN", SalesBand1 = "B", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 3, Type = "PLU_UNIT_LIMIT_OWN", SalesBand1 = "C", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 4, Type = "PLU_UNIT_LIMIT_OWN", SalesBand1 = "D", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 5, Type = "PLU_UNIT_LIMIT_OWN", SalesBand1 = "E", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 6, Type = "PLU_UNIT_LIMIT_OWN", SalesBand1 = "F", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 7, Type = "COST_LIMIT_OWN", SalesBand1 = "A", Value = 650, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 8, Type = "COST_LIMIT_OWN", SalesBand1 = "B", Value = 650, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 9, Type = "COST_LIMIT_OWN", SalesBand1 = "C", Value = 650, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 10, Type = "COST_LIMIT_OWN", SalesBand1 = "D", Value = 550, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 11, Type = "COST_LIMIT_OWN", SalesBand1 = "E", Value = 550, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 12, Type = "COST_LIMIT_OWN", SalesBand1 = "F", Value = 550, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 13, Type = "PLU_UNIT_LIMIT_SUPPLIER", SalesBand1 = "A", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 14, Type = "PLU_UNIT_LIMIT_SUPPLIER", SalesBand1 = "B", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 15, Type = "PLU_UNIT_LIMIT_SUPPLIER", SalesBand1 = "C", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 16, Type = "PLU_UNIT_LIMIT_SUPPLIER", SalesBand1 = "D", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 17, Type = "PLU_UNIT_LIMIT_SUPPLIER", SalesBand1 = "E", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 18, Type = "PLU_UNIT_LIMIT_SUPPLIER", SalesBand1 = "F", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 19, Type = "PLU_UNIT_LIMIT_COSMETIC", SalesBand1 = "A", Value = 2, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 20, Type = "PLU_UNIT_LIMIT_COSMETIC", SalesBand1 = "B", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 21, Type = "PLU_UNIT_LIMIT_COSMETIC", SalesBand1 = "C", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 22, Type = "PLU_UNIT_LIMIT_COSMETIC", SalesBand1 = "D", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 23, Type = "PLU_UNIT_LIMIT_COSMETIC", SalesBand1 = "E", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 24, Type = "PLU_UNIT_LIMIT_COSMETIC", SalesBand1 = "F", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 25, Type = "PLU_UNIT_LIMIT_SKINCARE", SalesBand1 = "A", Value = 2, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 26, Type = "PLU_UNIT_LIMIT_SKINCARE", SalesBand1 = "B", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 27, Type = "PLU_UNIT_LIMIT_SKINCARE", SalesBand1 = "C", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 28, Type = "PLU_UNIT_LIMIT_SKINCARE", SalesBand1 = "D", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 29, Type = "PLU_UNIT_LIMIT_SKINCARE", SalesBand1 = "E", Value = 1, CreatedBy = "System" },
+               new SalesBand { SalesBandId = 30, Type = "PLU_UNIT_LIMIT_SKINCARE", SalesBand1 = "F", Value = 1, CreatedBy = "System" }
+           );
         });
 
         modelBuilder.Entity<StoreAdjustment>(entity =>

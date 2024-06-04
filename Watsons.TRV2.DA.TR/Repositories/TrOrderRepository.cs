@@ -372,6 +372,7 @@ namespace Watsons.TRV2.DA.TR.Repositories
 
             foreach (var order in orders)
             {
+                // TODO : check TrOrderId is exists before insert.
                 var storeAdjustmentItem = new StoreAdjustment()
                 {
                     TrOrderBatchId = TrOrderBatchId,
@@ -405,6 +406,14 @@ namespace Watsons.TRV2.DA.TR.Repositories
                     WriteOffQuantity = 1
                 });
             return result;
+        }
+
+        public async Task<IEnumerable<TrOrder>> OrderPending()
+        {
+            return await _context.TrOrders
+                .Include(o => o.TrOrderBatch)
+                .Where(o => o.TrOrderStatus == (byte)TrOrderStatus.Pending
+                && o.TrOrderBatch.TrOrderBatchStatus == (byte)TrOrderBatchStatus.Pending).ToListAsync();
         }
     }
 

@@ -14,10 +14,12 @@ namespace Watsons.TRV2.DA.MyMaster.Repositories
     public class MigrationRepository : IMigrationRepository
     {
         private readonly string? _environment;
+        private readonly Serilog.ILogger _logger;
         private readonly MigrationContext _context;
         private readonly IConfiguration _configuration;
-        public MigrationRepository(MigrationContext context, IConfiguration configuration)
+        public MigrationRepository(Serilog.ILogger logger,  MigrationContext context, IConfiguration configuration)
         {
+            _logger = logger;
             _context = context;
             _configuration = configuration;
 
@@ -43,18 +45,26 @@ namespace Watsons.TRV2.DA.MyMaster.Repositories
 
         public async Task<bool> WriteOffOrder(long trOrderBatchId)
         {
-            var sqlQuery = "EXEC [dbo].[SP_RSIM_Adjustment_TR_APP] @TrOrderBatchId, @ENV";
-            var trOrderBatchIdParam = new SqlParameter("@TrOrderBatchId", trOrderBatchId);
-            //var environment = _configuration.GetSection("Environment").Value.ToString();
-            var envParam = new SqlParameter("@ENV", _environment);
-
-            var results = await _context.Database.ExecuteSqlRawAsync(sqlQuery, trOrderBatchIdParam, envParam);
-            if (results > 0)
+            try
             {
-                return true;
-            }
+                var sqlQuery = "EXEC [dbo].[SP_RSIM_Adjustment_TR_APP] @TrOrderBatchId, @ENV";
+                var trOrderBatchIdParam = new SqlParameter("@TrOrderBatchId", trOrderBatchId);
+                //var environment = _configuration.GetSection("Environment").Value.ToString();
+                var envParam = new SqlParameter("@ENV", _environment);
 
-            return false;
+                var results = await _context.Database.ExecuteSqlRawAsync(sqlQuery, trOrderBatchIdParam, envParam);
+                if (results > 0)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error in WriteOffOrder");
+                return false;
+            }
         }
 
         public async Task<bool> InsertShipment(InsertShipmentDto dto)

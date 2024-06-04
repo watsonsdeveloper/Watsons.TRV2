@@ -29,6 +29,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.TRV2.DTO.Portal", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Watsons.TRV2.Services.CredEncryptor", "Watsons.TRV2.Services.CredEncryptor\Watsons.TRV2.Services.CredEncryptor.csproj", "{AB0E087D-4D72-4E76-A562-14F28B6F84FA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jobs", "Jobs", "{3DA9E2BD-887C-45EE-AA2F-659C216AD88E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watsons.TRV2.EXE.CreateHhtOrder", "Jobs\Watsons.TRV2.EXE.CreateHhtOrder\Watsons.TRV2.EXE.CreateHhtOrder.csproj", "{B6D68E06-D009-4E1C-A801-E7FB704160C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watsons.TRV2.EXE.EmailPendingOrder", "Jobs\Watsons.TRV2.EXE.EmailPendingOrder\Watsons.TRV2.EXE.EmailPendingOrder.csproj", "{98D3EB28-32F8-4B12-B191-68662F271DE4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watsons.TRV2.EXE.SubmitB2B", "Jobs\Watsons.TRV2.EXE.SubmitB2B\Watsons.TRV2.EXE.SubmitB2B.csproj", "{D47E02FE-29C1-47ED-B2E5-66B0374214E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,9 +95,26 @@ Global
 		{AB0E087D-4D72-4E76-A562-14F28B6F84FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB0E087D-4D72-4E76-A562-14F28B6F84FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB0E087D-4D72-4E76-A562-14F28B6F84FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6D68E06-D009-4E1C-A801-E7FB704160C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6D68E06-D009-4E1C-A801-E7FB704160C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6D68E06-D009-4E1C-A801-E7FB704160C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6D68E06-D009-4E1C-A801-E7FB704160C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98D3EB28-32F8-4B12-B191-68662F271DE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98D3EB28-32F8-4B12-B191-68662F271DE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98D3EB28-32F8-4B12-B191-68662F271DE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98D3EB28-32F8-4B12-B191-68662F271DE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D47E02FE-29C1-47ED-B2E5-66B0374214E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D47E02FE-29C1-47ED-B2E5-66B0374214E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D47E02FE-29C1-47ED-B2E5-66B0374214E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D47E02FE-29C1-47ED-B2E5-66B0374214E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B6D68E06-D009-4E1C-A801-E7FB704160C2} = {3DA9E2BD-887C-45EE-AA2F-659C216AD88E}
+		{98D3EB28-32F8-4B12-B191-68662F271DE4} = {3DA9E2BD-887C-45EE-AA2F-659C216AD88E}
+		{D47E02FE-29C1-47ED-B2E5-66B0374214E8} = {3DA9E2BD-887C-45EE-AA2F-659C216AD88E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D09D362A-B768-4B05-A018-A863AA50F7CC}

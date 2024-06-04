@@ -1,0 +1,21 @@
+<html>
+<body>
+    <p>Dear {{fullname}},</p>
+    <p>Please be informed that the Tester Own Label Request stated below requires your approval.</p>
+
+    <table style="text-align:center; border: 1px solid; border-collapse: collapse;">
+        <tr>
+            <th style="border: 1px solid; padding: 4px 8px;">Store Code</th>
+            <th style="border: 1px solid; padding: 4px 8px;">Order No</th>
+            <th style="border: 1px solid; padding: 4px 8px;">Total Item</th>
+        </tr>
+        {{tableContent}}
+    </table>
+
+    <br /><br />
+    <p>Kindly click this <a href="{{link}}">link</a> to proceed the necessary action.</p>
+    <p>Thank you.</p>
+    <br />
+    <p>* This is an automated email, please DO NOT reply.</p>
+</body>
+</html>

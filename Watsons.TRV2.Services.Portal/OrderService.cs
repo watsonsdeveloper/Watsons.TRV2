@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections;
@@ -8,6 +9,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Watsons.Common;
 using Watsons.Common.ConnectionHelpers;
@@ -29,6 +32,8 @@ namespace Watsons.TRV2.Services.Portal
 {
     public class OrderService : IOrderService
     {
+        private readonly Logger<OrderService> logger;
+        private readonly Serilog.ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly IItemMasterRepository _itemMasterRepository;
@@ -44,8 +49,10 @@ namespace Watsons.TRV2.Services.Portal
         private readonly JwtHelper _jwtHelper;
         private readonly EmailHelper _emailHelper;
         private readonly RtsSettings _rtsSettings;
+        private readonly string? _environment;
 
-        public OrderService(IMapper mapper, IConfiguration configuration,
+        public OrderService(Serilog.ILogger logger,
+            IMapper mapper, IConfiguration configuration,
             IOptionsSnapshot<RtsSettings> rtsSettings,
             IItemMasterRepository itemMasterRepository,
             ITrOrderBatchRepository trOrderBatchRepository, ITrOrderRepository trOrderRepository,
@@ -56,6 +63,7 @@ namespace Watsons.TRV2.Services.Portal
             IUserService userService, IRtsService rtsService,
             EmailHelper emailHelper, JwtHelper jwtHelper)
         {
+            _logger = logger;
             _mapper = mapper;
             _configuration = configuration;
             _itemMasterRepository = itemMasterRepository;
@@ -71,6 +79,7 @@ namespace Watsons.TRV2.Services.Portal
             _emailHelper = emailHelper;
             _jwtHelper = jwtHelper;
             _rtsSettings = rtsSettings.Value;
+            _environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         }
         public async Task<ServiceResult<FetchOrderListResponse>> FetchOrderList(FetchOrderListRequest request)
         {
@@ -120,96 +129,104 @@ namespace Watsons.TRV2.Services.Portal
 
         public async Task<ServiceResult<FetchOrderOwnResponse>> FetchOrderOwn(FetchOrderOwnRequest request)
         {
-            List<int>? storeIds = null;
-            var roleLimitedStoreAccess = _configuration.GetSection(AppSettings.ROLE_LIMITED_STORE_ACCESS).Get<List<string>>();
-
-            var role = _jwtHelper.GetRole();
-            if (roleLimitedStoreAccess != null && roleLimitedStoreAccess.Contains(role))
+            try
             {
-                var jwtPayload = _jwtHelper.Payload();
-                storeIds = jwtPayload.Claims.Where(c => c.Type == "StoreId").Select(c => int.Parse(c.Value)).ToList();
-            }
+                List<int>? storeIds = null;
+                var roleLimitedStoreAccess = _configuration.GetSection(AppSettings.ROLE_LIMITED_STORE_ACCESS).Get<List<string>>();
 
-            var orderSummary = await _trOrderBatchRepository.SelectSummary(request.TrOrderBatchId);
-            if (orderSummary == null)
-            {
-                return ServiceResult<FetchOrderOwnResponse>.Fail("Order not found");
-            }
-
-            byte? trOrderStatus = request.TrOrderStatus != null ? (byte)request.TrOrderStatus : null;
-            ListSearchParams parameters = new ListSearchParams()
-            {
-                StoreIds = storeIds,
-                TrOrderBatchId = request.TrOrderBatchId,
-                Status = trOrderStatus,
-                PluOrBarcode = request.PluOrBarcode,
-            };
-            var trOrderItems = await _trOrderRepository.ListSearch(parameters);
-            var orderDtos = _mapper.Map<List<OrderDto>>(trOrderItems);
-
-            
-            var orderItemIds = orderDtos.Select(x => x.OrderItemId).ToList();
-            var orderItemImages = await _trImageRepository.ListByTrOrderIds(orderItemIds);
-
-            Dictionary<string, ItemMaster>? items = null;
-            Dictionary<string, DA.TR.Models.Order.LastWriteOffItem>? lastWriteOffItems = null;
-            if (orderSummary.TrOrderBatchStatus == (byte)TrOrderBatchStatus.Pending)
-            {
-                var plus = orderDtos.Select(x => x.Plu).ToList();
-                items = await _itemMasterRepository.Dictionary(plus);
-
-                // get store cost threshold
-                var storeSalesBand = await _storeSalesBandRepository.GetTypeValue(orderSummary.StoreId);
-                if (storeSalesBand == null || !storeSalesBand.ContainsKey(SalesBandConstants.COST_LIMIT_OWN))
+                var role = _jwtHelper.GetRole();
+                if (roleLimitedStoreAccess != null && roleLimitedStoreAccess.Contains(role))
                 {
-                    return ServiceResult<FetchOrderOwnResponse>.Fail("Store Sales Band not found.");
+                    var jwtPayload = _jwtHelper.Payload();
+                    storeIds = jwtPayload.Claims.Where(c => c.Type == "StoreId").Select(c => int.Parse(c.Value)).ToList();
                 }
-                orderSummary.CostThresholdSnapshot = storeSalesBand[SalesBandConstants.COST_LIMIT_OWN].Value;
 
-                orderSummary.AccumulatedCostApproved = await _trOrderRepository.TotalAccumulatedApprovedCost(orderSummary.TrOrderBatchId) ?? 0;
-
-                lastWriteOffItems = await _trOrderRepository.LastWriteOffDict(orderSummary.StoreId, plus);
-            }
-
-            decimal totalOrderItemCost = 0;
-            foreach (var orderDto in orderDtos)
-            {
-                // mapping uploaded images
-                orderDto.UploadedImages = orderItemImages.Where(x => x.TrOrderId == orderDto.OrderItemId).Select(x => x.ImagePath).ToList();
-
-                if (items != null && items[orderDto.Plu] != null)
+                var orderSummary = await _trOrderBatchRepository.SelectSummary(request.TrOrderBatchId);
+                if (orderSummary == null)
                 {
-                    // mapping avcost from live item master
-                    if (items.ContainsKey(orderDto.Plu) && items[orderDto.Plu].Avcost != null)
+                    return ServiceResult<FetchOrderOwnResponse>.Fail("Order not found");
+                }
+
+                byte? trOrderStatus = request.TrOrderStatus != null ? (byte)request.TrOrderStatus : null;
+                ListSearchParams parameters = new ListSearchParams()
+                {
+                    StoreIds = storeIds,
+                    TrOrderBatchId = request.TrOrderBatchId,
+                    Status = trOrderStatus,
+                    PluOrBarcode = request.PluOrBarcode,
+                };
+                var trOrderItems = await _trOrderRepository.ListSearch(parameters);
+                var orderDtos = _mapper.Map<List<OrderDto>>(trOrderItems);
+
+
+                var orderItemIds = orderDtos.Select(x => x.OrderItemId).ToList();
+                var orderItemImages = await _trImageRepository.ListByTrOrderIds(orderItemIds);
+
+                Dictionary<string, ItemMaster>? items = null;
+                Dictionary<string, DA.TR.Models.Order.LastWriteOffItem>? lastWriteOffItems = null;
+                if (orderSummary.TrOrderBatchStatus == (byte)TrOrderBatchStatus.Pending)
+                {
+                    var plus = orderDtos.Select(x => x.Plu).ToList();
+                    items = await _itemMasterRepository.Dictionary(plus);
+
+                    // get store cost threshold
+                    var storeSalesBand = await _storeSalesBandRepository.GetTypeValue(orderSummary.StoreId);
+                    if (storeSalesBand == null || !storeSalesBand.ContainsKey(SalesBandConstants.COST_LIMIT_OWN))
                     {
-                        decimal.TryParse(items[orderDto.Plu].Avcost.ToString(), out var averageCost);
-                        orderDto.AverageCost = averageCost;
-                        totalOrderItemCost += averageCost;
+                        return ServiceResult<FetchOrderOwnResponse>.Fail("Store Sales Band not found.");
+                    }
+                    orderSummary.CostThresholdSnapshot = storeSalesBand[SalesBandConstants.COST_LIMIT_OWN].Value;
+
+                    orderSummary.AccumulatedCostApproved = await _trOrderRepository.TotalAccumulatedApprovedCost(orderSummary.TrOrderBatchId) ?? 0;
+
+                    lastWriteOffItems = await _trOrderRepository.LastWriteOffDict(orderSummary.StoreId, plus);
+                }
+
+                decimal totalOrderItemCost = 0;
+                foreach (var orderDto in orderDtos)
+                {
+                    // mapping uploaded images
+                    orderDto.UploadedImages = orderItemImages.Where(x => x.TrOrderId == orderDto.OrderItemId).Select(x => x.ImagePath).ToList();
+
+                    if (items != null && items[orderDto.Plu] != null)
+                    {
+                        // mapping avcost from live item master
+                        if (items.ContainsKey(orderDto.Plu) && items[orderDto.Plu].Avcost != null)
+                        {
+                            decimal.TryParse(items[orderDto.Plu].Avcost.ToString(), out var averageCost);
+                            orderDto.AverageCost = averageCost;
+                            totalOrderItemCost += averageCost;
+                        }
+                    }
+                    else if (orderDto.AverageCost != null)
+                    {
+                        // mapping avcost from snapshot
+                        totalOrderItemCost += (decimal)orderDto.AverageCost;
+                    }
+
+                    if (lastWriteOffItems != null && lastWriteOffItems.Count > 0 && lastWriteOffItems.ContainsKey(orderDto.Plu))
+                    {
+                        orderDto.LastWriteOffAt = lastWriteOffItems[orderDto.Plu].LastWriteOffAt;
                     }
                 }
-                else if (orderDto.AverageCost != null)
+                orderSummary.TotalOrderCost = totalOrderItemCost;
+
+                var response = _mapper.Map<FetchOrderOwnResponse>(orderSummary);
+                response.OrderItems = orderDtos;
+
+                var storeName = await _storeMasterRepository.SelectStoreName(new List<int>() { response.StoreId });
+                if (storeName != null && storeName.Count > 0)
                 {
-                    // mapping avcost from snapshot
-                    totalOrderItemCost += (decimal)orderDto.AverageCost;
+                    response.StoreName = storeName[response.StoreId];
                 }
 
-                if(lastWriteOffItems != null && lastWriteOffItems.Count > 0 && lastWriteOffItems.ContainsKey(orderDto.Plu))
-                {
-                    orderDto.LastWriteOffAt = lastWriteOffItems[orderDto.Plu].LastWriteOffAt;
-                }
+                return ServiceResult<FetchOrderOwnResponse>.Success(response);
             }
-            orderSummary.TotalOrderCost = totalOrderItemCost;
-
-            var response = _mapper.Map<FetchOrderOwnResponse>(orderSummary);
-            response.OrderItems = orderDtos;
-
-            var storeName = await _storeMasterRepository.SelectStoreName(new List<int>() { response.StoreId });
-            if (storeName != null && storeName.Count > 0)
+            catch (Exception ex)
             {
-                response.StoreName = storeName[response.StoreId];
+                return ServiceResult<FetchOrderOwnResponse>.Fail(ex.Message);
             }
 
-            return ServiceResult<FetchOrderOwnResponse>.Success(response);
         }
 
         public async Task<ServiceResult<UpdateOrderOwnResponse>> UpdateOrdersOwn(UpdateOrderOwnRequest request)
@@ -309,12 +326,12 @@ namespace Watsons.TRV2.Services.Portal
                     continue;
                 }
 
-                if(rtsDictionary != null)
+                if (rtsDictionary != null)
                 {
                     var availableStock = rtsDictionary[item.Plu];
                     if (availableStock <= _rtsSettings.MinStockRequired && orderItem.TrOrderStatus != TrOrderStatus.Rejected)
                     {
-                        orderItem.ErrorMessage = "Stock is not available.";
+                        orderItem.ErrorMessage = $"SOH is less than {availableStock} units. Please reject the item.";
                         continue;
                     }
                 }
@@ -331,7 +348,7 @@ namespace Watsons.TRV2.Services.Portal
                 {
                     trOrderItem.LastWriteOffAt = lastWriteOffItemsDict[trOrderItem.Plu].LastWriteOffAt;
                 }
-                
+
             }
 
             var response = new UpdateOrderOwnResponse()
@@ -383,7 +400,7 @@ namespace Watsons.TRV2.Services.Portal
             }
 
             var storeSalesBand = await _storeSalesBandRepository.GetTypeValue(trOrderBatch.StoreId);
-            if(storeSalesBand == null || !storeSalesBand.ContainsKey(SalesBandConstants.COST_LIMIT_OWN))
+            if (storeSalesBand == null || !storeSalesBand.ContainsKey(SalesBandConstants.COST_LIMIT_OWN))
             {
                 return ServiceResult<UpdateOrderOwnResponse>.Fail("Store Sales Band not found.");
             }
@@ -436,32 +453,45 @@ namespace Watsons.TRV2.Services.Portal
                     await _trOrderRepository.UpdateRange(trOrderItems.ToList());
                 }
 
-                await _trOrderRepository.InsertStoreAdjustment(trOrderBatch.TrOrderBatchId);
-                try
+                if (trOrderBatch.OrderCost.TotalCostApproved > 0)
                 {
-                    var writeOffOrderResult = await _migrationRepository.WriteOffOrder(trOrderBatch.TrOrderBatchId);
-                    if(!writeOffOrderResult)
+                    await _trOrderRepository.InsertStoreAdjustment(trOrderBatch.TrOrderBatchId);
+                    try
                     {
+                        var writeOffOrderResult = await _migrationRepository.WriteOffOrder(trOrderBatch.TrOrderBatchId);
+                        if (!writeOffOrderResult)
+                        {
+                            return ServiceResult<UpdateOrderOwnResponse>.Fail("Stock adjustment failed.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"UpdateOrdersOwn \n{ex} \n{JsonSerializer.Serialize(request)} \n\n\n");
                         return ServiceResult<UpdateOrderOwnResponse>.Fail("Stock adjustment failed.");
                     }
                 }
-                catch (Exception ex)
-                {
-                    return ServiceResult<UpdateOrderOwnResponse>.Fail("Stock adjustment failed.");
-                }
 
-                if(trOrderBatch.Brand == (byte)Brand.Own)
+                if (_environment == "PROD")
                 {
-                    var storeIds = new List<int>() { trOrderBatch.StoreId };
-                    var roles = new List<string>() { "STORE" };
-                    var userStores = await _cashManageRepository.UserStoreIds(storeIds, roles);
-                    var userStore = userStores.FirstOrDefault(x => x.StoreId == trOrderBatch.StoreId);
-                    await _emailHelper.SendEmailBySp(new SendEmailBySpParams()
+                    if (trOrderBatch.Brand == (byte)Brand.Own)
                     {
-                        Recipients = new List<string>() { userStore?.Email },
-                        Subject = $"Tester Store {userStore?.Name} Order Processed",
-                        Body = $"Tester Store {userStore?.Name} Order Processed : {trOrderBatch.TrOrderBatchId} <br/><br/><br/>"
-                    });
+                        var storeIds = new List<int>() { trOrderBatch.StoreId };
+                        var roles = new List<string>() { "STORE" };
+                        var userStores = await _cashManageRepository.UserStoreIds(storeIds, roles);
+                        var userStore = userStores.FirstOrDefault(x => x.StoreId == trOrderBatch.StoreId);
+                        await _emailHelper.SendEmailBySp(new SendEmailBySpParams()
+                        {
+                            Recipients = new List<string>() { userStore?.Email },
+                            Subject = $"Permohonan Own Brand Tester {userStore?.Name} Diproses",
+                            Body = @$"{userStore?.Name} <br/> Dimaklumkan bahawa permohonan tester own brand {trOrderBatch.TrOrderBatchId} telah diproses. <br/><br/><br/> 
+                                    Tindakan Stor: <br/>
+                                    1. Semak laporan adjustment dalam RSIM 2.0. <br/>
+                                    2. Pastikan stor melekatkan 'Try Me Sticker' pada setiap PLU yang telah diluluskan. <br/>
+                                    3. Paparkan stok sebagai tester di shelving dalam masa 48 jam setelah diluluskan. <br/>
+                                    <br/>
+                                    Sila rujuk kepada ASOM untuk sebarang pertanyaan.<br/><br/>"
+                        });
+                    }
                 }
             }
 

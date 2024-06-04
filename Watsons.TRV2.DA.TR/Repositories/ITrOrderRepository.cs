@@ -30,5 +30,6 @@ namespace Watsons.TRV2.DA.TR.Repositories
         Task<bool> HasOrderProcessed(int storeId, string plu);
         Task<bool> InsertStoreAdjustment(long trOrderBatchId);
         Task<Dictionary<string, LastWriteOffItem>> LastWriteOffDict(int storeId, List<string> pluList);
+        Task<IEnumerable<TrOrder>> OrderPending();
     }
 }

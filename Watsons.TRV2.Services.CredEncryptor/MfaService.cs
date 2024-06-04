@@ -32,6 +32,10 @@ namespace Watsons.TRV2.Services.CredEncryptor
                 if (response == null || !response.IsSuccess)
                 {
                     errorMessage = response?.ErrorMessage ?? errorMessage;
+                    if(errorMessage.Contains("Invalid Password"))
+                    {
+                        errorMessage = "Incorrect user ID or password.";
+                    }
                     throw new Exception(errorMessage);
                 }
 

@@ -27,6 +27,7 @@ namespace Watsons.TRV2.Services.Portal
 {
     public class JobService : IJobService
     {
+        private readonly Serilog.ILogger _logger;
         private readonly IConfiguration _configuration;
         private readonly ITrCommonRepository _trCommonRepository;
         private readonly ITrOrderRepository _trOrderRepository;
@@ -39,7 +40,9 @@ namespace Watsons.TRV2.Services.Portal
         private readonly IMigrationRepository _migrationRepository;
         private readonly SupplierOrderSettings _supplierOrderSettings;
         private readonly EmailHelper _emailHelper;
+        private readonly string _environment;
         public JobService(
+            Serilog.ILogger logger,
             IConfiguration configuration,
             ITrCommonRepository trCommonRepository,
             ITrOrderRepository trOrderRepository,
@@ -53,6 +56,7 @@ namespace Watsons.TRV2.Services.Portal
             IOptionsSnapshot<SupplierOrderSettings> supplierOrderSettings,
             EmailHelper emailHelper)
         {
+            _logger = logger;
             _configuration = configuration;
             _trCommonRepository = trCommonRepository;
             _trOrderRepository = trOrderRepository;
@@ -65,6 +69,7 @@ namespace Watsons.TRV2.Services.Portal
             _migrationRepository = migrationRepository;
             _supplierOrderSettings = supplierOrderSettings.Value;
             _emailHelper = emailHelper;
+            _environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
         }
 
         public async Task<ServiceResult<bool>> EmailNotifyStoreOrderPending()
@@ -83,27 +88,67 @@ namespace Watsons.TRV2.Services.Portal
                 return ServiceResult<bool>.Fail("No user found.");
             }
 
-            var userStoreDict = userStoreList.GroupBy(u => u.Email).ToDictionary(u => u.Key, u => u.Select(v => v.StoreId).ToList());
+            var userStoreDict = userStoreList.GroupBy(u => u.Email).ToDictionary(u => u.Key, u => u.ToList());
             if (userStoreDict == null || userStoreDict.Count() <= 0)
             {
                 return ServiceResult<bool>.Success(true);
             }
 
-            foreach (var userStore in userStoreDict)
+            var orderItemsPending = await _trOrderRepository.OrderPending();
+            orderItemsPending = orderItemsPending.Where(o => o.TrOrderBatch.Brand == (byte)Brand.Own);
+            var orderItemPendingDict = orderItemsPending.GroupBy(o => o.TrOrderBatch.StoreId)
+                .ToDictionary(o => o.Key, o => o.GroupBy(o => o.TrOrderBatchId).ToDictionary(o => o.Key, o => o.Count()));
+            if(orderItemPendingDict == null || orderItemPendingDict.Count() <= 0)
             {
-                var email = userStore.Key;
-                var storeIdList = userStore.Value;
-                var storeIdStr = string.Join(",", storeIdList);
-                var subject = $"Tester Store Pending Order Notification";
-                var body = $@"Tester Store Order Pending : {storeIdStr} <br/><br/><br/>";
-                var emailParams = new SendEmailBySpParams()
-                {
-                    Recipients = new List<string>() { email },
-                    Subject = subject,
-                    Body = body
-                };
+                return ServiceResult<bool>.Success(true);
+            }
 
-                await _emailHelper.SendEmailBySp(emailParams);
+            foreach (var userStore in userStoreDict) // loop through each user
+            {
+                try
+                {
+                    var email = userStore.Key;
+                    var userStores = userStore.Value;
+                    var user = userStores.FirstOrDefault();
+                    var env = _environment != "PROD" ? $"({_environment})": "";
+                    var subject = $"Tester Own Label Request - Pending Approval {env}";
+                    var body = System.IO.File.ReadAllText("EmailTemplates/EmailNotifyStoreOrderPending.html");
+                    body = body.Replace("{{fullname}}", user?.Name);
+
+                    var bodyContent = string.Empty;
+                    foreach(var store in userStores) // loop throuh each store
+                    {
+                        var orderPending = orderItemPendingDict.Where(o => o.Key == store.StoreId).FirstOrDefault().Value;
+                        if (orderPending == null || orderPending.Count() <= 0)
+                        {
+                            continue;
+                        }
+                        foreach (var order in orderPending) // loop through each order
+                        {
+                            bodyContent += $"<tr>" +
+                                $"<td style=\"border: 1px solid\">{store.StoreId}</td>" +
+                                $"<td style=\"border: 1px solid\">{order.Key}</td>" +
+                                $"<td style=\"border: 1px solid\">{order.Value}</td>" +
+                                $"</tr>";
+                        }
+                    }
+                    body = body.Replace("{{tableContent}}", bodyContent);
+                    body = body.Replace("{{link}}", _configuration.GetValue<string>("PortalUrl"));
+
+                    var emailParams = new SendEmailBySpParams()
+                    {
+                        Recipients = new List<string>() { email },
+                        Subject = subject,
+                        Body = body
+                    };
+
+                    await _emailHelper.SendEmailBySp(emailParams);
+
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex, "Error in EmailNotifyStoreOrderPending");
+                }
             }
 
             return ServiceResult<bool>.Success(true);

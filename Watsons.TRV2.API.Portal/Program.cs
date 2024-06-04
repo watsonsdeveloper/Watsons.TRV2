@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System;
 using System.Reflection;
 using System.Text;
@@ -29,6 +30,29 @@ using Watsons.TRV2.Services.Portal.Settings;
 using Watsons.TRV2.Services.RTS;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .WriteTo.Console()
+    .WriteTo.Logger(log => log
+        .Filter.ByIncludingOnly(e => e.Level == Serilog.Events.LogEventLevel.Information)
+        .WriteTo.File("Logs/information.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30,
+        rollOnFileSizeLimit: false))
+    .WriteTo.Logger(log => log
+        .Filter.ByIncludingOnly(e => e.Level == Serilog.Events.LogEventLevel.Debug)
+        .WriteTo.File("Logs/debug.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30,
+        rollOnFileSizeLimit: true, fileSizeLimitBytes: 419430400))
+    .WriteTo.Logger(log => log
+        .Filter.ByIncludingOnly(e => e.Level == Serilog.Events.LogEventLevel.Error)
+        .WriteTo.File("Logs/errors.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30,
+        rollOnFileSizeLimit: true, fileSizeLimitBytes: 419430400))
+    .WriteTo.Logger(log => log
+        .Filter.ByIncludingOnly(e => e.Level == Serilog.Events.LogEventLevel.Fatal)
+        .WriteTo.File("Logs/fatal.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30,
+        rollOnFileSizeLimit: true, fileSizeLimitBytes: 419430400))
+    .CreateLogger();
+builder.Host.UseSerilog();
+builder.Services.AddSingleton<Serilog.ILogger>(provider => Log.Logger);
 
 var trv2ConnectionSettings = new ConnectionSettings();
 var cashManageConnectionSettings = new ConnectionSettings();
@@ -223,7 +247,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("CorsPolicy",
                builder =>
                {
-                   builder.WithOrigins(corsSettings.AllowedOrigins)
+                   builder
+                           .WithOrigins(corsSettings.AllowedOrigins)
                            //.AllowAnyOrigin()
                           .AllowAnyMethod()
                           .AllowAnyHeader()
