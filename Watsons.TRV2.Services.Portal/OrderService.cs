@@ -49,11 +49,13 @@ namespace Watsons.TRV2.Services.Portal
         private readonly JwtHelper _jwtHelper;
         private readonly EmailHelper _emailHelper;
         private readonly RtsSettings _rtsSettings;
+        private readonly EmailNotifyStoreOrderPendingSettings _emailNotifyStoreOrderPendingSettings;
         private readonly string? _environment;
 
         public OrderService(Serilog.ILogger logger,
             IMapper mapper, IConfiguration configuration,
             IOptionsSnapshot<RtsSettings> rtsSettings,
+            IOptionsSnapshot<EmailNotifyStoreOrderPendingSettings> emailNotifyStoreOrderPendingSettings,
             IItemMasterRepository itemMasterRepository,
             ITrOrderBatchRepository trOrderBatchRepository, ITrOrderRepository trOrderRepository,
             ITrImageRepository trImageRepository, IStoreMasterRepository storeMasterRepository,
@@ -79,6 +81,7 @@ namespace Watsons.TRV2.Services.Portal
             _emailHelper = emailHelper;
             _jwtHelper = jwtHelper;
             _rtsSettings = rtsSettings.Value;
+            _emailNotifyStoreOrderPendingSettings = emailNotifyStoreOrderPendingSettings.Value;
             _environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         }
         public async Task<ServiceResult<FetchOrderListResponse>> FetchOrderList(FetchOrderListRequest request)
@@ -152,12 +155,12 @@ namespace Watsons.TRV2.Services.Portal
                 {
                     StoreIds = storeIds,
                     TrOrderBatchId = request.TrOrderBatchId,
-                    Status = trOrderStatus,
+                    TrOrderStatus = trOrderStatus,
                     PluOrBarcode = request.PluOrBarcode,
+                    BrandName = request.BrandName,
                 };
                 var trOrderItems = await _trOrderRepository.ListSearch(parameters);
                 var orderDtos = _mapper.Map<List<OrderDto>>(trOrderItems);
-
 
                 var orderItemIds = orderDtos.Select(x => x.OrderItemId).ToList();
                 var orderItemImages = await _trImageRepository.ListByTrOrderIds(orderItemIds);
@@ -483,13 +486,25 @@ namespace Watsons.TRV2.Services.Portal
                         {
                             Recipients = new List<string>() { userStore?.Email },
                             Subject = $"Permohonan Own Brand Tester {userStore?.Name} Diproses",
-                            Body = @$"{userStore?.Name} <br/> Dimaklumkan bahawa permohonan tester own brand {trOrderBatch.TrOrderBatchId} telah diproses. <br/><br/><br/> 
-                                    Tindakan Stor: <br/>
+                            Body = @$"{userStore?.Name} <br/> Dimaklumkan bahawa permohonan Tester Own Brand, Order No: {trOrderBatch.TrOrderBatchId} telah diproses. <br/><br/><br/> 
+                                    <p><u>Item Diluluskan</u></p>
+                                    <b>Tindakan Stor:</b> <br/>
                                     1. Semak laporan adjustment dalam RSIM 2.0. <br/>
                                     2. Pastikan stor melekatkan 'Try Me Sticker' pada setiap PLU yang telah diluluskan. <br/>
                                     3. Paparkan stok sebagai tester di shelving dalam masa 48 jam setelah diluluskan. <br/>
+                                    <br/><br/>
+                                    <p><u>Item <b>TIDAK</b> Diluluskan</u></p>
                                     <br/>
-                                    Sila rujuk kepada ASOM untuk sebarang pertanyaan.<br/><br/>"
+                                    <b>Faktor penolakan permohonan : </b><br/>
+                                    <p>Tidak memenuhi kriteria untuk tester – SOH stok < 3 unit atau jumlah permintaan telah melebihi had kuota yang ditetapkan.</p>
+                                    <br/>
+                                    <b>Tindakan Stor:</b><br/>
+                                    <p>1. Pamerkan semula item yang telah diasingkan sebelum ini di Planogram.</p>
+                                    <br/>
+                                    <p>Sila rujuk kepada ASOM untuk sebarang pertanyaan.</p><br/><br/>
+                                    <p>Thank you.</p><br/>
+                                    <p>* This is an automated email, please DO NOT reply.</p>",
+                            CopyRecipients = _emailNotifyStoreOrderPendingSettings.CopyRecipients,
                         });
                     }
                 }

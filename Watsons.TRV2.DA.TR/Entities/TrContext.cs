@@ -208,45 +208,47 @@ public partial class TrContext : DbContext
 
             entity.HasData(
                 new RoleModuleAccess { RoleModuleAccessId = 1, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 1, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 2, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 3, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 3, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 4, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 4, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 5, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 5, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 6, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 6, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 7, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 7, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 8, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 8, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 9, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 9, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 1, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 10, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 3, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 11, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 4, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 12, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 5, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 13, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 6, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 14, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 7, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 15, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 8, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 16, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 9, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 17, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 1, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 18, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 2, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 19, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 3, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 20, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 4, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 21, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 5, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 22, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 6, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 23, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 7, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 24, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 8, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 25, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 9, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 26, RoleId = new Guid("8D39CCA7-EDF9-49ED-A959-3D0057B055C2"), ModuleId = 1, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 27, RoleId = new Guid("8D39CCA7-EDF9-49ED-A959-3D0057B055C2"), ModuleId = 2, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 28, RoleId = new Guid("8D39CCA7-EDF9-49ED-A959-3D0057B055C2"), ModuleId = 3, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 29, RoleId = new Guid("BAC83BF7-9C2C-46EE-B79F-D64094FFF01E"), ModuleId = 1, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 30, RoleId = new Guid("BAC83BF7-9C2C-46EE-B79F-D64094FFF01E"), ModuleId = 2, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 31, RoleId = new Guid("BAC83BF7-9C2C-46EE-B79F-D64094FFF01E"), ModuleId = 3, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 32, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 1, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 33, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 2, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 34, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 3, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 35, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 4, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 36, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 5, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 37, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 6, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 38, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 7, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 39, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 8, CreatedBy = "System" },
-                new RoleModuleAccess { RoleModuleAccessId = 40, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 9, CreatedBy = "System" }
+                new RoleModuleAccess { RoleModuleAccessId = 2, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 2, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 3, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 3, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 4, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 4, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 5, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 5, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 6, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 6, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 7, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 7, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 8, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 8, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 9, RoleId = new Guid("37E1BFD1-45B7-4F19-8C6C-AC6D6BF12CA0"), ModuleId = 9, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 10, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 1, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 11, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 2, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 12, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 3, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 13, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 4, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 14, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 5, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 15, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 6, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 16, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 7, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 17, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 8, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 18, RoleId = new Guid("7F195F8E-2FCE-4404-A8DB-097F212CC2BF"), ModuleId = 9, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 19, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 1, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 20, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 2, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 21, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 3, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 22, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 4, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 23, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 5, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 24, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 6, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 25, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 7, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 26, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 8, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 27, RoleId = new Guid("41560460-C203-4212-A341-6860008AD007"), ModuleId = 9, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 28, RoleId = new Guid("8D39CCA7-EDF9-49ED-A959-3D0057B055C2"), ModuleId = 1, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 29, RoleId = new Guid("8D39CCA7-EDF9-49ED-A959-3D0057B055C2"), ModuleId = 2, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 30, RoleId = new Guid("8D39CCA7-EDF9-49ED-A959-3D0057B055C2"), ModuleId = 3, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 31, RoleId = new Guid("BAC83BF7-9C2C-46EE-B79F-D64094FFF01E"), ModuleId = 1, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 32, RoleId = new Guid("BAC83BF7-9C2C-46EE-B79F-D64094FFF01E"), ModuleId = 2, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 33, RoleId = new Guid("BAC83BF7-9C2C-46EE-B79F-D64094FFF01E"), ModuleId = 3, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 34, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 1, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 35, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 2, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 36, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 3, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 37, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 4, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 38, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 5, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 39, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 6, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 40, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 7, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 41, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 8, CreatedBy = "System" },
+                new RoleModuleAccess { RoleModuleAccessId = 42, RoleId = new Guid("1B6F6C6D-53B8-4613-A57E-079A3084AAEE"), ModuleId = 9, CreatedBy = "System" }
             );
         });
 
@@ -393,46 +395,50 @@ public partial class TrContext : DbContext
             entity.Property(e => e.Value)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
+            entity.HasData(
+                new SysParam { Param = "OrderNumber", Value = "1000" }
+            );
         });
 
         modelBuilder.Entity<TrCart>(entity =>
-        {
-            entity.HasKey(e => e.TrCartId).HasName("PK__TrCart__6B0492B214083B72");
+            {
+                entity.HasKey(e => e.TrCartId).HasName("PK__TrCart__6B0492B214083B72");
 
-            entity.ToTable("TrCart");
+                entity.ToTable("TrCart");
 
-            entity.HasIndex(e => e.StoreId, "idx_store");
+                entity.HasIndex(e => e.StoreId, "idx_store");
 
-            entity.Property(e => e.Barcode)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.BrandName)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.CreatedBy)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.Justification)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.Plu)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.ProductName)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.SupplierCode)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.SupplierName).HasMaxLength(200);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            entity.Property(e => e.UpdatedBy)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-        });
+                entity.Property(e => e.Barcode)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+                entity.Property(e => e.BrandName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.CreatedAt)
+                    .HasDefaultValueSql("(getdate())")
+                    .HasColumnType("datetime");
+                entity.Property(e => e.CreatedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.Justification)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+                entity.Property(e => e.Plu)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+                entity.Property(e => e.ProductName)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+                entity.Property(e => e.SupplierCode)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+                entity.Property(e => e.SupplierName).HasMaxLength(200);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+                entity.Property(e => e.UpdatedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
 
         modelBuilder.Entity<TrImage>(entity =>
         {

@@ -71,6 +71,7 @@ namespace Watsons.TRV2.DTO.Portal.OrderDto
         public long TrOrderBatchId { get; set; }
         public TrOrderStatus? TrOrderStatus { get; set; }
         public string? PluOrBarcode { get; set; }
+        public string? BrandName { get; set; }
     }
 
     public class FetchOrderOwnResponse

@@ -269,6 +269,11 @@ namespace Watsons.TRV2.API.Portal
                 return await service.CreateStoreHhtOrder();
             });
 
+            jobApi.MapGet("/syncStoreHhtOrderStatus", async (JobService service) =>
+            {
+                return await service.SyncStoreHhtOrderStatus();
+            });
+
             #endregion
         }
     }

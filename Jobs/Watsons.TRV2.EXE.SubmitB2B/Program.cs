@@ -18,7 +18,7 @@ var configuration = new ConfigurationBuilder()
 string baseAddress = configuration["BaseAddress"];
 
 Console.WriteLine($"baseAddress : {baseAddress}");
-Thread.Sleep(3000);
+//Thread.Sleep(3000);
 
 SubmitB2B(baseAddress).GetAwaiter().GetResult();
 
@@ -33,7 +33,8 @@ static async Task SubmitB2B(string baseAddress)
     client.DefaultRequestHeaders.Accept.Add(
         new MediaTypeWithQualityHeaderValue("application/json"));
 
-    var response = await client.GetAsync("/job/submitToB2B");
+    var response = await client.GetAsync($"{baseAddress}/job/submitToB2B");
 
     Console.WriteLine(response);
+    //Thread.Sleep(5000);
 }

@@ -299,7 +299,7 @@ namespace Watsons.TRV2.Services.Mobile
                 return ServiceResult<TrCartDto>.Fail("You have submitted a request for this PLU.");
             }
 
-            if (request.Brand == Brand.Supplier && await _trOrderRepository.HasOrderProcessed(store.StoreId, item.Item))
+            if (request.Brand == Brand.Supplier && await _trOrderRepository.HasOrderProcessing(store.StoreId, item.Item))
             {
                 return ServiceResult<TrCartDto>.Fail("Product is proccessed by supplier.");
             }

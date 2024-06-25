@@ -17,6 +17,7 @@ namespace Watsons.TRV2.DA.MyMaster.Repositories
         private readonly Serilog.ILogger _logger;
         private readonly MigrationContext _context;
         private readonly IConfiguration _configuration;
+        
         public MigrationRepository(Serilog.ILogger logger,  MigrationContext context, IConfiguration configuration)
         {
             _logger = logger;
@@ -67,9 +68,9 @@ namespace Watsons.TRV2.DA.MyMaster.Repositories
             }
         }
 
-        public async Task<bool> InsertShipment(InsertShipmentDto dto)
+        public async Task<bool> InsertShipment(InsertShipmentParams parameters)
         {
-            var storeId = dto.StoreId < 1000 ? dto.StoreId.ToString("000") : dto.StoreId.ToString();
+            var storeId = parameters.StoreId < 1000 ? parameters.StoreId.ToString("000") : parameters.StoreId.ToString();
 
             if (_environment != "PROD")
             {
@@ -78,19 +79,19 @@ namespace Watsons.TRV2.DA.MyMaster.Repositories
 
             string sql = @"IF NOT EXISTS(SELECT TOP 1 OrderNumber FROM [" + storeId + "].[RSIM2].[dbo].[Shipment] WITH (NOLOCK) WHERE [Number] = @ShipmentNumber) " +
                         "BEGIN INSERT INTO [" + storeId + "].[RSIM2].[dbo].[Shipment] " +
-                        "([Number], [ConsolidatingNumber], [OrderNumber], [Type], [ReceivingStoreNumber], [SupplierNumber], [OrderDate], [DeliveryDate], [PpIndicator], [Status], [Remark], [ImportLogId], [CreationTime], [CreateBy], [ModificationTime], [ModifiedBy], [Locked], [OneClickReceive]) " +
-                        "VALUES (@ShipmentNumber, @ShipmentNumber, @ShipmentNumber, 'RL', @StoreId, @SupplierNumber, @OrderDate, @DeliveryDate, 'Push', 10, @Remark, 0, GETDATE(), @CreatedBy, GETDATE(), @ModifiedBy, 0, 0); END";
+                        "([Number], [ConsolidatingNumber], [OrderNumber], [Type], [ReceivingStoreNumber], [SupplierNumber], [OrderDate], [DeliveryDate], [PpIndicator], [Status], [Remark], [ImportLogId], [CreationDate], [CreationTime], [CreateBy], [ModificationTime], [ModifiedBy], [LocationCode], [SendingStoreNumber], [SendReason], [Locked], [OneClickReceive]) " +
+                        "VALUES (@ShipmentNumber, @ShipmentNumber, @ShipmentNumber, 'RL', @StoreId, @SupplierNumber, @OrderDate, @DeliveryDate, 'Push', 10, @Remark, 0, GETDATE(), GETDATE(), @CreatedBy, GETDATE(), @ModifiedBy, 'BackendStoreroom', '', '', 0, 0); END";
             var sqlParams = new List<SqlParameter>
-                {
-                    new SqlParameter("@ShipmentNumber", dto.ShipmentNumber),
-                    new SqlParameter("@StoreId", storeId),
-                    new SqlParameter("@SupplierNumber", dto.SupplierNumber),
-                    new SqlParameter("@OrderDate", dto.OrderDate.Date),
-                    new SqlParameter("@DeliveryDate", dto.DeliveryDate.Date),
-                    new SqlParameter("@Remark", dto.Remark),
-                    new SqlParameter("@ModifiedBy", dto.CreatedBy),
-                    new SqlParameter("@CreatedBy", dto.CreatedBy),
-                };
+            {
+                new SqlParameter("@ShipmentNumber", parameters.ShipmentNumber),
+                new SqlParameter("@StoreId", storeId),
+                new SqlParameter("@SupplierNumber", parameters.SupplierNumber),
+                new SqlParameter("@OrderDate", parameters.OrderDate.Date),
+                new SqlParameter("@DeliveryDate", parameters.DeliveryDate.Date),
+                new SqlParameter("@Remark", parameters.Remark),
+                new SqlParameter("@ModifiedBy", parameters.CreatedBy),
+                new SqlParameter("@CreatedBy", parameters.CreatedBy),
+            };
 
             var results = await _context.Database.ExecuteSqlRawAsync(sql, sqlParams);
             if (results > 0) // SHIPMENT IS EXISTS IF `results = -1`
@@ -101,9 +102,9 @@ namespace Watsons.TRV2.DA.MyMaster.Repositories
             return false; 
         }
 
-        public async Task<bool> InsertShipmentItem(InsertShipmentItemDto dto)
+        public async Task<bool> InsertShipmentItem(InsertShipmentItemParams parameters)
         {
-            var storeId = dto.StoreId < 1000 ? dto.StoreId.ToString("000") : dto.StoreId.ToString();
+            var storeId = parameters.StoreId < 1000 ? parameters.StoreId.ToString("000") : parameters.StoreId.ToString();
 
             if (_environment != "PROD")
             {
@@ -112,19 +113,20 @@ namespace Watsons.TRV2.DA.MyMaster.Repositories
 
             string sql = @"IF NOT EXISTS (SELECT TOP 1 ShipmentNumber FROM [" + storeId + "].[RSIM2].[dbo].[ShipmentItem] WITH (NOLOCK) WHERE [ShipmentNumber] = @ShipmentNumber AND [ItemCode] = @ItemCode)" +
                         "BEGIN  INSERT INTO [" + storeId + "].[RSIM2].[dbo].[ShipmentItem] " +
-                        "([ShipmentNumber], [ItemCode], [SupplierItemCode], [Barcode], [Qty], [CreateBy], [ModifiedBy], [CreationTime], [ModificationTime], [PackingQty], [OriginalQty], [ImportLogId], [LocationCode], [Damaged], [BatchId], [ImportedBatchInfo])" +
-                        " VALUES (@ShipmentNumber, @ItemCode, @SupplierItemCode, @Barcode, @Qty, @CreateBy, @ModifiedBy, GETDATE(), GETDATE(), 0, 0, 0, 'BackendStoreroom', 0, 0, 0); END";
+                        "([ShipmentNumber], [ItemCode], [SupplierItemCode], [Barcode], [Qty], [CreateBy], [ModifiedBy], [CreationTime], [ModificationTime], [ExpiryDate], [PackingQty], [OriginalQty], [ImportLogId], [LocationCode], [Damaged], [BatchId], [ImportedBatchInfo])" +
+                        " VALUES (@ShipmentNumber, @ItemCode, @SupplierItemCode, @Barcode, @Qty, @CreateBy, @ModifiedBy, GETDATE(), GETDATE(), @ExpiryDate, 0, 0, 0, 'BackendStoreroom', 0, 0, 0); END";
             var sqlParams = new List<SqlParameter>
-                {
-                    new SqlParameter("@ShipmentNumber", dto.ShipmentNumber),
-                    new SqlParameter("@StoreId", storeId),
-                    new SqlParameter("@ItemCode", dto.ItemCode),
-                    new SqlParameter("@SupplierItemCode", dto.SupplierItemCode),
-                    new SqlParameter("@Barcode", dto.Bardcode),
-                    new SqlParameter("@Qty", dto.Qty),
-                    new SqlParameter("@ModifiedBy", dto.CreatedBy),
-                    new SqlParameter("@CreateBy", dto.CreatedBy),
-                };
+            {
+                new SqlParameter("@ShipmentNumber", parameters.ShipmentNumber),
+                new SqlParameter("@StoreId", storeId),
+                new SqlParameter("@ItemCode", parameters.ItemCode),
+                new SqlParameter("@SupplierItemCode", parameters.SupplierItemCode),
+                new SqlParameter("@Barcode", parameters.Bardcode),
+                new SqlParameter("@Qty", parameters.Qty),
+                new SqlParameter("@ModifiedBy", parameters.CreatedBy),
+                new SqlParameter("@CreateBy", parameters.CreatedBy),
+                new SqlParameter("@ExpiryDate", DateTime.Now.AddDays(14)),
+            };
 
             var results = await _context.Database.ExecuteSqlRawAsync(sql, sqlParams);
             if (results > 0)
@@ -134,6 +136,64 @@ namespace Watsons.TRV2.DA.MyMaster.Repositories
 
             return false;
         }
+
+        public async Task<bool> InsertShipmentStatusLog(InsertShipmentStatusLogParams parameters)
+        {
+            var storeId = parameters.StoreId < 1000 ? parameters.StoreId.ToString("000") : parameters.StoreId.ToString();
+
+            if (_environment != "PROD")
+            {
+                storeId = "000";
+            }
+
+            string sql = @"IF NOT EXISTS (SELECT TOP 1 [Number] FROM [" + storeId + "].[RSIM2].[dbo].[StatusLog] WITH (NOLOCK) WHERE [Type] = 'Shipment' AND [Number] = @ShipmentNumber AND Status = '10')" +
+                                  "BEGIN  INSERT INTO [" + storeId + "].[RSIM2].[dbo].[StatusLog] " +
+                                  "([Type], [Number], [Status], [CreateBy], [CreationTime])" +
+                                  " VALUES (@Type, @ShipmentNumber, @Status, @CreatedBy, GETDATE()); " +
+                                  "END";
+            var sqlParams = new List<SqlParameter>
+            {
+                new SqlParameter("@StoreId", storeId),
+                new SqlParameter("@Type", parameters.Type),
+                new SqlParameter("@ShipmentNumber", parameters.ShipmentNumber),
+                new SqlParameter("@Status", parameters.Status),
+                new SqlParameter("@CreatedBy", parameters.CreatedBy),
+            };
+
+            var results = await _context.Database.ExecuteSqlRawAsync(sql, sqlParams);
+            if (results > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<List<Entities.ShipmentItem>> SelectShipmentItems(SelectShipmentItemParams parameters)
+        {
+            try
+            {
+                var storeId = parameters.StoreId < 1000 ? parameters.StoreId.ToString("000") : parameters.StoreId.ToString();
+
+                if (_environment != "PROD")
+                {
+                    storeId = "000";
+                }
+
+                string shipmentNumbers = string.Join(",", parameters.ShipmentNumbers.Select(shipmentNumber => $"'{shipmentNumber}'"));
+                string query = $@"SELECT SI.ShipmentNumber, SI.ItemCode, SI.SupplierItemCode, SI.Qty, SI.OriginalQty, SI.ReceivedQty, SI.ModifiedBy, SI.ModificationTime FROM [{storeId}].[RSIM2].[dbo].[Shipment] S 
+                                LEFT JOIN [{storeId}].[RSIM2].[dbo].[ShipmentItem] SI ON S.[Number] = SI.[ShipmentNumber]
+                                WHERE S.Status = '20' AND SI.[ShipmentNumber] IN ({shipmentNumbers})";
+
+                return await _context.ShipmentItems.FromSqlRaw(query).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error in SelectShipmentItems");
+            }
+            return new List<Entities.ShipmentItem>();
+        }
+
     }
 
 

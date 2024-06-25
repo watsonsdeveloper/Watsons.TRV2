@@ -168,14 +168,19 @@ namespace Watsons.TRV2.DA.TR.Repositories
             if (parameters.Brand != null)
                 query = query.Where(o => o.TrOrderBatch.Brand == parameters.Brand);
 
-            if (parameters.Status != null)
-                query = query.Where(o => o.TrOrderStatus == parameters.Status);
+            if (parameters.TrOrderStatus != null)
+                query = query.Where(o => o.TrOrderStatus == parameters.TrOrderStatus);
 
             if (parameters.StartDate != null && parameters.EndDate != null)
                 query = query.Where(o => o.TrOrderBatch.CreatedAt >= parameters.StartDate && o.TrOrderBatch.CreatedAt <= parameters.EndDate);
 
             if (!string.IsNullOrWhiteSpace(parameters.PluOrBarcode))
                 query = query.Where(o => o.Plu.Contains(parameters.PluOrBarcode) || (o.Barcode != null && o.Barcode.Contains(parameters.PluOrBarcode)));
+
+            if(!string.IsNullOrWhiteSpace(parameters.BrandName))
+            {
+                query = query.Where(o => o.BrandName != null && o.BrandName.Contains(parameters.BrandName));
+            }
 
             return await query.OrderByDescending(x => x.TrOrderId).ToListAsync();
         }
@@ -188,10 +193,10 @@ namespace Watsons.TRV2.DA.TR.Repositories
             if (storeIds != null && storeIds.Count > 0)
                 query = query.Where(o => storeIds.Contains(o.TrOrderBatch.StoreId));
 
-            //query = query.Where(o => o.TrOrderBatch.Brand == (byte)Brand.Supplier);
+            query = query.Where(o => o.TrOrderBatch.Brand == (byte)Brand.Supplier);
 
-            //query = query.Where(o => o.TrOrderStatus == (byte)TrOrderStatus.Fulfilled || o.TrOrderStatus == (byte)TrOrderStatus.Unfulfilled);
-            query = query.Where(o => o.TrOrderStatus == (byte)TrOrderStatus.Approved || o.TrOrderStatus == (byte)TrOrderStatus.Rejected);
+            var status = new List<byte>() { (byte)TrOrderStatus.Fulfilled, (byte)TrOrderStatus.Expired };
+            query = query.Where(o => status.Contains(o.TrOrderStatus ?? 0));
 
             if (startDate != null && endDate != null)
                 query = query.Where(o => o.TrOrderBatch.CreatedAt >= startDate && o.TrOrderBatch.CreatedAt <= endDate);
@@ -204,8 +209,8 @@ namespace Watsons.TRV2.DA.TR.Repositories
                 {
                     SupplierName = o.FirstOrDefault().SupplierName,
                     TotalOrder = o.Count(),
-                    TotalOrderFulfilled = o.Where(t => t.TrOrderStatus == (byte)TrOrderStatus.Approved).Count(),
-                    TotalOrderUnfulfill = o.Where(t => t.TrOrderStatus == (byte)TrOrderStatus.Rejected).Count(),
+                    TotalOrderFulfilled = o.Where(t => t.TrOrderStatus == (byte)TrOrderStatus.Fulfilled).Count(),
+                    TotalOrderUnfulfill = o.Where(t => t.TrOrderStatus == (byte)TrOrderStatus.Expired).Count(),
                 })
                 .ToListAsync();
 
@@ -347,11 +352,11 @@ namespace Watsons.TRV2.DA.TR.Repositories
                 .AnyAsync();
         }
 
-        public async Task<bool> HasOrderProcessed(int storeId, string plu)
+        public async Task<bool> HasOrderProcessing(int storeId, string plu)
         {
             return await _context.TrOrders
                 .Include(o => o.TrOrderBatch)
-                .Where(o => o.TrOrderBatch.StoreId == storeId && o.Plu == plu && o.TrOrderStatus == (byte)TrOrderStatus.Processed)
+                .Where(o => o.TrOrderBatch.StoreId == storeId && o.Plu == plu && o.TrOrderStatus == (byte)TrOrderStatus.Processing)
                 .AnyAsync();
         }
 

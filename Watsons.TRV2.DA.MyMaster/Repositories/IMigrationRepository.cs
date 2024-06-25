@@ -11,7 +11,9 @@ namespace Watsons.TRV2.DA.MyMaster.Repositories
     {
         //Task<bool> WriteOffItem(int storeId, string plu, int quantity);
         Task<bool> WriteOffOrder(long orderBatchId);
-        Task<bool> InsertShipment(InsertShipmentDto dto);
-        Task<bool> InsertShipmentItem(InsertShipmentItemDto dto);
+        Task<bool> InsertShipment(InsertShipmentParams parameters);
+        Task<bool> InsertShipmentItem(InsertShipmentItemParams parameters);
+        Task<bool> InsertShipmentStatusLog(InsertShipmentStatusLogParams parameters);
+        Task<List<Entities.ShipmentItem>> SelectShipmentItems(SelectShipmentItemParams parameters);
     }
 }

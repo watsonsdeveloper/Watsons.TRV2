@@ -33,7 +33,7 @@ static async Task CreateHHTOrder(string baseAddress)
     client.DefaultRequestHeaders.Accept.Add(
         new MediaTypeWithQualityHeaderValue("application/json"));
 
-    var response = await client.GetAsync("/job/createStoreHhtOrder");
+    var response = await client.GetAsync($"{baseAddress}/job/createStoreHhtOrder");
 
     Console.WriteLine(response);
     Thread.Sleep(5000);

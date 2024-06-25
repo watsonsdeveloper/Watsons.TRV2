@@ -490,7 +490,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 2,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 3,
+                            ModuleId = 2,
                             RoleId = new Guid("37e1bfd1-45b7-4f19-8c6c-ac6d6bf12ca0"),
                             Status = (byte)0
                         },
@@ -499,7 +499,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 4,
+                            ModuleId = 3,
                             RoleId = new Guid("37e1bfd1-45b7-4f19-8c6c-ac6d6bf12ca0"),
                             Status = (byte)0
                         },
@@ -508,7 +508,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 4,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 5,
+                            ModuleId = 4,
                             RoleId = new Guid("37e1bfd1-45b7-4f19-8c6c-ac6d6bf12ca0"),
                             Status = (byte)0
                         },
@@ -517,7 +517,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 6,
+                            ModuleId = 5,
                             RoleId = new Guid("37e1bfd1-45b7-4f19-8c6c-ac6d6bf12ca0"),
                             Status = (byte)0
                         },
@@ -526,7 +526,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 6,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 7,
+                            ModuleId = 6,
                             RoleId = new Guid("37e1bfd1-45b7-4f19-8c6c-ac6d6bf12ca0"),
                             Status = (byte)0
                         },
@@ -535,7 +535,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 7,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 8,
+                            ModuleId = 7,
                             RoleId = new Guid("37e1bfd1-45b7-4f19-8c6c-ac6d6bf12ca0"),
                             Status = (byte)0
                         },
@@ -544,7 +544,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 8,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 9,
+                            ModuleId = 8,
                             RoleId = new Guid("37e1bfd1-45b7-4f19-8c6c-ac6d6bf12ca0"),
                             Status = (byte)0
                         },
@@ -553,8 +553,8 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 9,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 1,
-                            RoleId = new Guid("7f195f8e-2fce-4404-a8db-097f212cc2bf"),
+                            ModuleId = 9,
+                            RoleId = new Guid("37e1bfd1-45b7-4f19-8c6c-ac6d6bf12ca0"),
                             Status = (byte)0
                         },
                         new
@@ -562,7 +562,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 10,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 3,
+                            ModuleId = 1,
                             RoleId = new Guid("7f195f8e-2fce-4404-a8db-097f212cc2bf"),
                             Status = (byte)0
                         },
@@ -571,7 +571,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 11,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 4,
+                            ModuleId = 2,
                             RoleId = new Guid("7f195f8e-2fce-4404-a8db-097f212cc2bf"),
                             Status = (byte)0
                         },
@@ -580,7 +580,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 12,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 5,
+                            ModuleId = 3,
                             RoleId = new Guid("7f195f8e-2fce-4404-a8db-097f212cc2bf"),
                             Status = (byte)0
                         },
@@ -589,7 +589,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 13,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 6,
+                            ModuleId = 4,
                             RoleId = new Guid("7f195f8e-2fce-4404-a8db-097f212cc2bf"),
                             Status = (byte)0
                         },
@@ -598,7 +598,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 14,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 7,
+                            ModuleId = 5,
                             RoleId = new Guid("7f195f8e-2fce-4404-a8db-097f212cc2bf"),
                             Status = (byte)0
                         },
@@ -607,7 +607,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 15,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 8,
+                            ModuleId = 6,
                             RoleId = new Guid("7f195f8e-2fce-4404-a8db-097f212cc2bf"),
                             Status = (byte)0
                         },
@@ -616,7 +616,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 16,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 9,
+                            ModuleId = 7,
                             RoleId = new Guid("7f195f8e-2fce-4404-a8db-097f212cc2bf"),
                             Status = (byte)0
                         },
@@ -625,8 +625,8 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 17,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 1,
-                            RoleId = new Guid("41560460-c203-4212-a341-6860008ad007"),
+                            ModuleId = 8,
+                            RoleId = new Guid("7f195f8e-2fce-4404-a8db-097f212cc2bf"),
                             Status = (byte)0
                         },
                         new
@@ -634,8 +634,8 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 18,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 2,
-                            RoleId = new Guid("41560460-c203-4212-a341-6860008ad007"),
+                            ModuleId = 9,
+                            RoleId = new Guid("7f195f8e-2fce-4404-a8db-097f212cc2bf"),
                             Status = (byte)0
                         },
                         new
@@ -643,7 +643,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 19,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 3,
+                            ModuleId = 1,
                             RoleId = new Guid("41560460-c203-4212-a341-6860008ad007"),
                             Status = (byte)0
                         },
@@ -652,7 +652,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 20,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 4,
+                            ModuleId = 2,
                             RoleId = new Guid("41560460-c203-4212-a341-6860008ad007"),
                             Status = (byte)0
                         },
@@ -661,7 +661,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 21,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 5,
+                            ModuleId = 3,
                             RoleId = new Guid("41560460-c203-4212-a341-6860008ad007"),
                             Status = (byte)0
                         },
@@ -670,7 +670,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 22,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 6,
+                            ModuleId = 4,
                             RoleId = new Guid("41560460-c203-4212-a341-6860008ad007"),
                             Status = (byte)0
                         },
@@ -679,7 +679,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 23,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 7,
+                            ModuleId = 5,
                             RoleId = new Guid("41560460-c203-4212-a341-6860008ad007"),
                             Status = (byte)0
                         },
@@ -688,7 +688,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 24,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 8,
+                            ModuleId = 6,
                             RoleId = new Guid("41560460-c203-4212-a341-6860008ad007"),
                             Status = (byte)0
                         },
@@ -697,7 +697,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 25,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 9,
+                            ModuleId = 7,
                             RoleId = new Guid("41560460-c203-4212-a341-6860008ad007"),
                             Status = (byte)0
                         },
@@ -706,8 +706,8 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 26,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 1,
-                            RoleId = new Guid("8d39cca7-edf9-49ed-a959-3d0057b055c2"),
+                            ModuleId = 8,
+                            RoleId = new Guid("41560460-c203-4212-a341-6860008ad007"),
                             Status = (byte)0
                         },
                         new
@@ -715,8 +715,8 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 27,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 2,
-                            RoleId = new Guid("8d39cca7-edf9-49ed-a959-3d0057b055c2"),
+                            ModuleId = 9,
+                            RoleId = new Guid("41560460-c203-4212-a341-6860008ad007"),
                             Status = (byte)0
                         },
                         new
@@ -724,7 +724,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 28,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 3,
+                            ModuleId = 1,
                             RoleId = new Guid("8d39cca7-edf9-49ed-a959-3d0057b055c2"),
                             Status = (byte)0
                         },
@@ -733,8 +733,8 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 29,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 1,
-                            RoleId = new Guid("bac83bf7-9c2c-46ee-b79f-d64094fff01e"),
+                            ModuleId = 2,
+                            RoleId = new Guid("8d39cca7-edf9-49ed-a959-3d0057b055c2"),
                             Status = (byte)0
                         },
                         new
@@ -742,8 +742,8 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 30,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 2,
-                            RoleId = new Guid("bac83bf7-9c2c-46ee-b79f-d64094fff01e"),
+                            ModuleId = 3,
+                            RoleId = new Guid("8d39cca7-edf9-49ed-a959-3d0057b055c2"),
                             Status = (byte)0
                         },
                         new
@@ -751,7 +751,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 31,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 3,
+                            ModuleId = 1,
                             RoleId = new Guid("bac83bf7-9c2c-46ee-b79f-d64094fff01e"),
                             Status = (byte)0
                         },
@@ -760,8 +760,8 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 32,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 1,
-                            RoleId = new Guid("1b6f6c6d-53b8-4613-a57e-079a3084aaee"),
+                            ModuleId = 2,
+                            RoleId = new Guid("bac83bf7-9c2c-46ee-b79f-d64094fff01e"),
                             Status = (byte)0
                         },
                         new
@@ -769,8 +769,8 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 33,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 2,
-                            RoleId = new Guid("1b6f6c6d-53b8-4613-a57e-079a3084aaee"),
+                            ModuleId = 3,
+                            RoleId = new Guid("bac83bf7-9c2c-46ee-b79f-d64094fff01e"),
                             Status = (byte)0
                         },
                         new
@@ -778,7 +778,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 34,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 3,
+                            ModuleId = 1,
                             RoleId = new Guid("1b6f6c6d-53b8-4613-a57e-079a3084aaee"),
                             Status = (byte)0
                         },
@@ -787,7 +787,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 35,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 4,
+                            ModuleId = 2,
                             RoleId = new Guid("1b6f6c6d-53b8-4613-a57e-079a3084aaee"),
                             Status = (byte)0
                         },
@@ -796,7 +796,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 36,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 5,
+                            ModuleId = 3,
                             RoleId = new Guid("1b6f6c6d-53b8-4613-a57e-079a3084aaee"),
                             Status = (byte)0
                         },
@@ -805,7 +805,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 37,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 6,
+                            ModuleId = 4,
                             RoleId = new Guid("1b6f6c6d-53b8-4613-a57e-079a3084aaee"),
                             Status = (byte)0
                         },
@@ -814,7 +814,7 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 38,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 7,
+                            ModuleId = 5,
                             RoleId = new Guid("1b6f6c6d-53b8-4613-a57e-079a3084aaee"),
                             Status = (byte)0
                         },
@@ -823,13 +823,31 @@ namespace Watsons.TRV2.DA.TR.Migrations
                             RoleModuleAccessId = 39,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
-                            ModuleId = 8,
+                            ModuleId = 6,
                             RoleId = new Guid("1b6f6c6d-53b8-4613-a57e-079a3084aaee"),
                             Status = (byte)0
                         },
                         new
                         {
                             RoleModuleAccessId = 40,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = "System",
+                            ModuleId = 7,
+                            RoleId = new Guid("1b6f6c6d-53b8-4613-a57e-079a3084aaee"),
+                            Status = (byte)0
+                        },
+                        new
+                        {
+                            RoleModuleAccessId = 41,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = "System",
+                            ModuleId = 8,
+                            RoleId = new Guid("1b6f6c6d-53b8-4613-a57e-079a3084aaee"),
+                            Status = (byte)0
+                        },
+                        new
+                        {
+                            RoleModuleAccessId = 42,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "System",
                             ModuleId = 9,
@@ -1299,6 +1317,13 @@ namespace Watsons.TRV2.DA.TR.Migrations
                         .HasName("PK_Param");
 
                     b.ToTable("SysParam", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Param = "OrderNumber",
+                            Value = "1000"
+                        });
                 });
 
             modelBuilder.Entity("Watsons.TRV2.DA.TR.Entities.TrCart", b =>

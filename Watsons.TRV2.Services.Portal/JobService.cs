@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -8,6 +9,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Watsons.Common;
 using Watsons.Common.EmailHelpers;
@@ -39,6 +42,8 @@ namespace Watsons.TRV2.Services.Portal
         private readonly ISupplierMasterRepository _supplierMasterRepository;
         private readonly IMigrationRepository _migrationRepository;
         private readonly SupplierOrderSettings _supplierOrderSettings;
+        private readonly B2bOrderSettings _b2bOrderSettings;
+        private readonly EmailNotifyStoreOrderPendingSettings _emailNotifyStoreOrderPendingSettings;
         private readonly EmailHelper _emailHelper;
         private readonly string _environment;
         public JobService(
@@ -54,6 +59,8 @@ namespace Watsons.TRV2.Services.Portal
             ISupplierMasterRepository supplierMasterRepository,
             IMigrationRepository migrationRepository,
             IOptionsSnapshot<SupplierOrderSettings> supplierOrderSettings,
+            IOptionsSnapshot<B2bOrderSettings> b2bOrderSettings,
+            IOptionsSnapshot<EmailNotifyStoreOrderPendingSettings> emailNotifyStoreOrderPendingSettings,
             EmailHelper emailHelper)
         {
             _logger = logger;
@@ -68,12 +75,20 @@ namespace Watsons.TRV2.Services.Portal
             _supplierMasterRepository = supplierMasterRepository;
             _migrationRepository = migrationRepository;
             _supplierOrderSettings = supplierOrderSettings.Value;
+            _b2bOrderSettings = b2bOrderSettings.Value;
+            _emailNotifyStoreOrderPendingSettings = emailNotifyStoreOrderPendingSettings.Value;
             _emailHelper = emailHelper;
             _environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
         }
 
         public async Task<ServiceResult<bool>> EmailNotifyStoreOrderPending()
         {
+            Log.Logger = new LoggerConfiguration()
+            .WriteTo.File("Logs/emailNotifyStoreOrderPending.log", rollingInterval: RollingInterval.Day,
+                 retainedFileCountLimit: 30,
+                 rollOnFileSizeLimit: false)
+            .CreateLogger();
+
             var orderPendingList = await _trOrderBatchRepository.PendingList();
             var storeIds = orderPendingList.Select(o => o.StoreId).ToList();
             if (storeIds == null || storeIds.Count() <= 0)
@@ -95,10 +110,13 @@ namespace Watsons.TRV2.Services.Portal
             }
 
             var orderItemsPending = await _trOrderRepository.OrderPending();
+            //orderItemsPending = orderItemsPending.Where(o => o.TrOrderBatch.Brand == (byte)Brand.Own);
+            //var orderItemPendingDict = orderItemsPending.GroupBy(o => o.TrOrderBatch.StoreId)
+            //    .ToDictionary(o => o.Key, o => o.GroupBy(o => o.TrOrderBatchId).ToDictionary(o => o.Key, o => o.Count()));
             orderItemsPending = orderItemsPending.Where(o => o.TrOrderBatch.Brand == (byte)Brand.Own);
             var orderItemPendingDict = orderItemsPending.GroupBy(o => o.TrOrderBatch.StoreId)
-                .ToDictionary(o => o.Key, o => o.GroupBy(o => o.TrOrderBatchId).ToDictionary(o => o.Key, o => o.Count()));
-            if(orderItemPendingDict == null || orderItemPendingDict.Count() <= 0)
+                .ToDictionary(o => o.Key, o => o);
+            if (orderItemPendingDict == null || orderItemPendingDict.Count() <= 0)
             {
                 return ServiceResult<bool>.Success(true);
             }
@@ -114,14 +132,32 @@ namespace Watsons.TRV2.Services.Portal
                     var subject = $"Tester Own Label Request - Pending Approval {env}";
                     var body = System.IO.File.ReadAllText("EmailTemplates/EmailNotifyStoreOrderPending.html");
                     body = body.Replace("{{fullname}}", user?.Name);
+                    if(user!.RoleCode == "ASOM")
+                    {
+                        body = body.Replace("{{title}}", "Please be informed that the Tester Own Label Request stated below requires your approval.");
+                    }
+                    else if (user!.RoleCode == "RSOM")
+                    {
+                        body = body.Replace("{{title}}", "Please be informed that the Tester Own Label Request mentioned below has been pending approval from ASOM for more than 3 days. Immediate action is required.");
+                    }
 
                     var bodyContent = string.Empty;
                     foreach(var store in userStores) // loop throuh each store
                     {
-                        var orderPending = orderItemPendingDict.Where(o => o.Key == store.StoreId).FirstOrDefault().Value;
-                        if (orderPending == null || orderPending.Count() <= 0)
+                        var orderBatch = orderItemPendingDict.Where(o => o.Key == store.StoreId).FirstOrDefault().Value;
+                        if (orderBatch == null || orderBatch.Count() <= 0)
                         {
                             continue;
+                        }
+                        Dictionary<long, int> orderPending;
+                        if (user!.RoleCode == "RSOM") // RSOM want to receive email only if orders are not approved more than 3 days.
+                        {
+                            orderPending = orderBatch.Where(o => o.TrOrderBatch.CreatedAt.Date.AddDays(_emailNotifyStoreOrderPendingSettings.RsomPendingDays) < DateTime.Now.Date)
+                                .GroupBy(o => o.TrOrderBatchId).ToDictionary(o => o.Key, o => o.Count());
+                        }
+                        else
+                        {
+                            orderPending = orderBatch.GroupBy(o => o.TrOrderBatchId).ToDictionary(o => o.Key, o => o.Count());
                         }
                         foreach (var order in orderPending) // loop through each order
                         {
@@ -132,6 +168,12 @@ namespace Watsons.TRV2.Services.Portal
                                 $"</tr>";
                         }
                     }
+
+                    if(string.IsNullOrEmpty(bodyContent))
+                    {
+                        continue;
+                    }
+
                     body = body.Replace("{{tableContent}}", bodyContent);
                     body = body.Replace("{{link}}", _configuration.GetValue<string>("PortalUrl"));
 
@@ -139,15 +181,32 @@ namespace Watsons.TRV2.Services.Portal
                     {
                         Recipients = new List<string>() { email },
                         Subject = subject,
-                        Body = body
+                        Body = body,
+                        CopyRecipients = _emailNotifyStoreOrderPendingSettings.CopyRecipients,
                     };
 
-                    await _emailHelper.SendEmailBySp(emailParams);
+                    try
+                    {
+
+                        if (_environment == "PROD")
+                        {
+                            await _emailHelper.SendEmailBySp(emailParams);
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Fatal(ex, $"{ex.Message} \n{JsonSerializer.Serialize(emailParams)}");
+                    }
+                    finally
+                    {
+                        Log.CloseAndFlush();
+                    }
 
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex, "Error in EmailNotifyStoreOrderPending");
+                    Log.Error(ex, "Error in EmailNotifyStoreOrderPending");
                 }
             }
 
@@ -160,7 +219,7 @@ namespace Watsons.TRV2.Services.Portal
 
             var orders = await _trOrderRepository.ListSearch(new ListSearchParams()
             {
-                Status = (byte)TrOrderStatus.Pending,
+                TrOrderStatus = (byte)TrOrderStatus.Pending,
                 Brand = (byte)Brand.Supplier,
             });
             var stores = orders.GroupBy(o => o.TrOrderBatch.StoreId);
@@ -211,10 +270,11 @@ namespace Watsons.TRV2.Services.Portal
                         suppliers = (await _supplierMasterRepository.Search(supplierSearchFilter)!).ToList();
                     }
 
+                    
                     foreach (var supplier in suppliers)
                     {
                         orderNumber++;
-                        string formattedOrderNumber = "99" + orderNumber.ToString("000000");
+                        string formattedOrderNumber = "80" + orderNumber.ToString("000000");
                         var filePath = string.Empty;
                         var fileName = string.Empty;
                         var supplierOrders = storeOrders.Where(o => o.SupplierCode == supplier.SupplierCode).ToList();
@@ -227,8 +287,7 @@ namespace Watsons.TRV2.Services.Portal
 
                         foreach (var orderItem in supplierOrders)
                         {
-                            // TODO : orderItem AverageCost, PluCappedSnapshot
-                            await _trOrderRepository.UpdateTrOrderStatus(orderItem.TrOrderId, TrOrderStatus.Processed);
+                            await _trOrderRepository.UpdateTrOrderStatus(orderItem.TrOrderId, TrOrderStatus.Processing);
                             await _b2bOrderRepository.Insert(new B2bOrder()
                             {
                                 TrOrderId = orderItem.TrOrderId,
@@ -243,13 +302,14 @@ namespace Watsons.TRV2.Services.Portal
                     var trOrderBatchIds = storeOrders.Select(o => o.TrOrderBatchId).Distinct().ToList();
                     foreach(var trOrderBatchId in trOrderBatchIds)
                     {
-                        await _trOrderBatchRepository.UpdateTrOrderBatchStatus(trOrderBatchId, TrOrderBatchStatus.Processed);
+                        await _trOrderBatchRepository.UpdateTrOrderBatchStatus(trOrderBatchId, TrOrderBatchStatus.Processing);
                     }
                 }
             }
             catch (Exception ex)
             {
                 // TODO : log
+                _logger.Error(ex, "Error in SubmitToB2B");
                 return ServiceResult<bool>.Fail(ex.Message);
             }
 
@@ -265,7 +325,6 @@ namespace Watsons.TRV2.Services.Portal
 
         public async Task<ServiceResult<bool>> CreateStoreHhtOrder()
         {
-
             var orders = await _b2bOrderRepository.HhtOrderList();
             if (orders == null || orders.Count() <= 0)
             {
@@ -313,9 +372,14 @@ namespace Watsons.TRV2.Services.Portal
                     var today = DateTime.Now;
                     var orderDate = today.Date;
                     var deliveryDate = orderDate.AddDays(14).Date;
-                    var shipmentDto = new InsertShipmentDto(storeId, firstOrderItem.B2bOrder.OrderNumber, firstOrderItem.SupplierCode,
+                    var shipmentDto = new InsertShipmentParams(storeId, firstOrderItem.B2bOrder.OrderNumber, firstOrderItem.SupplierCode,
                         orderDate, deliveryDate, firstOrderItem.TrOrderBatchId.ToString(), firstOrderItem.TrOrderBatchId.ToString());
                     var insertShipment = await _migrationRepository.InsertShipment(shipmentDto);
+                    if (!insertShipment)
+                    {
+                        // TODO : db action log
+                        continue;
+                    }
 
                     foreach (var item in orderItems!)
                     {
@@ -337,26 +401,125 @@ namespace Watsons.TRV2.Services.Portal
                             {
                                 continue;
                             }
-                            var shipmentItemDto = new InsertShipmentItemDto(storeId, item.B2bOrder.OrderNumber, item.Plu, item.SupplierCode, item.Barcode, 1);
+                            var shipmentItemDto = new InsertShipmentItemParams(storeId, item.B2bOrder.OrderNumber, item.Plu, item.SupplierCode, item.Barcode, 1);
                             await _migrationRepository.InsertShipmentItem(shipmentItemDto);
                             var updateHhtOrderDto = new UpdateHhtOrderDto(item.TrOrderId, HhtOrderStatus.Shipping, null);
                             await _b2bOrderRepository.UpdateHhtOrder(updateHhtOrderDto);
                         }
                         catch (Exception ex)
                         {
-                            // TODO : log
+                            // TODO : db action log
+                            _logger.Error(ex, "Error in CreateStoreHhtOrder");
                             var updateHhtOrderDto = new UpdateHhtOrderDto(item.TrOrderId, HhtOrderStatus.Error, ex.Message);
                             await _b2bOrderRepository.UpdateHhtOrder(updateHhtOrderDto);
                         }
                     }
+
+                    var shipmentStatusLogDto = new InsertShipmentStatusLogParams(storeId, firstOrderItem.B2bOrder.OrderNumber, "10"); // 10 - opening
+                    await _migrationRepository.InsertShipmentStatusLog(shipmentStatusLogDto);
                 }
                 catch (Exception ex)
                 {
-                    // TODO : log
+                    // TODO : db action log
+                    _logger.Error(ex, "Error in CreateStoreHhtOrder");
                 }
             }
 
             return ServiceResult<bool>.Success(true);
+        }
+
+        public async Task<ServiceResult<bool>> SyncStoreHhtOrderStatus()
+        {
+            var orders = await _b2bOrderRepository.HhtOrderList();
+            if (orders == null || orders.Count() <= 0)
+            {
+                return ServiceResult<bool>.Success(true);
+            }
+
+            var storeOrders = orders.Where(o => o.B2bOrder != null
+                    && (o.B2bOrder.HhtInsertStatus == (byte)HhtOrderStatus.Shipping))
+                    .GroupBy(o => o.TrOrderBatch.StoreId);
+
+            if (storeOrders == null || storeOrders.Count() <= 0)
+            {
+                return ServiceResult<bool>.Success(true);
+            }
+
+            foreach (var storeOrder in storeOrders) // loop through each store
+            {
+                var storeId = storeOrder.Key;
+                var shipmentNumbers = storeOrder.Select(b => b.B2bOrder!.OrderNumber).Distinct().ToList();
+                var shipmentItems = await _migrationRepository.SelectShipmentItems(new SelectShipmentItemParams(storeId, shipmentNumbers!)); // get the store orders shipment status
+
+                var orderBatchIds = new List<long>();
+                foreach (var order in storeOrder)
+                {
+                    try
+                    {
+                        if (order.B2bOrder == null)
+                        {
+                            continue; // make sure HHT is generated and sent to suppliers.
+                        }
+                        if (shipmentItems != null && shipmentItems.Count() > 0)
+                        {
+                            var shipItem = shipmentItems.Where(s => s.ItemCode == order.Plu && s.ShipmentNumber == order.B2bOrder.OrderNumber).FirstOrDefault();
+                            if (shipItem != null)
+                            {
+                                order.B2bOrder.HhtInsertStatus = (byte)HhtOrderStatus.Shipped;
+                                order.B2bOrder.ReceivedQty = shipItem.ReceivedQty;
+                                order.B2bOrder.StoreReceivedAt = shipItem.ModificationTime;
+                                order.TrOrderBatch.UpdatedBy = shipItem.ModifiedBy;
+                                order.B2bOrder.UpdatedAt = DateTime.Now;
+                                if (shipItem.Qty == shipItem.ReceivedQty)
+                                {
+                                    order.TrOrderStatus = (byte)TrOrderStatus.Fulfilled;
+                                }
+                                orderBatchIds.Add(order.TrOrderBatchId);
+                            }
+                        }
+
+                        if (order.TrOrderStatus == (byte)TrOrderStatus.Processing && order.B2bOrder.HhtInsertAt != null && order.B2bOrder.HhtInsertAt.Value.AddDays(_b2bOrderSettings.ExpiredDays) < DateTime.Now)
+                        {
+                            // set expired status
+                            order.TrOrderStatus = (byte)TrOrderStatus.Expired;
+                            order.B2bOrder.HhtInsertStatus = (byte)HhtOrderStatus.Expired;
+                            order.B2bOrder.UpdatedAt = DateTime.Now;
+                            orderBatchIds.Add(order.TrOrderBatchId);
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(ex, "Error in SyncStoreHhtOrderStatus Loop");
+                    }
+                }
+
+                await _trOrderRepository.UpdateRange(orders.ToList());
+
+                var updateOrderBatchIds = orderBatchIds.Distinct().ToList();
+                foreach (var orderBatchId in updateOrderBatchIds)
+                {
+                    // TODO: check if all orders in the batch are fulfilled
+                    var filter = new ListSearchParams()
+                    {
+                        TrOrderBatchId = orderBatchId
+                    };
+
+                    var orderItems = await _trOrderRepository.ListSearch(filter);
+                    if (orderItems == null || orderItems.Count() <= 0)
+                    {
+                        continue;
+                    }
+
+                    if (orderItems.All(o => o.TrOrderStatus == (byte)TrOrderStatus.Fulfilled || o.TrOrderStatus == (byte)TrOrderStatus.Expired))
+                    {
+                        await _trOrderBatchRepository.UpdateTrOrderBatchStatus(orderBatchId, TrOrderBatchStatus.Processed);
+                    }
+                }
+            }
+
+            return ServiceResult<bool>.Success(true);
+
         }
 
         protected bool GeneratePOFile(List<DA.TR.Entities.TrOrder> orderDetail, StoreMaster storeMaster, SupplierMaster supplierMaster, List<ItemMaster> itemMasterList, string orderNumber, ref string FileName, ref string FilePath)
@@ -381,7 +544,7 @@ namespace Watsons.TRV2.Services.Portal
                 Header.AppendLine(Row2);
                 Header.AppendLine(Row3);
                 Header.AppendLine(Row4);
-                //Header.AppendLine(Row5);
+                Header.AppendLine(Row5);
                 Header.AppendLine(Row6);
                 Header.AppendLine(Row7);
                 Header.AppendLine(Row8);
@@ -425,8 +588,9 @@ namespace Watsons.TRV2.Services.Portal
             }
             catch (Exception ex)
             {
+                _logger.Error(ex, "Error in GeneratePOFile");
                 Result = false;
-                // TODO : log
+                
                 //sp.InsertFileCreationLog(System.DateTime.Now, storeMaster.StoreId, supplierMaster.SupplierCode, orderNumber, ex.ToString());
             }
 

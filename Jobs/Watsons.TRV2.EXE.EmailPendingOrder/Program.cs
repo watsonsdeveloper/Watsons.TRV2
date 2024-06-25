@@ -33,7 +33,7 @@ static async Task EmailPendingOrder(string baseAddress)
     client.DefaultRequestHeaders.Accept.Add(
         new MediaTypeWithQualityHeaderValue("application/json"));
 
-    var response = await client.GetAsync("/job/emailNotifyStoreOrderPending");
+    var response = await client.GetAsync($"{baseAddress}/job/emailNotifyStoreOrderPending");
 
     Console.WriteLine(response);
 }

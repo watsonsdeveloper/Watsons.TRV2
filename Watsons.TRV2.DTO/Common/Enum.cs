@@ -35,7 +35,7 @@ namespace Watsons.TRV2.DTO.Common
         All = 0,
         Pending = 1,
         Processed = 2,
-        Overdue = 3
+        Processing = 3
     }
     public enum TrOrderStatus : byte
     {
@@ -43,10 +43,9 @@ namespace Watsons.TRV2.DTO.Common
         Pending = 1,
         Approved = 2,
         Rejected = 3,
-        Processed = 4,
+        Processing = 4,
         Fulfilled = 5,
-        Unfulfilled = 6,
-        Cancelled = 7
+        Expired = 6
     }
 
     public enum HhtOrderStatus : byte
@@ -55,9 +54,7 @@ namespace Watsons.TRV2.DTO.Common
         Pending = 1,
         Shipping = 2,
         Shipped = 3,
-        Cancelled = 4,
-        Expire = 5,
-        StoreReceived = 6
+        Expired = 4
     }
 
     public enum TrReason : byte

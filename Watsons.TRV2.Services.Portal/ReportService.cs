@@ -59,9 +59,10 @@ namespace Watsons.TRV2.Services.Portal
             ListSearchParams parameters = new ListSearchParams()
             {
                 PluOrBarcode = request.PluOrBarcode,
+                BrandName = request.BrandName,
                 StoreIds = storeIds,
                 Brand = (byte)Brand.Own,
-                Status = trOrderStatus,
+                TrOrderStatus = trOrderStatus,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate
             };
@@ -110,9 +111,10 @@ namespace Watsons.TRV2.Services.Portal
             ListSearchParams parameters = new ListSearchParams()
             {
                 PluOrBarcode = request.PluOrBarcode,
+                BrandName = request.BrandName,
                 StoreIds = storeIds,
                 Brand = (byte)Brand.Supplier,
-                Status = trOrderStatus,
+                TrOrderStatus = trOrderStatus,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate
             };

@@ -12,5 +12,6 @@ namespace Watsons.TRV2.Services.Portal
         Task<ServiceResult<bool>> EmailNotifyStoreOrderPending();
         Task<ServiceResult<bool>> SubmitToB2B();
         Task<ServiceResult<bool>> CreateStoreHhtOrder();
+        Task<ServiceResult<bool>> SyncStoreHhtOrderStatus();
     }
 }

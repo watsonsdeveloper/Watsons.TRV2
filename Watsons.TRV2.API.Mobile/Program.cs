@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Serilog;
 using Watsons.Common;
 using Watsons.Common.ConnectionHelpers;
 using Watsons.Common.EmailHelpers;
@@ -15,10 +16,32 @@ using Watsons.TRV2.DA.TR.Entities;
 using Watsons.TRV2.DA.TR.Repositories;
 using Watsons.TRV2.Mobile;
 using Watsons.TRV2.Services.Mobile;
-using Watsons.TRV2.Services.Portal.Settings;
 using Watsons.TRV2.Services.RTS;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .WriteTo.Console()
+    .WriteTo.Logger(log => log
+        .Filter.ByIncludingOnly(e => e.Level == Serilog.Events.LogEventLevel.Information)
+        .WriteTo.File("Logs/information.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30,
+        rollOnFileSizeLimit: false))
+    .WriteTo.Logger(log => log
+        .Filter.ByIncludingOnly(e => e.Level == Serilog.Events.LogEventLevel.Debug)
+        .WriteTo.File("Logs/debug.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30,
+        rollOnFileSizeLimit: true, fileSizeLimitBytes: 419430400))
+    .WriteTo.Logger(log => log
+        .Filter.ByIncludingOnly(e => e.Level == Serilog.Events.LogEventLevel.Error)
+        .WriteTo.File("Logs/errors.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30,
+        rollOnFileSizeLimit: true, fileSizeLimitBytes: 419430400))
+    .WriteTo.Logger(log => log
+        .Filter.ByIncludingOnly(e => e.Level == Serilog.Events.LogEventLevel.Fatal)
+        .WriteTo.File("Logs/fatal.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30,
+        rollOnFileSizeLimit: true, fileSizeLimitBytes: 419430400))
+    .CreateLogger();
+builder.Host.UseSerilog();
+builder.Services.AddSingleton<Serilog.ILogger>(provider => Log.Logger);
 
 //var tRV2Connection = SysCredential.GetConnectionString("Server248", "TRV2");
 //var myMasterConnection = SysCredential.GetConnectionString("Server121", "MyMaster");
@@ -102,6 +125,8 @@ builder.Services.AddScoped<TrCartService>();
 builder.Services.AddScoped<TrOrderService>();
 builder.Services.AddScoped<UploadImageService>();
 builder.Services.AddScoped<IUploadImageService, UploadImageService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRtsService, RtsService>();
 
 builder.Services.AddScoped<ITrImageRepository, TrImageRepository>();

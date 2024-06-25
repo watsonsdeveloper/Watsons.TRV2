@@ -145,6 +145,8 @@ builder.Services.AddDbContextFactory<MigrationContext>(options =>
 builder.Services.AddOptions();
 
 builder.Services.Configure<SupplierOrderSettings>(builder.Configuration.GetSection("SupplierOrderSettings"));
+builder.Services.Configure<B2bOrderSettings>(builder.Configuration.GetSection("B2bOrderSettings"));
+builder.Services.Configure<EmailNotifyStoreOrderPendingSettings>(builder.Configuration.GetSection("EmailNotifyStoreOrderPendingSettings"));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.Configure<ImageSettings>(builder.Configuration.GetSection("ImageSettings"));
 builder.Services.Configure<RtsSettings>(builder.Configuration.GetSection("RtsSettings"));

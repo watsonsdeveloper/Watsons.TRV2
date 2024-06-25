@@ -93,7 +93,7 @@ namespace Watsons.TRV2.Services.Mobile
             ListSearchParams parameters = new ListSearchParams()
             {
                 TrOrderBatchId = request.TrOrderBatchId,
-                Status = status,
+                TrOrderStatus = status,
                 PluOrBarcode = request.PluOrBarcode,
                 StoreIds = new List<int>() { request.StoreId },
                 Brand = (byte)request.Brand,
@@ -195,11 +195,10 @@ namespace Watsons.TRV2.Services.Mobile
                 if (itemStoreOrdered > 0 && itemStoreOrdered > storePluCapped && cart.Justification.IsNullOrEmpty())
                 {
                     // check if the item is in monthly requested order
-                    cart.ErrorMessage = "Required justify";
+                    cart.ErrorMessage = "Remark required.";
                     cart.RequireJustify = true;
                     hasError = true;
                     requiredJustifyPluList.Add(cart.Plu, true);
-                    continue;
                 }
                 else
                 {

@@ -34,9 +34,16 @@ namespace Watsons.TRV2.DA.TR.Repositories
             return entity;
         }
 
-        public Task<IEnumerable<B2bOrder>> List(B2bOrder entity)
+        public async Task<IEnumerable<B2bOrder>> List(B2bOrder entity)
         {
-            throw new NotImplementedException();
+            IQueryable<B2bOrder> query = _context.B2bOrders;
+
+            if (entity.HhtInsertStatus != 0)
+            {
+                query = query.Where(o => o.HhtInsertStatus == entity.HhtInsertStatus);
+            }
+
+            return await query.ToListAsync();
         }
 
         public Task<B2bOrder> Select(B2bOrder entity)
@@ -70,7 +77,7 @@ namespace Watsons.TRV2.DA.TR.Repositories
                 .Include(o => o.B2bOrder)
                 .Where(o => o.TrOrderBatch.Brand == (byte)Brand.Supplier 
                         && o.TrOrderBatch.TrOrderBatchStatus == (byte)TrOrderBatchStatus.Processed
-                        && o.TrOrderStatus == (byte)TrOrderStatus.Processed);
+                        && o.TrOrderStatus == (byte)TrOrderStatus.Processing);
 
             return await query.ToListAsync();
         }

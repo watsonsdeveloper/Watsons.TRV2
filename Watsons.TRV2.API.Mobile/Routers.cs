@@ -5,6 +5,7 @@ using Watsons.TRV2.DTO.Mobile;
 using Watsons.TRV2.DTO.Mobile.TrCart;
 using Watsons.TRV2.DTO.Mobile.TrOrder;
 using Watsons.TRV2.DTO.Mobile.UploadImage;
+using Watsons.TRV2.DTO.Mobile.UserDto;
 using Watsons.TRV2.Services.Mobile;
 
 namespace Watsons.TRV2.API.Mobile
@@ -22,6 +23,12 @@ namespace Watsons.TRV2.API.Mobile
             #region mobileApi
 
             var mobileApi = app.MapGroup("/mobileApi");
+            mobileApi.MapPost("/login", async (LoginRequest request, UserService service) =>
+            {
+                var response = await service.Login(request);
+                return Results.Ok(response);
+            });
+
             mobileApi.MapGet("/searchProduct/{pluOrBarcode}", async (string pluOrBarcode, ProductService service) =>
             {
                 var response = await service.SearchByPluOrBarcode(pluOrBarcode);

@@ -152,6 +152,8 @@ namespace Watsons.TRV2.DA.TR.Repositories
             if (entity != null)
             {
                 entity.TrOrderBatchStatus = (byte)trOrderBatchStatus;
+                entity.UpdatedAt = DateTime.Now;
+                entity.UpdatedBy = "System";
                 await _context.SaveChangesAsync();
                 return true;
             }
